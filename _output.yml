@@ -1,0 +1,32 @@
+# bookdown::tufte_html_book:
+#   css: [standard_html.css, toc.css, mytufte.css]
+#  font-import: http://fonts.googleapis.com/css?family=Risque|Roboto|Open+Sans
+#  font-family: 'Roboto'
+#   config:
+#    toc:
+#      before: |
+#        <li><a href="https://m-clark.github.io/docs/"><span style="font-size:125%; font-variant:small-caps; font-style:italic; color:#ff5503">Machine Learning</span></a></li>
+#      after: |
+#        <li><a href="https://m-clark.github.io" target="blank" style="font-size:150%; font-variant:small-caps; color:#ff5500">Michael Clark</a></li>
+#    edit:
+#      link: https://github.com/rstudio/bookdown-demo/edit/master/%s
+#    highlight: pygments
+bookdown::gitbook:
+ css: [standard_html.css, toc.css, mytufte.css]
+ font-import: http://fonts.googleapis.com/css?family=Risque|Roboto|Open+Sans
+ font-family: 'Roboto'
+ config:
+   toc:
+     before: |
+       <li><a href="weblink_to_file"><span style="font-size:125%; font-variant:small-caps; font-style:italic; color:#ff5503">Your Title Here</span></a></li>
+     after: |
+       <li><a href="https://m-clark.github.io" target="blank" style="font-size:150%; font-variant:small-caps; color:#ff5500">Michael Clark</a></li>
+   edit:
+     link: https://github.com/m-clark/docs/
+   highlight: pygments
+# bookdown::pdf_book:
+#   includes:
+#     in_header: preamble.tex
+#   latex_engine: xelatex
+#   citation_package: natbib
+# bookdown::epub_book: default

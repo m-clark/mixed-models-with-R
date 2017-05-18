@@ -1,0 +1,202 @@
+/* Google Font API */
+/* @import url("(https://fonts.gstatic.com/s/librebaskerville/v4/pR0sBQVcY0JZc_ciXjFsKwHlCYWexZJCPRz1QQ0uKVU.woff2");*/
+
+@import url("http://fonts.googleapis.com/css?family=Libre+Baskerville"); 
+
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans'), local('OpenSans'), url(http://fonts.gstatic.com/s/opensans/v13/cJZKeOuBrn4kERxqtaUH3aCWcynf_cDxXwCLxiixG1c.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Roboto'), local('Roboto-Regular'), url(http://fonts.gstatic.com/s/roboto/v15/zN7GBFwfMP4uA6AR0HCoLQ.ttf) format('truetype');
+}
+
+
+/* latin-ext */
+/*@font-face {
+  font-family: 'Libre Baskerville';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Libre Baskerville'), local('LibreBaskerville-Regular'), url(https://fonts.gstatic.com/s/librebaskerville/v4/pR0sBQVcY0JZc_ciXjFsKwHlCYWexZJCPRz1QQ0uKVU.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}*/
+/* latin */
+/*@font-face {
+  font-family: 'Libre Baskerville';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Libre Baskerville'), local('LibreBaskerville-Regular'), url(https://fonts.gstatic.com/s/librebaskerville/v4/pR0sBQVcY0JZc_ciXjFsK6Ucnt8gjcHpqyffjHeZWDA.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+}*/
+
+
+
+.emph {
+  color: #ff5503;
+  font-weight: 500;
+}
+
+/* pack func and objclass colors come from hcl(seq(90,360, length.out=4), c=80, l=80)*/
+.pack {
+  color: #AC9CFF; /*#e41a1c*/
+  font-weight: 500;
+}
+
+.func {            /*#984ea3;can just use `` instead*/
+  color: #00CBB6;
+  font-weight: 500;
+}
+
+.objclass {
+  color:  #AAB400;  /*#4daf4a; #FFC5D0*/
+  font-weight: 500;
+}
+
+
+body {
+  font-family: 'Libre Baskerville', Roboto;
+  color: #595959; /*#595959 (i.e. gray35) provides recommended contrast ratio 7:1; previous  #7f7f7f (4:1); */
+  background: #fffff8;
+}
+
+div {
+  background: #fffff8;
+}
+
+p, ul, ol {
+  font-family: 'Libre Baskerville';
+  font-size: 100%;
+  
+}
+.book .book-body .page-wrapper .page-inner section.normal {
+  background: #fffff8;
+}
+
+ul {
+  list-style-type: none;
+  background: #fffff8;
+}
+
+pre {
+  box-sizing: border-box;
+  left: 0; /* This changes where the code chunk box actually starts */
+  /* padding: 10px 0 10px 60px; /* Change the last value here to move the text left or right */
+  position: relative;
+  width: 55%;                  /* This changes where the code chunk box ends on the right side */
+  font-size: 75%;               /*changes output size; and comments*/
+  line-height: 1.25em;           /* line spacing; default seems to be about 1.5 or more */
+  /*border: 10px solid #ff5500;*/   /*code block and results border*/
+  background-color: none;   /* results background #F7F7F7*/
+
+}
+
+pre code.r {
+  line-height: 1.5em;           /* line spacing; default seems to be about 1.5 or more */
+}
+
+
+#TOC{
+  font-size: 75%;
+}
+
+.table {
+  margin: 0 auto;
+}
+
+
+.tocify ul, .tocify li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    width: 100%;
+    line-height: 30px;
+}
+
+li.tocify-item.list-group-item.active {
+  background-color: #B2001D;             /* background of current section in toc  rgb(97,151,213)*/
+}
+
+h1, h2, h3, h4, h5 {
+  /* color:rgb(97,151,213); */
+   color: #B2001D;   /* stan red*/
+   font-family: 'Libre Baskerville';
+}
+
+
+
+a href {
+   text-decoration: none;
+   color: #1e90ff;
+ }
+
+
+/* background is used for the link underline in order to 'clear descenders', which wouldn't be a problem if you don't underline links like it's 1997. Setting to none here removes*/
+a:link {
+  background: none;
+  color: #1e90ff;
+}
+
+
+
+/* make smaller font to go along with overall regular sized font above */
+.sidenote, .marginnote {
+  font-size: 75%;
+}
+
+/* fix of ridiculous default buttons */
+.btn-default {
+  background: #f0f8ff;
+  font-family: 'Open Sans';
+  color: rgb(97,151,213);
+  text-decoration: none;
+  width: 20%;
+  -webkit-border-radius: 50px;
+  -moz-border-radius: 50px;
+  border-radius: 50px;
+  border: 3px solid ;
+  border-color: rgba(97,151,213, .75);
+  margin: 50px;
+  /*border: 3px solid rgb(97,151,213);
+  /*background:rgba(227,227,227,0.5);*/
+  /* -webkit-box-shadow: #B3B3B3 5px 5px 5px;
+  -moz-box-shadow: #B3B3B3 5px 5px 5px;
+  box-shadow: #B3B3B3 5px 5px 5px; */
+}
+
+.btn-default:active,
+.btn-default.active,
+.open > .dropdown-toggle.btn-default {
+  color: #ffffff;
+  background-color: #282828;
+  border-color: #232323;
+}
+
+
+.imgbigger {
+    width: 100%;
+    height: 100%;
+}
+
+.imgbigger img {
+    -webkit-transition: all .5s ease; /* Safari and Chrome */
+    -moz-transition: all .5s ease; /* Firefox */
+    -ms-transition: all .5s ease; /* IE 9 */
+    -o-transition: all .5s ease; /* Opera */
+    transition: all .5s ease;
+}
+
+.imgbigger:hover img {
+    -webkit-transform:scale(2); /* Safari and Chrome */
+    -moz-transform:scale(2); /* Firefox */
+    -ms-transform:scale(2); /* IE 9 */
+    -o-transform:scale(2); /* Opera */
+     transform:scale(2);
+}
+

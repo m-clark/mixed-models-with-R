@@ -1,0 +1,25 @@
+Data from center for Multilevel Modeling website: http://www.bristol.ac.uk/cmm/learning/support/datasets/
+
+
+This data library is designed for purposes of teaching and training in the application of multilevel models. Any publication related to using datasets from the library should acknowledge the Centre for Multilevel Modelling and the original source where specified.
+
+Each dataset has three files associated with it which have been compressed into one zipped file. There is a text file describing the data, an ASCII file with the raw data and a worksheet file.
+Help
+
+The data contained in the zip files below are held in .dat (basic text file), .ws, and .asc formats
+
+- .ws is an MLwiN worksheet. If you have MLwiN you can open this file.
+- Stata, SPSS or Minitab users can use MLwiN to save the file in any of these formats
+- .asc is fixed width ASCII text. The data is held in the .DAT file and is described in the .ASC file. To read this version into Stata you will need to use the infix command (for further details go to Stata's help for infix) while referring to the .ASC file. An example command for reading the asian data set would be:
+- infix ChildID 1-4 Age 5-7 Weight 8-12 BirthWeight 13-16 Gender 17 using asian.dat
+
+
+- Growth data (zip, 0.1 mb) Weight measurements of 568 Asian children in a British community on up to five occasions
+- Employment opportunities (zip, 0.1 mb) Youth unemployment among school leavers in Scotland
+- School effectiveness (zip, 0.1 mb) Examination data for school leavers in Inner London with intake achievement measures
+- Junior school study (zip, 0.1 mb) Longitudinal data on performance for pupils in 50 Inner London schools
+- Height growth data (zip, 0.1 mb) Height measurements on 26 boys on 9 occasions
+- Jaw bone measurements (zip, 0.1 mb) Jaw bone measurements on 20 boys on 4 occasions
+- Exam scores (zip, 0.1 mb) Public examination scores from 1900 students in 73 schools
+- Attitudes to abortion (zip, 0.1 mb) Attitudes to abortion from 264 respondents over 4 years in 54 areas
+- Item response data (zip, 0.1 mb) Algebra and geometry multiple choice exam data

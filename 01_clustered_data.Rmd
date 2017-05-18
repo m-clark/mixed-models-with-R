@@ -1,0 +1,48 @@
+# Clustered Data
+
+
+
+## Random Intercepts demo
+
+Data: 
+
+```{r , echo=F, eval=F}
+popular <- haven::read_dta("data/joop_hox_data/ma_hox_stata/popular.dta")
+glimpse(popular)
+# https://stats.idre.ucla.edu/r/examples/mlm-ma-hox/r-mlm-chp-2/
+popular %>% map_chr(~attributes(.)$label)
+popular %>% map_chr(~attributes(.)$labels)
+rio::import("data/joop_hox_data/ma_hox_stata/popular.dta", haven=T)
+```
+
+ 
+```{r processEarnings, echo=F, eval=F}
+earnings0 = read.delim('data/ARM_Data/earnings/wfw90.dat', header = F, sep = '\t')
+earnings0 = haven::read_dta('data/ARM_Data/earnings/heights.dta')
+earnings = earnings0 %>% 
+  mutate_all(function(x) ifelse(x==99, NA, x)) %>% 
+  rename(ht_ft = height1,
+         ht_inches = height2,
+         years_educ = ed,
+         year_of_birth = yearbn,
+         height_in_inches = height) %>% 
+  mutate(sex = factor(sex, labels=c('male', 'female')),
+         race = ifelse(race==9, NA, race),
+         race = factor(race==1, labels=c('other', 'white')),
+         hisp = ifelse(hisp==9, NA, hisp),
+         hisp = factor(hisp==1, labels=c('not', 'hisp')),
+         year_of_birth = 1900+year_of_birth
+         )
+
+
+earnings %>% group_by(sex) %>% summarise(mean(height_in_inches, na.rm=T))
+earnings %>% group_by(race) %>% summarise(n())
+earnings %>% group_by(hisp) %>% summarise(n())
+summary(earnings)
+save(earnings, file='data/earnings.RData')
+``` 
+```{r importEarnings, echo=1}
+load('data/earnings.RData')
+DT::datatable(earnings, options=list(dom='dt'))
+heatR::corrheat(cor(earnings %>% select(-sex,-race,-hisp), use='pair'))
+```

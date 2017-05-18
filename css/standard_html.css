@@ -1,0 +1,77 @@
+.emph {
+  color: #ff5503;
+  font-weight: 500;
+}
+
+/* pack func and objclass colors come from hcl(seq(90,360, length.out=4), c=80, l=80)*/
+.pack {
+  color: #AC9CFF; /*#e41a1c*/
+  font-weight: 500;
+}
+
+.func {            /*#984ea3;can just use `` instead*/
+  color: #00CBB6;
+  font-weight: 500;
+}
+
+.objclass {
+  color:  #AAB400;  /*#4daf4a; #FFC5D0*/
+  font-weight: 500;
+}
+
+a {
+  color: #1e90ff;  /*dodgerblue*/
+}
+
+body {
+  color: #595959; /*#595959 (i.e. gray35) provides recommended contrast ratio 7:1; previous  #7f7f7f (4:1); */
+}
+
+pre {
+  box-sizing: border-box;
+  left: 0; /* This changes where the code chunk box actually starts */
+  /* padding: 10px 0 10px 60px; /* Change the last value here to move the text left or right */
+  position: relative;
+  width: 100%; /* This changes where the code chunk box ends on the right side */
+  font-size: 75%; /*changes output size; and comments*/
+  /*border: 10px solid #ff5500;*/  /*code block and results border*/
+  /*background-color:#ff5500;*/   /* results background*/
+
+}
+
+#TOC{
+  font-size: 75%;
+}
+
+.table {
+  margin: 0 auto;
+}
+
+
+.tocify ul, .tocify li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    width: 100%;
+    line-height: 30px;
+}
+
+li.tocify-item.list-group-item.active {
+  background-color: rgb(97,151,213);             /* background of current section in toc */
+}
+
+h1, h2, h3, h4, h5 {
+  color:rgb(97,151,213);
+}
+
+.col2 {
+  columns: 2 200px;         /* number of columns and width in pixels*/
+  -webkit-columns: 2 200px; /* chrome, safari */
+  -moz-columns: 2 200px;    /* firefox */
+}
+.col3 {
+  columns: 3 100px;
+  -webkit-columns: 3 100px;
+  -moz-columns: 3 100px;
+}
