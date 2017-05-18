@@ -10,7 +10,6 @@ Intro
 Standard clustering
 
 - Random Intercepts demo
-- Alternatives
 - Data: ARM- earnings height
 
 Longitudinal Data
