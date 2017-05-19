@@ -1,5 +1,39 @@
 # Introduction
 
 ## Overview
+
+Mixed models are an extremely useful modeling tool for clustered data situations. It is quite common to have data in which we have repeated measurements for the units of observation, or in which the units of observation are otherwise clustered (e.g. students within school, cities within geographic region).  Data might have one or multiple levels of clustering, and that clustering may be hierarch
+
+### Goals
+
+To provide a sense of when one would use mixed models and the variety of techniques available.  Additionally, we'll have an exe
+
 ## Terminology
+
+Mixed models can deal with such data in a variety of ways, but for the uninitiated, the terminology, especially across disciplines, can be a bit daunting.
+
+Some terms you might come across regarding mixed models:
+
+- Variance components
+- Random intercepts and slopes
+- Random effects
+- Random coefficients
+- Varying coefficients
+- Intercepts and slopes-as-outcomes
+- Hierarchical linear models
+- Multilevel models
+- Growth curve models (possibly Latent GCM)
+- Mixed effects models
+
+All describe types of mixed models.  Some might be more historical, others are more often seen in a specific discipline, others might refer to a certain data structure (e.g. multilevel clustering), and still others are special cases. <span class='emph'>Mixed effects</span>, or simply mixed, models generally refer to a mixture of fixed and random effects.  I prefer the term mixed models because it is simple and no specific structure is implied[^mixmeth].  <span class='emph'>Fixed effects</span>, as we will see later, is perhaps a poor but nonetheless stubborn term for the typical main effects one would see in a linear regression model, i.e. the non-random part of a mixed model, and in some contexts they are referred to as the *population average* effect.
+
+Alternative approaches used in clustered data situations include:
+
+- Using cluster-robust standard errors
+- Fixed effects models (also panel linear models with fixed, as opposed to random, effects)
+- Generalized estimating equations
+
+The first two are commonly used by those trained with an econometrics perspective, while you might see gee more with those of a biostatistics perspective (see the marginal model below for some perspective).  They will not be considered here.  I personally don't use them because they generally do not answer questions I have for clustered data situations, do not generalize to more complex clustering situations, or in other situations would only tell you what a mixed model would anyway.
+
+
 ## Data setup

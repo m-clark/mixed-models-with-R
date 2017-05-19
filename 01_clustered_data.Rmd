@@ -19,6 +19,7 @@ rio::import("data/joop_hox_data/ma_hox_stata/popular.dta", haven=T)
 ```{r processEarnings, echo=F, eval=F}
 earnings0 = read.delim('data/ARM_Data/earnings/wfw90.dat', header = F, sep = '\t')
 earnings0 = haven::read_dta('data/ARM_Data/earnings/heights.dta')
+
 earnings = earnings0 %>% 
   mutate_all(function(x) ifelse(x==99, NA, x)) %>% 
   rename(ht_ft = height1,
