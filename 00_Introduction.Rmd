@@ -6,7 +6,7 @@ Mixed models are an extremely useful modeling tool for clustered data situations
 
 ### Goals
 
-To provide a sense of when one would use mixed models and the variety of techniques available.  Additionally, we'll have an exe
+To provide a sense of when one would use mixed models and the variety of techniques available.  Additionally, we'll have exercises to practice the technique.
 
 ## Terminology
 

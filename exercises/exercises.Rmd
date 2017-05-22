@@ -1,0 +1,39 @@
+---
+title: "Mixed Model Exercises"
+output: 
+  html_document: 
+    css: ../css/standard_html.css
+    highlight: pygments
+    theme: united
+---
+
+
+# Exercise 1
+
+The following simulates data for a random intercepts model. Which of the following values represents the random effect standard deviation?  After you determine this, change the values of the sigmas, the betas and the sample sizes 
+
+
+
+```{r}
+N_per_group = 20
+N_groups = 25
+N = N_per_group*N_groups
+groups = rep(1:N_groups, e=N_per_group)
+sigma1 = 1
+sigma2 = .5
+v1 = rnorm(N, mean=0, sd=sigma1)
+v2 = rnorm(N_groups, mean=0, sd=sigma2)
+
+x1 = runif(N)
+beta_0 = 2
+beta_1 = .5
+y = beta_0 + beta_1*x1 + v2[groups] + v1
+
+
+library(lme4)
+model = lmer(y ~ x1 + (1|groups))
+summary(model, correlation=F)
+```
+
+# Exercise 2
+# Exercise 3
