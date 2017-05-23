@@ -10,7 +10,7 @@ Intro
 Standard clustering
 
 - Random Intercepts demo
-- Data: ARM- earnings height
+- Data: Popularity
 
 Longitudinal Data
 
