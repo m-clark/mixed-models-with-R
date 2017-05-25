@@ -5,7 +5,7 @@
 #   config:
 #    toc:
 #      before: |
-#        <li><a href="https://m-clark.github.io/docs/"><span style="font-size:125%; font-variant:small-caps; font-style:italic; color:#ff5503">Machine Learning</span></a></li>
+#        <li><a href="https://m-clark.github.io/docs/"><span style="font-size:125%; font-variant:small-caps; font-style:italic; color:#ff5503">Mixed Models in R</span></a></li>
 #      after: |
 #        <li><a href="https://m-clark.github.io" target="blank" style="font-size:150%; font-variant:small-caps; color:#ff5500">Michael Clark</a></li>
 #    edit:
@@ -18,7 +18,7 @@ bookdown::gitbook:
  config:
    toc:
      before: |
-       <li><a href="weblink_to_file"><span style="font-size:125%; font-variant:small-caps; font-style:italic; color:#ff5503">Your Title Here</span></a></li>
+       <li><a href="weblink_to_file"><span style="font-size:125%; font-variant:small-caps; font-style:italic; color:#ff5503">Mixed Models in R</span></a></li>
      after: |
        <li><a href="https://m-clark.github.io" target="blank" style="font-size:150%; font-variant:small-caps; color:#ff5500">Michael Clark</a></li>
    edit:

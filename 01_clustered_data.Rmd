@@ -38,6 +38,7 @@ Such a model is easily conducted in R, specifically with the package <span class
 load('data/popularity.RData')
 library(lme4)
 popular_lm = lm(popular ~ sex, data=popularity)
+# popular_grouped = popularity %>% split(.$pupil) %>% map(~ lm(popular ~ sex, data=.x)) %>% map(coef) # format for when you switch data to one with a within covariate
 popular_mixed = lmer(popular ~ sex + (1|pupil), data=popularity)
 ```
 

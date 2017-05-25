@@ -2,15 +2,15 @@
 
 ## Overview
 
-Mixed models are an extremely useful modeling tool for clustered data situations. It is quite common to have data in which we have repeated measurements for the units of observation, or in which the units of observation are otherwise clustered (e.g. students within school, cities within geographic region).   While there are different ways to approach such a situation, mixed models are far and away the most common approach.
+Mixed models are an extremely useful modeling tool for clustered data situations. It is quite common to have data in which we have repeated measurements for the units of observation, or in which the units of observation are otherwise clustered (e.g. students within school, cities within geographic region).   While there are different ways to approach such a situation, mixed models are far and away a common and powerful tool to do so.
 
 ### Goals
 
-To provide a sense of when one would use mixed models and the variety of techniques available.  Additionally, we'll have exercises to practice the technique.
+The goal of this workshop is to provide a sense of when one would use mixed models and a variety of standard techniques.  Additionally, we'll have exercises to practice.
 
 ## Terminology
 
-Mixed models can deal with such data in a variety of ways, but for the uninitiated, the terminology, especially across disciplines, can be a bit daunting.
+For the uninitiated, the terminology surrounding mixed models, especially across disciplines, can be a bit daunting.
 
 Some terms you might come across regarding mixed models:
 
@@ -30,4 +30,5 @@ All describe types of mixed models.  Some might be more historical, others are m
 
 ### Kinds of clustering
 
-Data might have one or multiple sources of clustering, and that clustering may be hierarchical, such that clusters are nested within other clusters. An example would be scholastic aptitude tests given multiple times to students (repeated observations nested within students, students nested within schools, schools nested within districts). In other cases, there is no nesting structure. An example would be a reaction time experiment where participants perform the same set of tasks.  While observations are nested within individual, observations are also clustered according to task type.  Some use the terms neste
+Data might have one or multiple sources of clustering, and that clustering may be hierarchical, such that clusters are nested within other clusters. An example would be scholastic aptitude tests given multiple times to students (repeated observations nested within students, students nested within schools, schools nested within districts). In other cases, there is no nesting structure. An example would be a reaction time experiment where participants perform the same set of tasks.  While observations are nested within individual, observations are also clustered according to task type.  Some use the terms <span class="emph">nested</span> and <span class="emph">crossed</span> to distinguish between these scenarios.
+
