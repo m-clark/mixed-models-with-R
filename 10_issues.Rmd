@@ -1,0 +1,32 @@
+# Issues
+
+
+## Alternative approaches
+
+Alternative approaches used in clustered data situations include:
+
+- Using cluster-robust standard errors
+- Fixed effects models (also panel linear models with fixed, as opposed to random, effects)
+- Generalized estimating equations
+
+The first two are commonly used by those trained with an econometrics perspective, while you might see GEE more with those of a biostatistics perspective. 
+
+
+### Growth curve models
+
+
+## Sample sizes
+
+### Small number of clusters
+
+Hard to estimate variance with small nclus
+
+### Small N within cluster
+
+Mixed models work even with no more than two and some singletons
+
+
+## Crossed vs. Nested
+
+
+## GLMM and beyond

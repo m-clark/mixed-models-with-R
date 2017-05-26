@@ -6,56 +6,82 @@
 d and crossed (respectively) to deal with these two scenarios.
 
 
-## Example: student popularity
+## Example: student GPA
 
-For the following we'll assess student popularity.  Each student rates the others, and so observed values are clustered within raters.  The popularity metric is 1-10, and we will include sex of the rater as a covariate.  See the [appendix][Appendix] for details.  
+For the following we'll assess factors predicting college grade point average (GPA).  Each of the 200 students is assessed for six occasions (each semester for the first three years), so we have observations nested within students. We have other variables such as job status, sex, high school gpa.  Some will be in both labeled and numeric form. See the [appendix][Appendix] for details.
 
-```{r popular_setup, echo=FALSE, eval=FALSE}
-popularity = haven::read_dta('data/joop_hox_data/ma_hox_stata/popular.dta')
-popularity = popularity %>% 
-  mutate(sex = factor(sex, labels = c('Male', 'Female'))) %>% 
-  select(-const)
-save(popularity, file='data/popularity.RData')
-# glimpse(popularity)
-# summary(popularity)
+```{r gpa_setup, echo=FALSE, eval=FALSE}
+gpa = read_spss('data/joop_hox_data2/5 Longitudinal/gpa2long.sav') %>% 
+  mutate(highgpa=as.numeric(highgpa),
+         occasion = as.numeric(occas),
+         job_num = as.numeric(job)) %>%  # to get rid of stupid labels
+  as_factor
+
+glimpse(gpa)
+save(gpa, file='data/gpa.RData')
 ```
 
-The model can be depicted in different ways.
+```{r show_gpa_data, echo=FALSE}
+load('data/gpa.RData')
+DT::datatable(gpa, options=list(dom='tp', scrollX=T))
+```
 
-$$popularity = b_{\mathrm{intercept}} + b_{\mathrm{sex}}\cdot sex + (\mathrm{effect}_{\mathscr{rater}} + \epsilon)$$
-$$popularity = b_{\mathrm{rater}} + b_{\mathrm{sex}}\cdot sex + \epsilon$$
-$$b_{\mathrm{rater}} = b_{\mathrm{intercept}} + \mathrm{effect}_{\mathrm{rater}}$$
-In either case, we assume the following for the rater effects and error term.
+<br>
+<br>
 
-$\epsilon \sim \mathscr{N}(0, \sigma)$
-$\mathrm{effect}_{\mathrm{rater}} \sim \mathscr{N}(0, \tau)$
+We can show the underlying model in a couple different ways. First we start with just a standard regression.
 
-In other words, conceptually the only difference between this and a standard regression is the rater effect, which is on average no effect, but specifically varies from rater to rater with some standard devation ($\tau$).
+$$gpa = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot occasion + \epsilon)$$
 
-Such a model is easily conducted in R, specifically with the package <span class="pack">lme4</span>.  In the following, the code will look just like what you used for regression with lm, but with an additional component specifying the group effect.  The `(1|pupil)` means that we are allowing the intercept, represented by 1, to vary by pupil. As a starting point, we'll also do the basic regression.
+$$\dots$$
 
-```{r popular_lme4}
-load('data/popularity.RData')
+Now we show one way of showing it as a mixed model that includes an effect of student.
+
+$$gpa = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot occasion + (\mathrm{effect}_{\mathscr{student}} + \epsilon)$$
+$$\dots$$
+
+$$gpa = b_{\mathrm{int\_student}} + b_{\mathrm{occ}}\cdot \mathrm{occasion} + \epsilon$$
+
+$$b_{\mathrm{int\_student}} = b_{\mathrm{int}} + \mathrm{effect}_{\mathrm{student}}$$
+
+In either case, we assume the following for the student effects and error term.  
+
+$$\epsilon \sim \mathscr{N}(0, \sigma)$$
+$$\mathrm{effect}_{\mathrm{student}} \sim \mathscr{N}(0, \tau)$$
+
+Both are normally distributed with mean of zero and some estimated standard deviation. In other words, conceptually the only difference between this and a standard regression is the student effect, which is on average no effect, but specifically varies from student to student with some standard devation ($\tau$).
+
+
+
+
+
+First, we'll look at the regression and only the time trend.
+
+```{r gpa_lm, echo=1:2}
+gpa_lm = lm(gpa ~ occasion, data=gpa)
+pander(summary(gpa_lm))
+gpa_lm_by_group = gpa %>% 
+  split(.$student) %>% 
+  map(~lm(gpa ~ occasion, data=.x)) %>% 
+  map(coef) %>% 
+  do.call(rbind, .) # some day bind_rows will work as advertised
+coef_lm = coef(gpa_lm)
+```
+
+The above tells us that as we move from semester to semester, we can expect GPA to increase by about `r round(coef_lm[2], 2)` points.
+
+
+Next we run a mixed model that will allow for a student specific effect.  Such a model is easily conducted in R, specifically with the package <span class="pack">lme4</span>.  In the following, the code will look just like what you used for regression with lm, but with an additional component specifying the group effect.  The `(1|student)` means that we are allowing the intercept, represented by 1, to vary by student.  As a starting point, we'll also do the basic regression. With the mixed model, we get the same results as the regression, but with more to talk about.
+
+
+```{r gpa_mixed, echo=-4}
 library(lme4)
-popular_lm = lm(popular ~ sex, data=popularity)
-# popular_grouped = popularity %>% split(.$pupil) %>% map(~ lm(popular ~ sex, data=.x)) %>% map(coef) # format for when you switch data to one with a within covariate
-popular_mixed = lmer(popular ~ sex + (1|pupil), data=popularity)
+gpa_mixed = lmer(gpa ~ occasion + (1|student), data=gpa)
+pander(broom::tidy(gpa_mixed))
 ```
 
+The first thing to note that's new is the estimated standard deviation of the student effect ($\tau$ in our formula depiction from before).  This tells us how much, on average, gpa bounces around as we move from student to student. In other words, even after making a prediction based on time point, each student has their own unique deviation, and that value is the estimated average deviation.  Note that scores move due to the student more than double what they move based on a semester change.
 
-First, we'll look at the regression.  We see that Females have a higher score on average.  When we look at the residuals, where we can see the student grouping effect.
+Another way to interpret the variance output is via the <span class="emph">intraclass correlation</span>, which tells us how much of the variance is due to the clustering.  In this case it's just the clustering variance out  of the total, or `
 
-```{r reg_output}
-summary(popular_lm)
-qqnorm(residuals(popular_lm))
-```
-
-With the mixed model, we get the same results as the regression, but with more to talk about.
-
-```{r mixed_output}
-summary(popular_mixed)
-```
-
-In the above
-
-
+One thing you'll also notice

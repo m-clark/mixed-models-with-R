@@ -1,0 +1,32 @@
+TITLE:  Popularity data using Mplus
+!
+
+DATA:
+  FILE IS "popular2.dat";
+
+VARIABLE:
+  NAMES ARE class pupil cons extrav sex texp popular popteach zextrav
+  zsex ztexp zpopular zpoptch;
+  USEVARIABLES ARE extrav sex texp popular class;
+  CLUSTER IS class;
+ ! WITHIN ARE extrav sex;
+  BETWEEN ARE texp;
+
+ANALYSIS:
+  TYPE IS TWOLEVEL RANDOM;
+  ESTIMATOR IS MLR;
+  ITERATIONS = 1000;
+  CONVERGENCE = 0.000001;
+
+DEFINE: extrexp=extrav*texp;
+
+MODEL:
+  %within%
+  popular on sex;
+  slope | popular on extrav;
+  %between%
+  popular on sex extrav;
+  popular on texp;
+  slope on texp;
+
+OUTPUT:  SAMPSTAT STANDARDIZED CINTERVAL;

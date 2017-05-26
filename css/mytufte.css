@@ -88,7 +88,7 @@ pre {
   left: 0; /* This changes where the code chunk box actually starts */
   /* padding: 10px 0 10px 60px; /* Change the last value here to move the text left or right */
   position: relative;
-  width: 55%;                  /* This changes where the code chunk box ends on the right side */
+  width: 100%;                  /* This changes where the code chunk box ends on the right side */
   font-size: 75%;               /*changes output size; and comments*/
   line-height: 1.25em;           /* line spacing; default seems to be about 1.5 or more */
   /*border: 10px solid #ff5500;*/   /*code block and results border*/

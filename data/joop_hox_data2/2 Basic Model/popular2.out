@@ -1,0 +1,280 @@
+Mplus VERSION 6
+MUTHEN & MUTHEN
+05/05/2010   6:56 PM
+
+INPUT INSTRUCTIONS
+
+  TITLE:  Popularity data using Mplus
+  !
+
+  DATA:
+    FILE IS "popular2.dat";
+
+  VARIABLE:
+    NAMES ARE class pupil cons extrav sex texp popular popteach zextrav
+    zsex ztexp zpopular zpoptch;
+    USEVARIABLES ARE extrav sex texp popular class;
+    CLUSTER IS class;
+   ! WITHIN ARE extrav sex;
+    BETWEEN ARE texp;
+
+  ANALYSIS:
+    TYPE IS TWOLEVEL RANDOM;
+    ESTIMATOR IS MLR;
+    ITERATIONS = 1000;
+    CONVERGENCE = 0.000001;
+
+  DEFINE: extrexp=extrav*texp;
+
+  MODEL:
+    %within%
+    popular on sex;
+    slope | popular on extrav;
+    %between%
+    popular on sex extrav;
+    popular on texp;
+    slope on texp;
+
+  OUTPUT:  SAMPSTAT STANDARDIZED CINTERVAL;
+
+
+
+*** WARNING in OUTPUT command
+  STANDARDIZED (STD, STDY, STDYX) options are not available for TYPE=RANDOM.
+  Request for STANDARDIZED (STD, STDY, STDYX) is ignored.
+   1 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+Popularity data using Mplus
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                        2000
+
+Number of dependent variables                                    1
+Number of independent variables                                  3
+Number of continuous latent variables                            1
+
+Observed dependent variables
+
+  Continuous
+   POPULAR
+
+Observed independent variables
+   EXTRAV      SEX         TEXP
+
+Continuous latent variables
+   SLOPE
+
+Variables with special functions
+
+  Cluster variable      CLASS
+  Between variables
+   TEXP
+
+
+Estimator                                                      MLR
+Information matrix                                        OBSERVED
+Maximum number of iterations                                  1000
+Convergence criterion                                    0.100D-05
+Maximum number of EM iterations                                500
+Convergence criteria for the EM algorithm
+  Loglikelihood change                                   0.100D-02
+  Relative loglikelihood change                          0.100D-05
+  Derivative                                             0.100D-03
+Minimum variance                                         0.100D-03
+Maximum number of steepest descent iterations                   20
+Maximum number of iterations for H1                           2000
+Convergence criterion for H1                             0.100D-03
+Optimization algorithm                                         EMA
+
+Input data file(s)
+  popular2.dat
+Input data format  FREE
+
+
+SUMMARY OF DATA
+
+     Number of clusters                        100
+
+     Average cluster size       20.000
+
+     Estimated Intraclass Correlations for the Y Variables
+
+                Intraclass              Intraclass
+     Variable  Correlation   Variable  Correlation
+
+     POPULAR      0.363
+
+
+
+SAMPLE STATISTICS
+
+NOTE:  The sample statistics for within and between refer to the
+       maximum-likelihood estimated within and between covariance
+       matrices, respectively.
+
+
+     ESTIMATED SAMPLE STATISTICS FOR WITHIN
+
+
+           Means
+              POPULAR       EXTRAV        SEX           TEXP
+              ________      ________      ________      ________
+ 1              0.000         0.000         0.000         0.000
+
+
+           Covariances
+              POPULAR       EXTRAV        SEX           TEXP
+              ________      ________      ________      ________
+ POPULAR        1.222
+ EXTRAV         0.587         1.180
+ SEX            0.295         0.044         0.222
+ TEXP           0.000         0.000         0.000         0.000
+
+
+           Correlations
+              POPULAR       EXTRAV        SEX           TEXP
+              ________      ________      ________      ________
+ POPULAR        1.000
+ EXTRAV         0.489         1.000
+ SEX            0.566         0.085         1.000
+ TEXP           0.000         0.000         0.000         0.000
+
+
+     ESTIMATED SAMPLE STATISTICS FOR BETWEEN
+
+
+           Means
+              POPULAR       EXTRAV        SEX           TEXP
+              ________      ________      ________      ________
+ 1              5.078         5.214         0.506        14.300
+
+
+           Covariances
+              POPULAR       EXTRAV        SEX           TEXP
+              ________      ________      ________      ________
+ POPULAR        0.695
+ EXTRAV        -0.040         0.414
+ SEX            0.099         0.012         0.028
+ TEXP           2.665        -3.215         0.243        43.230
+
+
+           Correlations
+              POPULAR       EXTRAV        SEX           TEXP
+              ________      ________      ________      ________
+ POPULAR        1.000
+ EXTRAV        -0.074         1.000
+ SEX            0.708         0.114         1.000
+ TEXP           0.486        -0.760         0.220         1.000
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+
+
+TESTS OF MODEL FIT
+
+Loglikelihood
+
+          H0 Value                       -6823.532
+          H0 Scaling Correction Factor       1.044
+            for MLR
+
+Information Criteria
+
+          Number of Free Parameters             10
+          Akaike (AIC)                   13667.063
+          Bayesian (BIC)                 13723.072
+          Sample-Size Adjusted BIC       13691.301
+            (n* = (n + 2) / 24)
+
+
+
+MODEL RESULTS
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+Within Level
+
+ POPULAR    ON
+    SEX                1.227      0.036     34.227      0.000
+
+ Residual Variances
+    POPULAR            0.558      0.020     27.753      0.000
+
+Between Level
+
+ SLOPE      ON
+    TEXP              -0.025      0.002    -10.187      0.000
+
+ POPULAR    ON
+    SEX                2.646      0.496      5.336      0.000
+    EXTRAV            -0.339      0.158     -2.152      0.031
+    TEXP               0.193      0.019     10.043      0.000
+
+ Intercepts
+    POPULAR            0.309      0.861      0.360      0.719
+    SLOPE              0.806      0.041     19.533      0.000
+
+ Residual Variances
+    POPULAR            0.232      0.062      3.775      0.000
+    SLOPE              0.000      0.002      0.129      0.898
+
+
+QUALITY OF NUMERICAL RESULTS
+
+     Condition Number for the Information Matrix              0.200E-06
+       (ratio of smallest to largest eigenvalue)
+
+
+CONFIDENCE INTERVALS OF MODEL RESULTS
+
+                  Lower .5%  Lower 2.5%    Lower 5%    Estimate    Upper 5%  Upper 2.5%   Upper .5%
+
+Within Level
+
+ POPULAR  ON
+    SEX              1.135       1.157       1.168       1.227       1.286       1.297       1.319
+
+ Residual Variances
+    POPULAR          0.506       0.518       0.525       0.558       0.591       0.597       0.610
+
+Between Level
+
+ SLOPE    ON
+    TEXP            -0.031      -0.030      -0.029      -0.025      -0.021      -0.020      -0.018
+
+ POPULAR  ON
+    SEX              1.369       1.674       1.830       2.646       3.461       3.617       3.923
+    EXTRAV          -0.746      -0.649      -0.599      -0.339      -0.080      -0.030       0.067
+    TEXP             0.144       0.156       0.162       0.193       0.225       0.231       0.243
+
+ Intercepts
+    POPULAR         -1.907      -1.377      -1.106       0.309       1.725       1.996       2.526
+    SLOPE            0.700       0.725       0.738       0.806       0.874       0.887       0.912
+
+ Residual Variances
+    POPULAR          0.074       0.112       0.131       0.232       0.334       0.353       0.391
+    SLOPE           -0.004      -0.003      -0.002       0.000       0.003       0.003       0.004
+
+
+     Beginning Time:  18:56:32
+        Ending Time:  18:56:32
+       Elapsed Time:  00:00:00
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2010 Muthen & Muthen
