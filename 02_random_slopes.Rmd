@@ -1,0 +1,106 @@
+# Random Slopes
+
+Previously we've looked at random intercepts, but any observation level covariate could be allowed to vary by cluster as well.
+
+
+
+
+## Application
+
+
+
+Returning to the GPA data, recall the visualization from before.
+
+
+```{r spaghetti2, echo=FALSE}
+set.seed(1234)
+gpa_lm = lm(gpa ~ occasion, data=gpa)
+sample_students = gpa %>% filter(student %in% sample(1:200, 10))
+occasion_sample = gpa$occasion[gpa$student %in% sample_students$student]
+gpa_sample = gpa$gpa[gpa$student %in% sample_students$student]
+gpa %>% 
+  modelr::add_predictions(gpa_lm, var='all') %>% 
+  group_by(student) %>% 
+  plot_ly %>% 
+  add_lines(x=~occasion, y=~gpa, opacity=.2, color=I('#03b3ff'), showlegend=F) %>%
+  add_paths(x=occasion_sample, y=gpa_sample, color=I('#ff5503'), opacity=.5, showlegend=F) %>% 
+  add_lines(x=~occasion, y=~all, color=I('#b2001d')) %>% 
+  theme_plotly()
+```
+
+Let us now assume that the trends over time are worth allowing to vary by student.  Using lme4, this is quite straightforward.
+
+```{r random_slope, eval=FALSE}
+gpa_mixed =  lmer(gpa ~ occasion + (1 + occasion|student), data=gpa)
+summary(gpa_mixed)
+```
+
+Pretty easy huh? Let's look at the results.
+
+
+```{r random_slope_summary, echo=FALSE}
+gpa_mixed =  lmer(gpa ~ occasion + (1 + occasion|student), data=gpa)
+pander(tidy(gpa_mixed, 'fixed') %>% mutate_if(is.numeric, arm::fround, digits=2))
+tidy(VarCorr(gpa_mixed)) %>% 
+  slice(-3) %>%  
+  select(-var2) %>% 
+  rename(variance=vcov, sd=sdcor) %>%  
+  mutate_if(is.numeric, arm::fround, digits=3) %>% 
+  mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
+  pander()
+```
+
+Note that since we have 0 as our starting semester, the intercept tells us what the average GPA is in the first semester.  The associated intercept variance tells us how much that starting GPA bounces around from student to student.
+
+The slope variance might not look like much in comparison, but slopes are on a notably different scale than the intercept.  Note that the mean slope for the semester to semester effect, our fixed effect, is `r round(fixef(gpa_mixed)[2], 2)`, but from student to student it bounces around half that, and we could effect most students to fall somewhere between a flat effect of zero to more than double the population average. 
+
+Yet another point of interest is the correlation of the intercepts and slopes. In this case it's `r tidy(VarCorr(gpa_mixed)) %>% slice(3) %>% select(sdcor) %>%  round(2)`. That's pretty small, but the interpretation is the same as with any correlation.  In this case specifically, it tells us that those with lower intercepts would be assocaited with increased time trajectories.   This makes intuitive sense in that those at the bottom would have more room to improve.  However, this is very slight, and practically speaking we might not put too much weight on it.
+
+
+### Comparison to many regressions
+
+
+ Let's compare these results to the ones we would have gotten had we run a separate regression for each student.  First the intercepts.
+
+```{r ranints_vs_separateints, echo=FALSE}
+gint = data_frame(Mixed=coef(gpa_mixed)$student[,1], Separate=gpa_lm_by_group[,1]) %>% 
+  gather(key=Model, value=Intercept) %>% 
+  ggplot(aes(x=Intercept)) +
+  geom_density(aes(color=Model, fill=Model), alpha=.25) +
+  scale_fill_manual(values=c('#ff5503', '#03b3ff')) +
+  ggtitle('Intercepts') +
+  labs(x='', y='') +
+  xlim(c(1.5,4)) +
+  theme_trueMinimal() +
+  theme(
+    legend.key.size=unit(2, 'mm'),
+    legend.title=element_text(size=8),
+    legend.text=element_text(size=8),
+    legend.box.spacing=unit(0, 'in'),
+    legend.position=c(.75,.75))
+gslopes = data_frame(Mixed=coef(gpa_mixed)$student[,2], Separate=gpa_lm_by_group[,2]) %>% 
+  gather(key=Model, value=Occasion) %>% 
+  ggplot(aes(x=Occasion)) +
+  geom_density(aes(color=Model, fill=Model), alpha=.25, show.legend=F) +
+  scale_fill_manual(values=c('#ff5503', '#03b3ff')) +
+  ggtitle('Slopes for occasion') +
+  labs(x='', y='') +
+  xlim(c(-.2,.4)) +
+  theme_trueMinimal() 
+
+
+gridExtra::grid.arrange(gint, gslopes, ncol=2)
+```
+
+Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what otherwise would have been the by-group estimate, which would overfit.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models.
+
+## Exercises
+
+#### Sleep revisited
+
+Run the sleep study model with random coefficient for the Days effect. 
+
+```{r sleepstudy2}
+library(lme4)
+data("sleepstudy")
+```

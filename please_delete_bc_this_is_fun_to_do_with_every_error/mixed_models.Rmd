@@ -59,8 +59,8 @@ knitr::opts_chunk$set(echo = T, message=F, warning=F, comment=NA, autodep=F,
 ```
 
 ```{r load_common_packages, echo=FALSE, cache=FALSE, eval=TRUE}
-library(lazerhawk); library(htmltools); library(forcats)
-library(broom); library(pander); library(tidyverse)
+library(lazerhawk); library(htmltools); library(forcats); library(lme4)
+library(broom); library(pander); library(tidyverse); library(plotly)
 ```
 
 # 
@@ -165,7 +165,7 @@ Now we show one way of showing it as a mixed model that includes an effect of st
 
 
 $$gpa = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot occasion + (\mathrm{effect}_{\mathscr{student}} + \epsilon)$$
-$$\dots$$
+
 
 
 ##### As a multi-level model
@@ -186,6 +186,28 @@ Both are normally distributed with mean of zero and some estimated standard devi
 
 
 ## Application
+
+#### Initial visualization
+
+It always helps to look before we leap, so let's do so.  Here we plot GPA vs. occasion (i.e. semester) to get a sense of the variability in starting points and trends.
+
+```{r spaghetti, echo=FALSE}
+set.seed(1234)
+gpa_lm = lm(gpa ~ occasion, data=gpa)
+sample_students = gpa %>% filter(student %in% sample(1:200, 10))
+occasion_sample = gpa$occasion[gpa$student %in% sample_students$student]
+gpa_sample = gpa$gpa[gpa$student %in% sample_students$student]
+gpa %>% 
+  modelr::add_predictions(gpa_lm, var='all') %>% 
+  group_by(student) %>% 
+  plot_ly %>% 
+  add_lines(x=~occasion, y=~gpa, opacity=.2, color=I('#03b3ff'), showlegend=F) %>%
+  add_paths(x=occasion_sample, y=gpa_sample, color=I('#ff5503'), opacity=.5, showlegend=F) %>% 
+  add_lines(x=~occasion, y=~all, color=I('#b2001d')) %>% 
+  theme_plotly()
+```
+
+All student paths are shown in blue, with a sample of 10 shown in orange. The overall trend as estimated by the regression we'll do later is shown in red. Two things stand out.  One is that students have a lot of variability in starting out. Secondly, while the general trend in gpa is upward over time as we'd expect, individual students may vary in that trajectory.
 
 #### Standard regression
 
@@ -223,7 +245,11 @@ summary(gpa_mixed)
 ```{r gpa_mixed_pretty, echo=FALSE}
 vcovs = tidy(VarCorr(gpa_mixed)) %>% select(vcov)  # for icc later
 pander(tidy(gpa_mixed, 'fixed') %>% mutate_if(is.numeric, arm::fround, digits=2))
-pander(tidy(VarCorr(gpa_mixed)) %>% select(-var1, -var2) %>% rename(variance=vcov, sd=sdcor) %>%  mutate_if(is.numeric, arm::fround, digits=3))
+tidy(VarCorr(gpa_mixed)) %>% 
+  select(-var1, -var2) %>% 
+  rename(variance=vcov, sd=sdcor) %>%  
+  mutate_if(is.numeric, arm::fround, digits=3) %>% 
+  pander()
 ```
 
 
@@ -234,7 +260,10 @@ confint(gpa_mixed)
 ```
 
 ```{r gpa_mixed_ci_pretty, echo=FALSE}
-pander(tidy(gpa_mixed, conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=2), justify='lrrrrrc', split.cells=Inf, split.tables=Inf)
+tidy(gpa_mixed, conf.int=T) %>% 
+  mutate_if(is.numeric, arm::fround, digits=2) %>% 
+  mutate_all(function(x) ifelse(stringr::str_trim(x)=='NA', '', x)) %>%
+  pander(justify='lrrrrrc', split.cells=Inf, split.tables=Inf)  
 ```
 
 
@@ -258,12 +287,62 @@ coef(gpa_mixed)$student %>% head(5) %>% arm::fround(digits=3) %>% pander(justify
 ```
 
 
-Note that we did not allow occasion to vary, so it is a constant, i.e. fixed, effect for all students.
+Note that we did not allow occasion to vary, so it is a constant, i.e. fixed, effect for all students. 
 
 
-Another way to interpret the variance output is via the <span class="emph">intraclass correlation</span>, which tells us how much of the variance is due to the clustering.  In this case it's just the student variance out of the total, or `r round(vcovs[1], 3)` / `r round(sum(vcovs), 3)` =  `r round(vcovs[1,1]/sum(vcovs), 3)*100`%.
+Another way to interpret the variance output is via the <span class="emph">intraclass correlation</span>, which tells us how much of the variance is due to the clustering.  In this case it's just the student variance out of the total, or `r round(vcovs[1,1], 3)` / `r round(sum(vcovs), 3)` =  `r round(vcovs[1,1]/sum(vcovs), 3)*100`%.
+
+## Cluster level covariate
+
+Note our depiction of a mixed model as a multilevel model.
+
+$$gpa = b_{\mathrm{int\_student}} + b_{\mathrm{occ}}\cdot \mathrm{occasion} + \epsilon$$
+
+$$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + \mathrm{effect}_{\mathrm{student}}$$
+If we add student a student level covariate, e.g sex, to the model, we then have the following.
+
+$$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + b_{sex}\cdot \mathrm{sex} +  \mathrm{effect}_{\mathrm{student}}$$
+
+Which, after plugging in we still have the same model as before, just with an additional predictor.
+
+$$gpa = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot occasion+ b_{sex}\cdot \mathrm{sex} + (\mathrm{effect}_{\mathscr{student}} + \epsilon)$$
+
+Thus, adding cluster level covariates doesn't have any unusual effect on how we think about the model[^mlevel]. We simply add them to our set of predictor variables. Note also, that we can create cluster level covariates as means or some other summary of the observation level variables.  This is especially common when the clusters represent geographical units and observations are people.
+
+## Summary
+
+Mixed models allow for us to take into account clustering in the data.  If this were all it was used for, we would have more accurate inference relative to what would be had if we ignored the structure in the data.  However, we get much more.  We better understand the sources of variability in the target variable.  We also get group specific estimates of the parameters in the model, allowing us to understand exactly how the groups differ from one another.  Furthermore, this in turn allows for group specific prediction, and much more accurate prediction.  In short, there is much to be gained by mixed models, even in the simplest of settings.
 
 
+## Exercises
+
+
+### Sleep
+
+For this exercise, we'll use the sleep study data from the <span class="pack">lme4</span> package.  The followin describes it.
+
+> The average reaction time per day for subjects in a sleep deprivation study. On day 0 the subjects had their normal amount of sleep. Starting that night they were restricted to 3 hours of sleep per night. The observations represent the average reaction time (in milliseconds) on a series of tests given each day to each subject.
+
+After loading the package, the data can be loaded as follows.  I show the first few observations.
+
+```{r sleepstudy, echo=-3}
+library(lme4)
+data("sleepstudy")
+pander(head(sleepstudy))
+```
+
+Run a mixed model with Days as a covariate and a random intercept for Subject.
+
+### Cluster level covariate
+
+Rerun the mixed model with the GPA data adding the cluster level covariate of `sex`, or high school gpa (`highgpa`), or both.  Interpret all aspects of the results.
+
+```{r gpa_cluster, echo=F, eval=FALSE}
+gpa_mixed_cluster_level = lmer(gpa ~ occasion + sex + highgpa + (1|student), gpa)
+summary(gpa_mixed_cluster_level)
+```
+
+What happened to the cluster level variance after adding cluster level covariates to the model?
 
 
 
@@ -274,7 +353,109 @@ Another way to interpret the variance output is via the <span class="emph">intra
 
 [^lmlmercoef]: This will not always be the case, e.g. with unbalanced data, but they should be fairly close.
 
+[^mlevel]: This is why the multilevel depiction is subpar, and leads many to confusion at times.  You have a target variable and predictor variables based on theory.  Whether they are cluster level variables or if there are interactions doesn't have anything to do with the data structure.  However, if you depict the model in multilevel fashion, the final model must adhere to the 'plugged in' result.
+
 <!--chapter:end:01_clustered_data.Rmd-->
+
+# Random Slopes
+
+Previously we've looked at random intercepts, but any observation level covariate could be allowed to vary by cluster as well.
+
+
+
+
+## Application
+
+
+
+Returning to the GPA data, recall the visualization from before.
+
+
+```{r spaghetti2, echo=FALSE}
+set.seed(1234)
+gpa_lm = lm(gpa ~ occasion, data=gpa)
+sample_students = gpa %>% filter(student %in% sample(1:200, 10))
+occasion_sample = gpa$occasion[gpa$student %in% sample_students$student]
+gpa_sample = gpa$gpa[gpa$student %in% sample_students$student]
+gpa %>% 
+  modelr::add_predictions(gpa_lm, var='all') %>% 
+  group_by(student) %>% 
+  plot_ly %>% 
+  add_lines(x=~occasion, y=~gpa, opacity=.2, color=I('#03b3ff'), showlegend=F) %>%
+  add_paths(x=occasion_sample, y=gpa_sample, color=I('#ff5503'), opacity=.5, showlegend=F) %>% 
+  add_lines(x=~occasion, y=~all, color=I('#b2001d')) %>% 
+  theme_plotly()
+```
+
+Let us now assume that the trends over time are worth allowing to vary by student.  Using lme4, this is quite straightforward.
+
+```{r random_slope, eval=FALSE}
+gpa_mixed =  lmer(gpa ~ occasion + (1 + occasion|student), data=gpa)
+summary(gpa_mixed)
+```
+
+Pretty easy huh? Let's look at the results.
+
+
+```{r random_slope_summary, echo=FALSE}
+gpa_mixed =  lmer(gpa ~ occasion + (1 + occasion|student), data=gpa)
+pander(tidy(gpa_mixed, 'fixed') %>% mutate_if(is.numeric, arm::fround, digits=2))
+tidy(VarCorr(gpa_mixed)) %>% 
+  slice(-3) %>%  
+  select(-var2) %>% 
+  rename(variance=vcov, sd=sdcor) %>%  
+  mutate_if(is.numeric, arm::fround, digits=3) %>% 
+  mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
+  pander()
+```
+
+Note that since we have 0 as our starting semester, the intercept tells us what the average GPA is in the first semester.  The associated intercept variance tells us how much that starting GPA bounces around from student to student.
+
+The slope variance might not look like much in comparison, but slopes are on a notably different scale than the intercept.  Note that the mean slope for the semester to semester effect, our fixed effect, is `r round(fixef(gpa_mixed)[2], 2)`, but from student to student it bounces around half that, and we could effect most students to fall somewhere between a flat effect of zero to more than double the population average. 
+
+Yet another point of interest is the correlation of the intercepts and slopes. In this case it's `r tidy(VarCorr(gpa_mixed)) %>% slice(3) %>% select(sdcor) %>%  round(2)`. That's pretty small, but the interpretation is the same as with any correlation.  In this case specifically, it tells us that those with lower intercepts would be assocaited with increased time trajectories.   This makes intuitive sense in that those at the bottom would have more room to improve.  However, this is very slight, and practically speaking we might not put too much weight on it.
+
+
+### Comparison to many regressions
+
+
+ Let's compare these results to the ones we would have gotten had we run a separate regression for each student.  First the intercepts.
+
+```{r ranints_vs_separateints, echo=FALSE}
+gint = data_frame(Mixed=coef(gpa_mixed)$student[,1], Separate=gpa_lm_by_group[,1]) %>% 
+  gather(key=Model, value=Intercept) %>% 
+  ggplot(aes(x=Intercept)) +
+  geom_density(aes(color=Model, fill=Model), alpha=.25) +
+  scale_fill_manual(values=c('#ff5503', '#03b3ff')) +
+  ggtitle('Intercepts') +
+  labs(x='', y='') +
+  xlim(c(1.5,4)) +
+  theme_trueMinimal() +
+  theme(
+    legend.key.size=unit(2, 'mm'),
+    legend.title=element_text(size=8),
+    legend.text=element_text(size=8),
+    legend.box.spacing=unit(0, 'in'),
+    legend.position=c(.75,.75•))
+gslopes = data_frame(Mixed=coef(gpa_mixed)$student[,2], Separate=gpa_lm_by_group[,2]) %>% 
+  gather(key=Model, value=Occasion) %>% 
+  ggplot(aes(x=Occasion)) +
+  geom_density(aes(color=Model, fill=Model), alpha=.25, show.legend=F) +
+  scale_fill_manual(values=c('#ff5503', '#03b3ff')) +
+  ggtitle('Slopes for occasion') +
+  labs(x='', y='') +
+  xlim(c(-.2,.4)) +
+  theme_trueMinimal() 
+
+
+gridExtra::grid.arrange(gint, gslopes, ncol=2)
+```
+
+Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what otherwise would have been the by-group estimate, which would overfit.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models.
+
+
+
+<!--chapter:end:02_random_slopes.Rmd-->
 
 # Issues
 

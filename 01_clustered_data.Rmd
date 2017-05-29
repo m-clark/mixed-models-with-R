@@ -135,7 +135,11 @@ summary(gpa_mixed)
 ```{r gpa_mixed_pretty, echo=FALSE}
 vcovs = tidy(VarCorr(gpa_mixed)) %>% select(vcov)  # for icc later
 pander(tidy(gpa_mixed, 'fixed') %>% mutate_if(is.numeric, arm::fround, digits=2))
-pander(tidy(VarCorr(gpa_mixed)) %>% select(-var1, -var2) %>% rename(variance=vcov, sd=sdcor) %>%  mutate_if(is.numeric, arm::fround, digits=3))
+tidy(VarCorr(gpa_mixed)) %>% 
+  select(-var1, -var2) %>% 
+  rename(variance=vcov, sd=sdcor) %>%  
+  mutate_if(is.numeric, arm::fround, digits=3) %>% 
+  pander()
 ```
 
 
@@ -146,7 +150,10 @@ confint(gpa_mixed)
 ```
 
 ```{r gpa_mixed_ci_pretty, echo=FALSE}
-pander(tidy(gpa_mixed, conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=2), justify='lrrrrrc', split.cells=Inf, split.tables=Inf)
+tidy(gpa_mixed, conf.int=T) %>% 
+  mutate_if(is.numeric, arm::fround, digits=2) %>% 
+  mutate_all(function(x) ifelse(stringr::str_trim(x)=='NA', '', x)) %>%
+  pander(justify='lrrrrrc', split.cells=Inf, split.tables=Inf)  
 ```
 
 

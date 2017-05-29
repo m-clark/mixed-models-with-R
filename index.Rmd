@@ -59,7 +59,7 @@ knitr::opts_chunk$set(echo = T, message=F, warning=F, comment=NA, autodep=F,
 ```
 
 ```{r load_common_packages, echo=FALSE, cache=FALSE, eval=TRUE}
-library(lazerhawk); library(htmltools); library(forcats)
+library(lazerhawk); library(htmltools); library(forcats); library(lme4)
 library(broom); library(pander); library(tidyverse); library(plotly)
 ```
 
