@@ -60,7 +60,7 @@ knitr::opts_chunk$set(echo = T, message=F, warning=F, comment=NA, autodep=F,
 
 ```{r load_common_packages, echo=FALSE, cache=FALSE, eval=TRUE}
 library(lazerhawk); library(htmltools); library(forcats); library(lme4)
-library(broom); library(pander); library(tidyverse); library(plotly)
+library(broom); library(pander); library(tidyverse); library(plotly); library(haven)
 ```
 
 # 
@@ -122,10 +122,15 @@ For the following we'll demonstrate the simplest[^vcmodel] and most common case 
 For the following we'll assess factors predicting college grade point average (GPA).  Each of the 200 students is assessed for six occasions (each semester for the first three years), so we have observations nested within students. We have other variables such as job status, sex, high school gpa.  Some will be in both labeled and numeric form. See the [appendix][Appendix] for details.
 
 ```{r gpa_setup, echo=FALSE, eval=FALSE}
+# MC Note: either the job label is incorrect or this variable makes no sense. 
+# The label is 0,1:3, 4 or more hours (pt jobs for less than 4 hours? per day?).
+# However only values of 1 (rare to non-existent some years) 2 or 3.  How the
+# hell do you 'simulate' a factor that only has 3 of 5 levels and one category
+# that makes up 97% of the data? Avoid or change.
+
 gpa = read_spss('data/joop_hox_data2/5 Longitudinal/gpa2long.sav') %>% 
   mutate(highgpa=as.numeric(highgpa),
-         occasion = as.numeric(occas),
-         job_num = as.numeric(job)) %>%  # to get rid of stupid labels
+         occasion = as.numeric(occas) %>%  # to get rid of stupid labels
   as_factor
 
 glimpse(gpa)
@@ -211,9 +216,10 @@ All student paths are shown in blue, with a sample of 10 shown in orange. The ov
 
 #### Standard regression
 
-So let's get started. First, we'll look at the regression and only the time trend.
+So let's get started. First, we'll look at the regression and only the time trend.  Note that I present a cleaner version of the summarized objects for the purposes of this document.
 
-```{r gpa_lm, echo=1:2, eval=-2}
+```{r gpa_lm, echo=1:3, eval=-3}
+load('data/gpa.RData')
 gpa_lm = lm(gpa ~ occasion, data=gpa)
 summary(gpa_lm)
 pander(summary(gpa_lm))
@@ -436,7 +442,7 @@ gint = data_frame(Mixed=coef(gpa_mixed)$student[,1], Separate=gpa_lm_by_group[,1
     legend.title=element_text(size=8),
     legend.text=element_text(size=8),
     legend.box.spacing=unit(0, 'in'),
-    legend.position=c(.75,.75•))
+    legend.position=c(.75,.75))
 gslopes = data_frame(Mixed=coef(gpa_mixed)$student[,2], Separate=gpa_lm_by_group[,2]) %>% 
   gather(key=Model, value=Occasion) %>% 
   ggplot(aes(x=Occasion)) +
@@ -453,9 +459,64 @@ gridExtra::grid.arrange(gint, gslopes, ncol=2)
 
 Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what otherwise would have been the by-group estimate, which would overfit.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models.
 
+## Exercises
 
+#### Sleep revisited
+
+Run the sleep study model with random coefficient for the Days effect. 
+
+```{r sleepstudy2}
+library(lme4)
+data("sleepstudy")
+```
 
 <!--chapter:end:02_random_slopes.Rmd-->
+
+# Extensions
+
+
+
+## Additional Grouping Structure
+
+```{r pupil_nurses_setup, echo=FALSE, eval=FALSE}
+pupils = read_sav('data/joop_hox_data2/9 CrossClass/pupcross.sav') %>% 
+  as_factor() %>% 
+  mutate(ACHIEV = as.numeric(as.character(ACHIEV)),
+         PUPSEX = factor(PUPSEX, labels=c('male', 'female')) ) %>% 
+  rename(achievement = ACHIEV,
+         primary_school_id = PSCHOOL,
+         secondary_school_id = SSCHOOL,
+         sex = PUPSEX,
+         ses = PUPSES,
+         primary_denominational=PDENOM,
+         secondary_denominational=SDENOM)  
+save(pupils, file='data/pupils.RData')
+
+nurses = read_sav('data/joop_hox_data2/2 Basic Model/nurses.sav') %>% 
+  as_factor() %>% 
+  rename(experience = experien,
+         treatment = expcon) %>% 
+  mutate(age = as.numeric(as.character(age)))
+save(nurses, file='data/nurses.RData')
+```
+
+
+
+
+### Hierarchical Structure
+
+```{r}
+nurses_hierarchical = lmer(stress ~ age  + gender + experien + expcon + wardtype + hospsize + (1|hospital) + (1|hospital:ward), nurses)
+summary(nurses_hierarchical)
+```
+
+
+## Correlational Structure
+
+
+## Generalized Linear Mixed Models
+
+<!--chapter:end:03_extensions.Rmd-->
 
 # Issues
 
@@ -502,17 +563,13 @@ Mixed models work even with no more than two and some singletons
 
 ## Data
 
-- <span class="emph">Popularity</span>: The popularity data in the file POPULAR are simulated data for 2000 pupils in 100 schools. The purpose is to offer a very simple example for multilevel regression analysis. The main outcome variable is the pupil popularity, a popularity rating on a scale of 1-10 derived by a sociometric procedure. Typically, a sociometric procedure asks all pupils in a class to rate all the other pupils, and then assigns the average received popularity rating to each pupil. Because of the sociometric procedure, group effects as apparent from higher level variance components are rather strong. There is a second outcome variable: pupil popularity as rated by their teacher, on a scale from 1- 7. The explanatory variables are pupil gender (boy=0, girl=1) and teacher experience in years. The popularity data have been generated to be a 'nice' well-behaved data set: the sample sizes at both levels are sufficient, the residuals have a normal distribution, and the multilevel effects are strong (
+Note that I have converted these from their original SPSS format to R data.frames saved within RData files. I also cleaned them up with better names/labesl etc.
 
-MC Note: I'm not sure what this data was supposed to be, but students are not nested within school (many occur in every of 100 schools), the estimated variance for pupil is zero, and there is no teacher id. Even if 'school' meant class it doesn't make any sense.  Description doesn't specify what is group level effects. 
+- <span class="emph">GPA</span>: The GPA data are a longitudinal data set, where 200 college students have been followed 6 consecutive semesters. In this data set, there are GPA measures on 6 consecutive occasions, with a JOB status variable (how many hours worked) for the same 6 occasions. There are two student-level explanatory variables: the gender (1= male, 2= female) and the high school GPA. There is also a dichotomous student-level outcome variable, which indicates whether a student has been admitted to the university of their choice. Since not every student applies to a university, this variable has many missing values. 
 
+- <span class="emph">nurses</span>: The data in this example are from a hypothetical study on stress in hospitals. The data are from nurses working in wards nested within hospitals. In each of 25 hospitals, four wards are selected and randomly assigned to an experimental and control condition. In the experimental condition, a training program is offered to all nurses to cope with job- related stress. After the program is completed, a sample of about 10 nurses from each ward is given a test that measures job-related stress. Additional variables are: nurse age (years), nurse experience (years), nurse gender (0 = male, 1 = female), type of ward (0 = general care, 1 = special care), and hospital size (0 = small, 1 = medium, 2 = large). This is an example of an experiment where the experimental intervention is carried out at the group level. In biomedical research this design is known as a cluster randomized trial. They are quite common also in educational and organizational research, where entire classes or schools are assigned to experimental and control conditions. Since the design variable Experimental versus Control group (ExpCon) is manipulated at the second (ward) level, we can study whether the experimental effect is different in different hospitals, by defining the regression coefficient for the ExpCon variable as random at the hospital level. In this example, the variable ExpCon is of main interest, and the other variables are covariates. Their function is to control for differences between the groups, which should be small given that randomization is used, and to explain variance in the outcome variable stress. To the extent that they are successful in explaining variance, the power of the test for the effect of ExpCon will be increased. Therefore, although logically we can test if explanatory variables at the first level have random coefficients at the second or third level, and if explanatory variables at the second level have random coefficients at the third level, these possibilities are not pursued. We do test a model with a random coefficient for ExpCon at the third level, where there turns out to be significant slope variation. This varying slope can be predicted by adding a cross-level interaction between the variables ExpCon and HospSize. In view of this interaction, the variables ExpCon and HospSize have been centered on their overall mean. 
 
-
-- <span class="emph">GPA</span>: The GPA data are a longitudinal data set, where 200 college students have been followed 6 consecutive semesters. The data are simulated. In this data set, there are GPA measures on 6 consecutive occasions, with a JOB status variable (how many hours worked) for the same 6 occasions. There are two student-level explanatory variables: the gender (1= male, 2= female) and the high school GPA. There is also a dichotomous student-level outcome variable, which indicates whether a student has been admitted to the university of their choice. Since not every student applies to a university, this variable has many missing values. 
-
-MC Note: either the job label is incorrect or this variable makes no sense.  The label is 0,1:3, 4 or more hours (pt jobs for less than 4 hours? per day?). However only values of 1 (rare to non-existent some years) 2 or 3
-
-MC Note: Joop Hox's data descriptions seem to be problematic, the data may be problematic, and the book examples used spss and HLM.  Also bizarre habit of labeling numeric data.
+- <span class="emph">pupils</span>: Assume that we have data from 1000 pupils who have attended 100 different primary schools, and subsequently went on to 30 secondary schools. Similar to the situation where we have pupils within schools and neighborhoods, we have a cross-classified structure. Pupils are nested within primary and within secondary schools, with primary and secondary schools crossed. In other words: pupils are nested within the cross- classification of primary and secondary schools. Goldstein (1994) introduces a formal description of these models, which will be followed here. In our example, we have a response variable achievement which is measured in secondary school. We have two explanatory variables at the pupil level: pupil gender (0 = male, 1 = female) and a six-point scale for pupil socioeconomic status, pupil ses. We have at the school level a dichotom- ous variable that indicates if the school is public (denom = 0) or denominational (denom = 1). Since we have both primary and secondary schools, we have two such variables (named pdenom for the primary school and sdenom for the secondary school).
 
 <!--chapter:end:1000_appendix.Rmd-->
 

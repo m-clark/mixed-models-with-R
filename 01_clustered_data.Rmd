@@ -12,10 +12,15 @@ For the following we'll demonstrate the simplest[^vcmodel] and most common case 
 For the following we'll assess factors predicting college grade point average (GPA).  Each of the 200 students is assessed for six occasions (each semester for the first three years), so we have observations nested within students. We have other variables such as job status, sex, high school gpa.  Some will be in both labeled and numeric form. See the [appendix][Appendix] for details.
 
 ```{r gpa_setup, echo=FALSE, eval=FALSE}
+# MC Note: either the job label is incorrect or this variable makes no sense. 
+# The label is 0,1:3, 4 or more hours (pt jobs for less than 4 hours? per day?).
+# However only values of 1 (rare to non-existent some years) 2 or 3.  How the
+# hell do you 'simulate' a factor that only has 3 of 5 levels and one category
+# that makes up 97% of the data? Avoid or change.
+
 gpa = read_spss('data/joop_hox_data2/5 Longitudinal/gpa2long.sav') %>% 
   mutate(highgpa=as.numeric(highgpa),
-         occasion = as.numeric(occas),
-         job_num = as.numeric(job)) %>%  # to get rid of stupid labels
+         occasion = as.numeric(occas) %>%  # to get rid of stupid labels
   as_factor
 
 glimpse(gpa)
@@ -101,9 +106,10 @@ All student paths are shown in blue, with a sample of 10 shown in orange. The ov
 
 #### Standard regression
 
-So let's get started. First, we'll look at the regression and only the time trend.
+So let's get started. First, we'll look at the regression and only the time trend.  Note that I present a cleaner version of the summarized objects for the purposes of this document.
 
-```{r gpa_lm, echo=1:2, eval=-2}
+```{r gpa_lm, echo=1:3, eval=-3}
+load('data/gpa.RData')
 gpa_lm = lm(gpa ~ occasion, data=gpa)
 summary(gpa_lm)
 pander(summary(gpa_lm))

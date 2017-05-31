@@ -1,0 +1,68 @@
+# Extensions
+
+
+
+## Additional Grouping Structure
+
+```{r pupil_nurses_setup, echo=FALSE, eval=FALSE}
+pupils = read_sav('data/joop_hox_data2/9 CrossClass/pupcross.sav') %>% 
+  as_factor() %>% 
+  mutate(ACHIEV = as.numeric(as.character(ACHIEV)),
+         PUPSEX = factor(PUPSEX, labels=c('male', 'female')) ) %>% 
+  rename(achievement = ACHIEV,
+         primary_school_id = PSCHOOL,
+         secondary_school_id = SSCHOOL,
+         sex = PUPSEX,
+         ses = PUPSES,
+         primary_denominational=PDENOM,
+         secondary_denominational=SDENOM)  
+save(pupils, file='data/pupils.RData')
+
+nurses = read_sav('data/joop_hox_data2/2 Basic Model/nurses.sav') %>% 
+  as_factor() %>% 
+  rename(experience = experien,
+         treatment = expcon) %>% 
+  mutate(age = as.numeric(as.character(age)))
+save(nurses, file='data/nurses.RData')
+```
+
+```{r cross_classified}
+load('data/pupils.RData')
+pupils_crossed = lmer(achievement ~ sex + ses + (1|primary_school_id) + (1|secondary_school_id), data = pupils)
+summary(pupils_crossed, correlation=F)
+```
+
+
+
+
+### Hierarchical Structure
+
+```{r hierarchical}
+load('data/nurses.RData')
+nurses_hierarchical = lmer(stress ~ age  + gender + experience + treatment + wardtype + hospsize 
+                           + (1|hospital) + (1|hospital:ward), data = nurses)
+summary(nurses_hierarchical, correlation=F)
+```
+
+
+## Correlational Structure
+
+Sometimes we will want to estimate the residual correlation structure. This especially the case in the longitudinal setting, where we think that observations closer in time would be more strongly correlated than those further apart.  
+
+For reasons that defy my ability to parse, <span class="pack">lme4</span> does not provide the ability to do this, though practically every other mixed model package does[^lmerho].  In fact, two packages that come with the basic R installation do so, <span class="pack">mgcv</span> and <span class="pack">nlme</span>.
+
+```{r corr_residual}
+library(nlme)
+corr_res = lme(gpa ~ occasion, random=~1|student, correlation = corAR1(form = ~occasion),
+               data=gpa)
+summary(corr_res)
+
+```
+
+
+## Generalized Linear Mixed Models
+
+
+
+
+[^lmerho]: While I'm extremely grateful to the work put forth by those involved with lme4, making it probably the best mixed model package out there, this feature request has been made by its users for over a decade.  
