@@ -6,7 +6,8 @@ Mixed models are an extremely useful modeling tool for clustered data situations
 
 ### Goals
 
-The goal of this workshop is to provide a sense of when one would use mixed models and a variety of standard techniques.  Additionally, we'll have exercises to practice.
+The goal of this workshop is primarily to provide a sense of when one would use mixed models and a variety of standard techniques.  Additionally, we'll have exercises to practice.  The document is very applied in nature, and only assumes a basic understanding of standard regression models.
+
 
 ## Terminology
 

@@ -4,6 +4,25 @@
 
 ## Additional Grouping Structure
 
+
+### Cross-classified models
+
+Oftentimes there will be additional sources of variance beyond one grouping factor. Consider as an example, a visual perception experiment where there are multiple trials for each individual along with specific images displayed.  Such data might look like this.
+
+```{r demodata_crossed}
+crossing(Person=1:20, Image=letters[1:10]) %>% 
+  mutate(score=sample(1:10, 200, replace=T)) %>% 
+  DT::datatable(options=list(dom='tp'), rownames = F)
+```
+
+In such a case we have observations clustered within both person and image, but person and image are not nested within one another. For example all participants see all 10 items.  Such a situation is typically referred to as one in which there are <span class="emph">crossed</span> random effects.  In such settings we have multiple sources variances to consider.
+
+
+#### Example: Student achievement
+
+For our own demonstration we'll look at achievment scores for students.  The sources of dependency are due to students having gone to the same primary or secondary schools.  However, in this example, going to a primary school doesn't necessarily mean you'll go to a specific secondary school.  Note also that there are no repeated measures, we see each student only one. Here's a quick look a the data.
+
+
 ```{r pupil_nurses_setup, echo=FALSE, eval=FALSE}
 pupils = read_sav('data/joop_hox_data2/9 CrossClass/pupcross.sav') %>% 
   as_factor() %>% 
@@ -26,43 +45,120 @@ nurses = read_sav('data/joop_hox_data2/2 Basic Model/nurses.sav') %>%
 save(nurses, file='data/nurses.RData')
 ```
 
-```{r cross_classified}
+
+```{r examine_pupil_data, echo=1}
 load('data/pupils.RData')
-pupils_crossed = lmer(achievement ~ sex + ses + (1|primary_school_id) + (1|secondary_school_id), data = pupils)
+DT::datatable(pupils, 
+              options=list(dom='tp', 
+                           scrollX=T,  
+                           autoWidth=T),
+                           # columnDefs = list(list(width = '150px', targets = 1),
+                           #                   list(width = '100px', targets = 3))), 
+              rownames=F)
+```
+
+
+For our mixed model we'll look at the effects for `sex` and socioeconomic status, `ses`, a six level variable from low to high on scholastic achievement.  The range of achievement scores is roughly `r round(min(pupils$achievement))` to `r round(max(pupils$achievement))`, with mean of `r round(mean(pupils$achievement), 1)` and standard deviation `r round(sd(pupils$achievement), 1)`.  We'll take into account the clustering at primary school and secondary school.  To incorporate the additional structure in <span class="pack">lme4</span> syntax is very easy, we just do as we did before[^crossed_notation].
+
+```{r cross_classified, eval=1}
+pupils_crossed = lmer(achievement ~ sex + ses 
+                      + (1|primary_school_id) + (1|secondary_school_id), 
+                      data = pupils)
 summary(pupils_crossed, correlation=F)
 ```
 
+
+```{r cross_classified_fixed, echo=FALSE}
+pander(tidy(pupils_crossed, 'fixed', conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=2))
+```
+
+The fixed effects tell us there is a positive effect of being female on achievement, and in general, relative to lowest SES category, being in the upper categories of SES also has a positive effect.
+
+```{r  cross_classified_random, echo=FALSE}
+# note tidy doesn't work with multiple random effects and conf.int
+crossed_var_cor = tidy(VarCorr(pupils_crossed)) %>% 
+  select(-var2) %>% 
+  rename(variance=vcov, sd=sdcor)
+crossed_var_cor %>%  
+  mutate_if(is.numeric, arm::fround, digits=3) %>% 
+  mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
+  pander()
+
+```
+
+When we look at the variance components we see that primary and secondary school does contribute about `r round(sum(crossed_var_cor$variance[1:2])/sum(crossed_var_cor$variance)*100)`% of the total variance.  Most of the variance attributable to school comes from the primary school.
+
+Note that we have the usual extensions here if desired.  As an example, we could also do random slopes for student level characteristics.
 
 
 
 ### Hierarchical Structure
 
-```{r hierarchical}
+Now that we have looked at cross-classified models, we can examine hierarchical 
+
+#### Example: Nurses and Stress
+
+
+```{r nurses_data, echo=1}
 load('data/nurses.RData')
+DT::datatable(nurses, 
+              options=list(dom='tp', 
+                           scrollX=T,  
+                           autoWidth=T),
+                           # columnDefs = list(list(width = '150px', targets = 1),
+                           #                   list(width = '100px', targets = 3))), 
+              rownames=F)
+```
+
+
+```{r hierarchical, eval=1}
 nurses_hierarchical = lmer(stress ~ age  + gender + experience + treatment + wardtype + hospsize 
                            + (1|hospital) + (1|hospital:ward), data = nurses)
 summary(nurses_hierarchical, correlation=F)
 ```
 
+```{r hierarchical_fixed, echo=FALSE}
+pander(tidy(nurses_hierarchical, 'fixed', conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=2))
+```
+
+```{r hierarchical_random, echo=FALSE}
+# note tidy doesn't work with multiple random effects and conf.int
+hierarch_var_cor = tidy(VarCorr(nurses_hierarchical)) %>% 
+  select(-var2) %>% 
+  rename(variance=vcov, sd=sdcor)
+hierarch_var_cor %>%  
+  mutate_if(is.numeric, arm::fround, digits=3) %>% 
+  mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
+  pander()
+
+```
 
 ## Correlational Structure
 
 Sometimes we will want to estimate the residual correlation structure. This especially the case in the longitudinal setting, where we think that observations closer in time would be more strongly correlated than those further apart.  
 
-For reasons that defy my ability to parse, <span class="pack">lme4</span> does not provide the ability to do this, though practically every other mixed model package does[^lmerho].  In fact, two packages that come with the basic R installation do so, <span class="pack">mgcv</span> and <span class="pack">nlme</span>.
+For reasons that defy my ability to parse, <span class="pack">lme4</span> does not provide the ability to do this, though practically every other mixed model package does[^lmerho].  In fact, two packages that come with the basic R installation do so, <span class="pack">mgcv</span> and <span class="pack">nlme</span>.  We'll demonstrate with the latter.
+
+The following shows the same model we did before, but also includes an <span class="emph">autocorrelation</span> structure, of lag order one, for the residuals.  What this means is that we assume the residuals at one time point apart correlate with some value $\phi$, observations at two time points apart correlate $\phi^2$, and so on.  As such we only need to estimate $\phi$, while the rest are then automatically determined.  In <span class="pack">nlme</span> we use the built in <span class="func">corAR1</span> function and `correlation` argument.  Note also the different random effect specification (though not *too* different).
 
 ```{r corr_residual}
 library(nlme)
-corr_res = lme(gpa ~ occasion, random=~1|student, correlation = corAR1(form = ~occasion),
-               data=gpa)
+corr_res = lme(gpa ~ occasion, data = gpa,
+               random = ~1|student, 
+               correlation = corAR1(form = ~occasion))
 summary(corr_res)
-
 ```
+
+While the output isn't as pretty[^digits], the fixed effect for occasion is the same as [before][application]. The variance estimates have changed slightly along with the variances of the parameters (i.e. the standard errors). The main thing is that we have a new paramter `Phi`, that represents our AR correlation with value of `r round(coef(corr_res$model$corStruct, unconstrained = F), 3)`, suggesting at least some correlation among the residuals for observations next to each other in time, though it diminishes quickly.
 
 
 ## Generalized Linear Mixed Models
 
 
-
+## Exercises
 
 [^lmerho]: While I'm extremely grateful to the work put forth by those involved with lme4, making it probably the best mixed model package out there, this feature request has been made by its users for over a decade.  
+
+[^crossed_notation]: I don't show the formal model here as we did before, but this is why depicting mixed models solely as 'multilevel' becomes a bit problematic in my opinion. In the standard mixed model notation it's straightforward though, you just add an addition random effect term, just as we do in the actual model syntax.
+
+[^digits]: Nothing like randomly selected significant digits from 5 to 9 decimal places.
