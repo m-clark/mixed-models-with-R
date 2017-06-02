@@ -1,6 +1,6 @@
 # Random Slopes
 
-Previously we've looked at random intercepts, but any observation level covariate could be allowed to vary by cluster as well.
+Previously we've looked at random intercepts, but any observation level covariate effect could be allowed to vary by cluster as well.
 
 
 
@@ -28,7 +28,7 @@ gpa %>%
   theme_plotly()
 ```
 
-Let us now assume that the trends over time are worth allowing to vary by student.  Using lme4, this is quite straightforward.
+Let us now assume that the trends over time are worth allowing to vary by student.  Using <span class="pack">lme4</span>, this is quite straightforward.
 
 ```{r random_slope, eval=FALSE}
 gpa_mixed =  lmer(gpa ~ occasion + (1 + occasion|student), data=gpa)
@@ -60,7 +60,7 @@ Yet another point of interest is the correlation of the intercepts and slopes. I
 ### Comparison to many regressions
 
 
- Let's compare these results to the ones we would have gotten had we run a separate regression for each student.  First the intercepts.
+Let's compare these results to the ones we would have gotten had we run a separate regression for each student.  In what follows we see the distribution of of the estimated intercept and slope coefficients for all the students.
 
 ```{r ranints_vs_separateints, echo=FALSE}
 gint = data_frame(Mixed=coef(gpa_mixed)$student[,1], Separate=gpa_lm_by_group[,1]) %>% 
@@ -92,7 +92,7 @@ gslopes = data_frame(Mixed=coef(gpa_mixed)$student[,2], Separate=gpa_lm_by_group
 gridExtra::grid.arrange(gint, gslopes, ncol=2)
 ```
 
-Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what otherwise would have been the by-group estimate, which would overfit.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models.
+Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what otherwise would have been the by-group estimate, which would overfit.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models.
 
 ## Exercises
 
