@@ -1,4 +1,4 @@
-# Extensions
+# Common Extensions
 
 
 
@@ -9,11 +9,17 @@
 
 Oftentimes there will be additional sources of variance beyond one grouping factor. Consider as an example, a visual perception experiment where there are multiple trials for each individual along with specific images displayed.  Such data might look like this.
 
-```{r demodata_crossed}
+```{r demodata_crossed, echo=FALSE}
 crossing(Person=1:20, Image=letters[1:10]) %>% 
   mutate(score=sample(1:10, 200, replace=T)) %>% 
-  DT::datatable(options=list(dom='tp'), rownames = F)
+  DT::datatable(options=list(dom='tp', autoWidth=F, 
+                             columnDefs=list(
+                               list(width='10px', targets=0:2),
+                               list(className = 'dt-center', targets = 0:2))), rownames = F, width=250)
 ```
+
+<br>
+<br>
 
 In such a case we have observations clustered within both person and image, but person and image are not nested within one another. For example all participants see all 10 items.  Such a situation is typically referred to as one in which there are <span class="emph">crossed</span> random effects.  In such settings we have multiple sources variances to consider.
 
@@ -56,7 +62,8 @@ DT::datatable(pupils,
                            #                   list(width = '100px', targets = 3))), 
               rownames=F)
 ```
-
+<br>
+<br>
 
 For our mixed model we'll look at the effects for `sex` and socioeconomic status, `ses`, a six level variable from low to high on scholastic achievement.  The range of achievement scores is roughly `r round(min(pupils$achievement))` to `r round(max(pupils$achievement))`, with mean of `r round(mean(pupils$achievement), 1)` and standard deviation `r round(sd(pupils$achievement), 1)`.  We'll take into account the clustering at primary school and secondary school.  To incorporate the additional structure in <span class="pack">lme4</span> syntax is very easy, we just do as we did before[^crossed_notation].
 
@@ -80,7 +87,7 @@ crossed_var_cor = tidy(VarCorr(pupils_crossed)) %>%
   select(-var2) %>% 
   rename(variance=vcov, sd=sdcor)
 crossed_var_cor %>%  
-  mutate_if(is.numeric, arm::fround, digits=3) %>% 
+  mutate_if(is.numeric, arm::fround, digits=2) %>% 
   mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
   pander()
 
@@ -141,15 +148,23 @@ For reasons that defy my ability to parse, <span class="pack">lme4</span> does n
 
 The following shows the same model we did before, but also includes an <span class="emph">autocorrelation</span> structure, of lag order one, for the residuals.  What this means is that we assume the residuals at one time point apart correlate with some value $\phi$, observations at two time points apart correlate $\phi^2$, and so on.  As such we only need to estimate $\phi$, while the rest are then automatically determined.  In <span class="pack">nlme</span> we use the built in <span class="func">corAR1</span> function and `correlation` argument.  Note also the different random effect specification (though not *too* different).
 
-```{r corr_residual}
+```{r corr_residual, echo=1:3, eval=-3}
 library(nlme)
 corr_res = lme(gpa ~ occasion, data = gpa,
                random = ~1|student, 
                correlation = corAR1(form = ~occasion))
 summary(corr_res)
+pander(corr_res, round=3)
+
+vc = VarCorr(corr_res) # christ lme objects are the worst
+cbind(rownames(vc), vc[,1:2]) %>% 
+  data.frame(stringsAsFactors=F) %>% 
+  mutate_at(vars(Variance, StdDev), function(x) round(as.numeric(x), 3)) %>% 
+  rename(' ' = V1) %>% 
+  pander
 ```
 
-While the output isn't as pretty[^digits], the fixed effect for occasion is the same as [before][application]. The variance estimates have changed slightly along with the variances of the parameters (i.e. the standard errors). The main thing is that we have a new paramter `Phi`, that represents our AR correlation with value of `r round(coef(corr_res$model$corStruct, unconstrained = F), 3)`, suggesting at least some correlation among the residuals for observations next to each other in time, though it diminishes quickly.
+Notice first that the fixed effect for occasion is the same as [before][Mixed model]. The variance estimates have changed slightly along with the variances of the fixed effects (i.e. the standard errors). The main thing is that we have a new paramter `Phi`, that represents our AR correlation, with value of `r round(coef(corr_res$model$corStruct, unconstrained = F), 3)`. This suggests at least some correlation exists among the residuals for observations next to each other in time, though it diminishes quickly as observations grow further apart.
 
 
 ## Generalized Linear Mixed Models
@@ -160,5 +175,3 @@ While the output isn't as pretty[^digits], the fixed effect for occasion is the 
 [^lmerho]: While I'm extremely grateful to the work put forth by those involved with lme4, making it probably the best mixed model package out there, this feature request has been made by its users for over a decade.  
 
 [^crossed_notation]: I don't show the formal model here as we did before, but this is why depicting mixed models solely as 'multilevel' becomes a bit problematic in my opinion. In the standard mixed model notation it's straightforward though, you just add an addition random effect term, just as we do in the actual model syntax.
-
-[^digits]: Nothing like randomly selected significant digits from 5 to 9 decimal places.

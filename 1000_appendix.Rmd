@@ -3,7 +3,7 @@
 
 ## Data
 
-Note that I have converted these from their original SPSS format to R data.frames saved within RData files. I also cleaned them up with better names/labesl etc.
+Note that I have converted these from their original SPSS format to R data.frames saved within RData files. I also cleaned them up with better names/labels etc. Most of the description is taken from Joop Hox's text appendix.
 
 - <span class="emph">GPA</span>: The GPA data are a longitudinal data set, where 200 college students have been followed 6 consecutive semesters. In this data set, there are GPA measures on 6 consecutive occasions, with a JOB status variable (how many hours worked) for the same 6 occasions. There are two student-level explanatory variables: the gender (1= male, 2= female) and the high school GPA. There is also a dichotomous student-level outcome variable, which indicates whether a student has been admitted to the university of their choice. Since not every student applies to a university, this variable has many missing values. 
 
@@ -18,12 +18,12 @@ Note that I have converted these from their original SPSS format to R data.frame
 
 R has more mixed modeling capabilities than anything else out there.  However there are other options.
 
-- lme4: generalized linear mixed models; extremely efficient
-- nlme: non-linear mixed models but only for the gaussian case.
-- mgcv: provides means to use both lme4 or nlme, extends distributional families, correlated residuals, and all that additive model stuff too
-- rstanarm:  Bayesian with lme4 level options
-- brms: Bayesian with possibly the most extensive mixed model capabilities
-- ordinal: for various types of ordinal models
+- <span class="pack">lme4</span>: generalized linear mixed models; extremely efficient
+- <span class="pack">nlme</span>: non-linear mixed models but only for the gaussian case.
+- <span class="pack">mgcv</span>: provides means to use both lme4 or nlme, extends distributional families, correlated residuals, and all that additive model stuff too
+- <span class="pack">rstanarm</span>:  Bayesian with lme4 level options
+- <span class="pack">brms</span>: Bayesian with possibly the most extensive mixed model capabilities
+- <span class="pack">ordinal</span>: for various types of ordinal models
 
 
 
@@ -32,8 +32,8 @@ R has more mixed modeling capabilities than anything else out there.  However th
 
 ### Proprietary
 
-Among the standard stats packages, I can only recommend Stata for both ease of implementation and flexiblity in modeling. SAS and SPSS both have non-intuitive and needlessly verbose syntax, and SPSS consistently struggles with even simple models.  
+Among the standard stats packages, I can only recommend Stata for both ease of implementation and flexiblity in modeling. SAS and SPSS both have non-intuitive and needlessly verbose syntax, and, while SAS is a fairly good tool for mixed models (from my understanding), I've seen SPSS consistently struggle with even simple models.  
 
-Mplus has a lot of functionality both for standard mixed models and growth curve models, though between lavaan, mediation, and the rest of R, there is little need to use Mplus except for very complicated multilevel SEM, which you probably do not have the sample size for anyway.
+Mplus has a lot of functionality both for standard mixed models and growth curve models, though between <span class="pack">lavaan</span>, <span class="pack">mediation</span>, and the rest of R, there is little need to use Mplus except for very complicated multilevel SEM, which requires very large samples and a lot of theoretical justification.
 
-I will also say that there is zero reason to use mixed model specfic software like HLM.  The day for such hijinks has long since passed.
+I will also say that there is zero reason to use mixed model specfic software like HLM.  The days for such hijinks have long since passed.

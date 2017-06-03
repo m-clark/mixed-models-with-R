@@ -75,17 +75,29 @@ knitr::include_graphics('img/nineteeneightyR.png', dpi = NA)
 
 ## Overview
 
-Mixed models are an extremely useful modeling tool for clustered data situations. It is quite common to have data in which we have repeated measurements for the units of observation, or in which the units of observation are otherwise clustered (e.g. students within school, cities within geographic region).   While there are different ways to approach such a situation, mixed models are far and away a common and powerful tool to do so.
+Mixed models are an extremely useful modeling tool for correlated data, where the correlation typically arises from the observations being clustered in some way. It is quite common to have data in which we have repeated measurements for the units of observation, or in which the units of observation are otherwise clustered (e.g. students within school, cities within geographic region).   While there are different ways to approach such a situation, mixed models are a very common and powerful tool to do so.
 
 ### Goals
 
-The goal of this workshop is to provide a sense of when one would use mixed models and a variety of standard techniques.  Additionally, we'll have exercises to practice.
+The goal of this workshop is primarily to provide a sense of when one would use mixed models and a variety of standard techniques.  Additionally, we'll have exercises to practice.  The document is very applied in nature, and only assumes a basic understanding of standard regression models.
+
+
+Note the following color coding used in this document:
+
+- <span class="emph">emphasis</span>
+- <span class="pack">package</span>
+- <span class="func">function</span>
+- <span class="objclass">object/class</span>
+- [link]()
+
+
+
 
 ## Terminology
 
 For the uninitiated, the terminology surrounding mixed models, especially across disciplines, can be a bit daunting.
 
-Some terms you might come across regarding mixed models:
+Some terms you might come across regarding these types of models:
 
 - Variance components
 - Random intercepts and slopes
@@ -98,7 +110,7 @@ Some terms you might come across regarding mixed models:
 - Growth curve models (possibly Latent GCM)
 - Mixed effects models
 
-All describe types of mixed models.  Some might be more historical, others are more often seen in a specific discipline, others might refer to a certain data structure (e.g. multilevel clustering), and still others are special cases. <span class='emph'>Mixed effects</span>, or simply mixed, models generally refer to a mixture of fixed and random effects.  I prefer the term mixed models because it is simple and no specific structure is implied[^mixmeth].  <span class='emph'>Fixed effects</span>, is perhaps a poor but nonetheless stubborn term for the typical main effects one would see in a linear regression model, i.e. the non-random part of a mixed model, and in some contexts they are referred to as the *population average* effect.
+All describe types of mixed models.  Some might be more historical, others are more often seen in a specific discipline, others might refer to a certain data structure (e.g. multilevel clustering), and still others are special cases. <span class='emph'>Mixed effects</span>, or simply mixed, models generally refer to a mixture of fixed and random effects.  I prefer the term mixed models because it is simple and no specific structure is implied.  <span class='emph'>Fixed effects</span>, is perhaps a poor but nonetheless stubborn term for the typical main effects one would see in a linear regression model, i.e. the non-random part of a mixed model, and in some contexts they are referred to as the *population average* effect.
 
 
 ### Kinds of clustering
@@ -108,18 +120,18 @@ Data might have one or multiple sources of clustering, and that clustering may b
 
 <!--chapter:end:00_Introduction.Rmd-->
 
-# Clustered Data
+# Correlated Data
 
 
 
 ## Random Intercepts model
 
-For the following we'll demonstrate the simplest[^vcmodel] and most common case of a mixed model, that in which we have a single random effect added to the standard regression situation.  We'll start with some data to get our bearings.
+For the following we'll demonstrate the simplest[^vcmodel] and most common case of a mixed model, that in which we have a single random effect added to the standard regression situation.  For reasons that will hopefully become clear later, this is commonly called a random intercepts model. We will see an extension of it later.
 
 
 ## Example: student GPA
 
-For the following we'll assess factors predicting college grade point average (GPA).  Each of the 200 students is assessed for six occasions (each semester for the first three years), so we have observations nested within students. We have other variables such as job status, sex, high school gpa.  Some will be in both labeled and numeric form. See the [appendix][Appendix] for details.
+For the following we'll assess factors predicting college grade point average (GPA).  Each of the 200 students is assessed for six occasions (each semester for the first three years), so we have observations nested within students. We have other variables such as job status, sex, and high school gpa.  Some will be in both labeled and numeric form. See the [appendix][Appendix] for details.
 
 ```{r gpa_setup, echo=FALSE, eval=FALSE}
 # MC Note: either the job label is incorrect or this variable makes no sense. 
@@ -153,10 +165,10 @@ DT::datatable(gpa,
 
 ## The standard regression model
 
-Now for the underlying model. We can show the underlying model in a couple different ways. First we start with just a standard regression.
+Now for the underlying model. We can show it in a couple different ways. First we start with just a standard regression to get our bearings.
 
 
-$$gpa = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot occasion + \epsilon$$
+$$\mathscr{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathscr{occasion} + \epsilon$$
 
 We have coefficients for the intercept and the effect of time.  The error $\epsilon$ is assumed to be normally distributed with mean 0 and some standard deviation $\sigma$.
 
@@ -166,20 +178,15 @@ $$\epsilon \sim \mathscr{N}(0, \sigma)$$
 
 ##### Initial depiction
 
-Now we show one way of showing it as a mixed model that includes an effect of student. This depiction shows that students are an additional source of variance.
+Now we show one way of showing it as a mixed model that includes a unique effect for each student. Consider the following model for a single student[^notation]. This depiction shows that the student-specific effect can be seen as an additional source of variance.
 
 
-$$gpa = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot occasion + (\mathrm{effect}_{\mathscr{student}} + \epsilon)$$
+$$\mathscr{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathscr{occasion} + (\mathrm{effect}_{\mathscr{student}} + \epsilon)$$
+If we rearrange it, we can instead focus on model coefficients.
 
+$$\mathscr{gpa} = (b_{\mathrm{intercept}} + \mathrm{effect}_{\mathscr{student}}) + b_{\mathrm{occ}}\cdot \mathscr{occasion} +  \epsilon$$
 
-
-##### As a multi-level model
-
-This next depcition is commonly seen in the multilevel modeling picture.  It is shown into two parts, one at the observation level and one at the student level.  After 'plugging in', it is identical to the previous.
-
-$$gpa = b_{\mathrm{int\_student}} + b_{\mathrm{occ}}\cdot \mathrm{occasion} + \epsilon$$
-
-$$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + \mathrm{effect}_{\mathrm{student}}$$
+In this way, we'll have student-specific intercepts, as each person will have their own unique effect added to the overall intercept, resulting in a different intercept for each person. As such this is often called a random intercepts model.
 
 In either case, we (usually) assume the following for the student effects.  
 
@@ -187,8 +194,21 @@ In either case, we (usually) assume the following for the student effects.
 $$\mathrm{effect}_{\mathrm{student}} \sim \mathscr{N}(0, \tau)$$
 
 
-Both are normally distributed with mean of zero and some estimated standard deviation. In other words, conceptually the only difference between the mixed model and a standard regression is the student effect, which is on average no effect, but specifically varies from student to student with some standard deviation ($\tau$).
+Thus the student effects are random, and specifically are normally distributed with mean of zero and some estimated standard deviation. In other words, conceptually the only difference between the mixed model and a standard regression is the student effect, which is *on average* no effect, but specifically varies from student to student with some standard deviation ($\tau$).
 
+
+
+##### As a multi-level model
+
+This next depcition is commonly seen in the multilevel modeling literature.  It is shown as a two part model, one at the observation level and one at the student level.  
+
+$$\mathrm{gpa} = b_{\mathrm{int\_student}} + b_{\mathrm{occ}}\cdot \mathrm{occasion} + \epsilon$$
+
+$$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + \mathrm{effect}_{\mathrm{student}}$$
+
+However, after 'plugging in' the second level part to the first, it is identical to the previous.
+
+Note how we don't have a student-specific effect for occasion.  In this context, occasion is said to be a fixed effect only, and there is no random component. This definitely does not have to be the case though, as we'll see later.
 
 ## Application
 
@@ -199,18 +219,21 @@ It always helps to look before we leap, so let's do so.  Here we plot GPA vs. oc
 ```{r spaghetti, echo=FALSE}
 set.seed(1234)
 gpa_lm = lm(gpa ~ occasion, data=gpa)
-sample_students = gpa %>% filter(student %in% sample(1:200, 10))
-occasion_sample = gpa$occasion[gpa$student %in% sample_students$student]
-gpa_sample = gpa$gpa[gpa$student %in% sample_students$student]
+# sample_students = gpa %>% filter(student %in% sample(1:200, 10))
+# occasion_sample = gpa$occasion[gpa$student %in% sample_students$student]
+# gpa_sample = gpa$gpa[gpa$student %in% sample_students$student]
 gpa %>% 
   modelr::add_predictions(gpa_lm, var='all') %>% 
-  group_by(student) %>% 
+  mutate(select = factor(student %in% sample(1:200, 10))) %>% 
+  group_by(student, select) %>% 
   plot_ly %>% 
-  add_lines(x=~occasion, y=~gpa, opacity=.2, color=I('#03b3ff'), showlegend=F) %>%
-  add_paths(x=occasion_sample, y=gpa_sample, color=I('#ff5503'), opacity=.5, showlegend=F) %>% 
-  add_lines(x=~occasion, y=~all, color=I('#b2001d')) %>% 
+  add_lines(x=~occasion, y=~gpa, opacity=.35, color=~select, colors=c('#03b3ff', '#ff5503'), showlegend=F) %>%
+  # add_paths(x=occasion_sample, y=gpa_sample, color=I('#ff5503'), opacity=.5, showlegend=F) %>% 
+  add_lines(x=~occasion, y=~all, color=I('#b2001d'), opacity=.85) %>% 
   theme_plotly()
 ```
+
+<br>
 
 All student paths are shown in blue, with a sample of 10 shown in orange. The overall trend as estimated by the regression we'll do later is shown in red. Two things stand out.  One is that students have a lot of variability in starting out. Secondly, while the general trend in gpa is upward over time as we'd expect, individual students may vary in that trajectory.
 
@@ -222,7 +245,7 @@ So let's get started. First, we'll look at the regression and only the time tren
 load('data/gpa.RData')
 gpa_lm = lm(gpa ~ occasion, data=gpa)
 summary(gpa_lm)
-pander(summary(gpa_lm))
+pander.return(summary(gpa_lm), round=3)
 gpa_lm_by_group = gpa %>% 
   split(.$student) %>% 
   map(~lm(gpa ~ occasion, data=.x)) %>% 
@@ -235,11 +258,11 @@ The above tells us that as we move from semester to semester, we can expect GPA 
 
 #### Regression by cluster
 
-An alternative approach would be to run separate regressions for every student.  However, there are many drawbacks to this- it's not easily summarized when there are many groups, typically there would be very little data to do so, and the models are overcontextualized, meaning they ignore what students have in common.  We'll compare this result to the mixed model later.
+An alternative approach would be to run separate regressions for every student.  However, there are many drawbacks to this- it's not easily summarized when there are many groups, typically there would be very little data within each cluster to do so, and the models are overcontextualized, meaning they ignore what students have in common.  We'll compare this result to the mixed model later.
 
 #### Mixed model
 
-Next we run a mixed model that will allow for a student specific effect.  Such a model is easily conducted in R, specifically with the package <span class="pack">lme4</span>.  In the following, the code will look just like what you used for regression with lm, but with an additional component specifying the group effect.  The `(1|student)` means that we are allowing the intercept, represented by `1`, to vary by student. With the mixed model, we get the same results as the regression, but with more to talk about.
+Next we run a mixed model that will allow for a student specific effect.  Such a model is easily conducted in R, specifically with the package <span class="pack">lme4</span>.  In the following, the code will look just like what you used for regression with <span class="func">lm</span>, but with an additional component specifying the group effect.  The `(1|student)` means that we are allowing the intercept, represented by `1`, to vary by student. With the mixed model, we get the same results as the regression, but with more to talk about.
 
 
 ```{r gpa_mixed, eval=-3}
@@ -354,6 +377,7 @@ What happened to the cluster level variance after adding cluster level covariate
 
 
 
+[^notation]: Note that I leave out the observation level subscript to keep things clean. I find that multilevel style notation quickly becomes unwieldy, and don't wish to reproduce it.  It also tends to add confusion to a lot of applied researchers starting out with mixed models.
 
 [^vcmodel]: Actually, the simplest model would have no covariates at all, just <span class="emph">variance components</span>.  Such a model can be interesting to look at while exploring your data, but would probably never suffice to tell the story you desire to.
 
@@ -361,11 +385,11 @@ What happened to the cluster level variance after adding cluster level covariate
 
 [^mlevel]: This is why the multilevel depiction is subpar, and leads many to confusion at times.  You have a target variable and predictor variables based on theory.  Whether they are cluster level variables or if there are interactions doesn't have anything to do with the data structure.  However, if you depict the model in multilevel fashion, the final model must adhere to the 'plugged in' result.
 
-<!--chapter:end:01_clustered_data.Rmd-->
+<!--chapter:end:01_correlated_data.Rmd-->
 
-# Random Slopes
+# More Random Effects
 
-Previously we've looked at random intercepts, but any observation level covariate could be allowed to vary by cluster as well.
+Previously we've looked at random intercepts, but any observation level covariate effect could be allowed to vary by cluster as well.
 
 
 
@@ -393,7 +417,7 @@ gpa %>%
   theme_plotly()
 ```
 
-Let us now assume that the trends over time are worth allowing to vary by student.  Using lme4, this is quite straightforward.
+Let us now assume that the trends over time are worth allowing to vary by student.  Using <span class="pack">lme4</span>, this is quite straightforward.
 
 ```{r random_slope, eval=FALSE}
 gpa_mixed =  lmer(gpa ~ occasion + (1 + occasion|student), data=gpa)
@@ -425,7 +449,7 @@ Yet another point of interest is the correlation of the intercepts and slopes. I
 ### Comparison to many regressions
 
 
- Let's compare these results to the ones we would have gotten had we run a separate regression for each student.  First the intercepts.
+Let's compare these results to the ones we would have gotten had we run a separate regression for each student.  In what follows we see the distribution of of the estimated intercept and slope coefficients for all the students.
 
 ```{r ranints_vs_separateints, echo=FALSE}
 gint = data_frame(Mixed=coef(gpa_mixed)$student[,1], Separate=gpa_lm_by_group[,1]) %>% 
@@ -457,7 +481,7 @@ gslopes = data_frame(Mixed=coef(gpa_mixed)$student[,2], Separate=gpa_lm_by_group
 gridExtra::grid.arrange(gint, gslopes, ncol=2)
 ```
 
-Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what otherwise would have been the by-group estimate, which would overfit.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models.
+Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what otherwise would have been the by-group estimate, which would overfit.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models.
 
 ## Exercises
 
@@ -472,11 +496,36 @@ data("sleepstudy")
 
 <!--chapter:end:02_random_slopes.Rmd-->
 
-# Extensions
+# Common Extensions
 
 
 
 ## Additional Grouping Structure
+
+
+### Cross-classified models
+
+Oftentimes there will be additional sources of variance beyond one grouping factor. Consider as an example, a visual perception experiment where there are multiple trials for each individual along with specific images displayed.  Such data might look like this.
+
+```{r demodata_crossed, echo=FALSE}
+crossing(Person=1:20, Image=letters[1:10]) %>% 
+  mutate(score=sample(1:10, 200, replace=T)) %>% 
+  DT::datatable(options=list(dom='tp', autoWidth=F, 
+                             columnDefs=list(
+                               list(width='10px', targets=0:2),
+                               list(className = 'dt-center', targets = 0:2))), rownames = F, width=250)
+```
+
+<br>
+<br>
+
+In such a case we have observations clustered within both person and image, but person and image are not nested within one another. For example all participants see all 10 items.  Such a situation is typically referred to as one in which there are <span class="emph">crossed</span> random effects.  In such settings we have multiple sources variances to consider.
+
+
+#### Example: Student achievement
+
+For our own demonstration we'll look at achievment scores for students.  The sources of dependency are due to students having gone to the same primary or secondary schools.  However, in this example, going to a primary school doesn't necessarily mean you'll go to a specific secondary school.  Note also that there are no repeated measures, we see each student only one. Here's a quick look a the data.
+
 
 ```{r pupil_nurses_setup, echo=FALSE, eval=FALSE}
 pupils = read_sav('data/joop_hox_data2/9 CrossClass/pupcross.sav') %>% 
@@ -501,20 +550,123 @@ save(nurses, file='data/nurses.RData')
 ```
 
 
+```{r examine_pupil_data, echo=1}
+load('data/pupils.RData')
+DT::datatable(pupils, 
+              options=list(dom='tp', 
+                           scrollX=T,  
+                           autoWidth=T),
+                           # columnDefs = list(list(width = '150px', targets = 1),
+                           #                   list(width = '100px', targets = 3))), 
+              rownames=F)
+```
+<br>
+<br>
+
+For our mixed model we'll look at the effects for `sex` and socioeconomic status, `ses`, a six level variable from low to high on scholastic achievement.  The range of achievement scores is roughly `r round(min(pupils$achievement))` to `r round(max(pupils$achievement))`, with mean of `r round(mean(pupils$achievement), 1)` and standard deviation `r round(sd(pupils$achievement), 1)`.  We'll take into account the clustering at primary school and secondary school.  To incorporate the additional structure in <span class="pack">lme4</span> syntax is very easy, we just do as we did before[^crossed_notation].
+
+```{r cross_classified, eval=1}
+pupils_crossed = lmer(achievement ~ sex + ses 
+                      + (1|primary_school_id) + (1|secondary_school_id), 
+                      data = pupils)
+summary(pupils_crossed, correlation=F)
+```
+
+
+```{r cross_classified_fixed, echo=FALSE}
+pander(tidy(pupils_crossed, 'fixed', conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=2))
+```
+
+The fixed effects tell us there is a positive effect of being female on achievement, and in general, relative to lowest SES category, being in the upper categories of SES also has a positive effect.
+
+```{r  cross_classified_random, echo=FALSE}
+# note tidy doesn't work with multiple random effects and conf.int
+crossed_var_cor = tidy(VarCorr(pupils_crossed)) %>% 
+  select(-var2) %>% 
+  rename(variance=vcov, sd=sdcor)
+crossed_var_cor %>%  
+  mutate_if(is.numeric, arm::fround, digits=2) %>% 
+  mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
+  pander()
+
+```
+
+When we look at the variance components we see that primary and secondary school does contribute about `r round(sum(crossed_var_cor$variance[1:2])/sum(crossed_var_cor$variance)*100)`% of the total variance.  Most of the variance attributable to school comes from the primary school.
+
+Note that we have the usual extensions here if desired.  As an example, we could also do random slopes for student level characteristics.
+
 
 
 ### Hierarchical Structure
 
-```{r}
-nurses_hierarchical = lmer(stress ~ age  + gender + experien + expcon + wardtype + hospsize + (1|hospital) + (1|hospital:ward), nurses)
-summary(nurses_hierarchical)
+Now that we have looked at cross-classified models, we can examine hierarchical 
+
+#### Example: Nurses and Stress
+
+
+```{r nurses_data, echo=1}
+load('data/nurses.RData')
+DT::datatable(nurses, 
+              options=list(dom='tp', 
+                           scrollX=T,  
+                           autoWidth=T),
+                           # columnDefs = list(list(width = '150px', targets = 1),
+                           #                   list(width = '100px', targets = 3))), 
+              rownames=F)
 ```
 
 
+```{r hierarchical, eval=1}
+nurses_hierarchical = lmer(stress ~ age  + gender + experience + treatment + wardtype + hospsize 
+                           + (1|hospital) + (1|hospital:ward), data = nurses)
+summary(nurses_hierarchical, correlation=F)
+```
+
+```{r hierarchical_fixed, echo=FALSE}
+pander(tidy(nurses_hierarchical, 'fixed', conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=2))
+```
+
+```{r hierarchical_random, echo=FALSE}
+# note tidy doesn't work with multiple random effects and conf.int
+hierarch_var_cor = tidy(VarCorr(nurses_hierarchical)) %>% 
+  select(-var2) %>% 
+  rename(variance=vcov, sd=sdcor)
+hierarch_var_cor %>%  
+  mutate_if(is.numeric, arm::fround, digits=3) %>% 
+  mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
+  pander()
+
+```
+
 ## Correlational Structure
+
+Sometimes we will want to estimate the residual correlation structure. This especially the case in the longitudinal setting, where we think that observations closer in time would be more strongly correlated than those further apart.  
+
+For reasons that defy my ability to parse, <span class="pack">lme4</span> does not provide the ability to do this, though practically every other mixed model package does[^lmerho].  In fact, two packages that come with the basic R installation do so, <span class="pack">mgcv</span> and <span class="pack">nlme</span>.  We'll demonstrate with the latter.
+
+The following shows the same model we did before, but also includes an <span class="emph">autocorrelation</span> structure, of lag order one, for the residuals.  What this means is that we assume the residuals at one time point apart correlate with some value $\phi$, observations at two time points apart correlate $\phi^2$, and so on.  As such we only need to estimate $\phi$, while the rest are then automatically determined.  In <span class="pack">nlme</span> we use the built in <span class="func">corAR1</span> function and `correlation` argument.  Note also the different random effect specification (though not *too* different).
+
+```{r corr_residual}
+library(nlme)
+corr_res = lme(gpa ~ occasion, data = gpa,
+               random = ~1|student, 
+               correlation = corAR1(form = ~occasion))
+pander(summary(corr_res), round=3)
+```
+
+While the output isn't as pretty[^digits], the fixed effect for occasion is the same as [before][application]. The variance estimates have changed slightly along with the variances of the fixed effects (i.e. the standard errors). The main thing is that we have a new paramter `Phi`, that represents our AR correlation with value of `r round(coef(corr_res$model$corStruct, unconstrained = F), 3)`, suggesting at least some correlation among the residuals for observations next to each other in time, though it diminishes quickly.
 
 
 ## Generalized Linear Mixed Models
+
+
+## Exercises
+
+[^lmerho]: While I'm extremely grateful to the work put forth by those involved with lme4, making it probably the best mixed model package out there, this feature request has been made by its users for over a decade.  
+
+[^crossed_notation]: I don't show the formal model here as we did before, but this is why depicting mixed models solely as 'multilevel' becomes a bit problematic in my opinion. In the standard mixed model notation it's straightforward though, you just add an addition random effect term, just as we do in the actual model syntax.
+
+[^digits]: Nothing like randomly selected significant digits from 5 to 9 decimal places.
 
 <!--chapter:end:03_extensions.Rmd-->
 
@@ -523,16 +675,19 @@ summary(nurses_hierarchical)
 
 ## Alternative approaches
 
-Alternative approaches used in clustered data situations include:
+I have a [document](https://m-clark.github.io/docs/clustered/) that goes into more detail about many approaches to dealing with clustered data, but we'll briefly talk about some here. Alternative approaches used in clustered data situations include:
 
-- Using cluster-robust standard errors
 - Fixed effects models (also panel linear models with fixed, as opposed to random, effects)
+- Using cluster-robust standard errors
 - Generalized estimating equations
 
-The first two are commonly used by those trained with an econometrics perspective, while you might see GEE more with those of a biostatistics perspective. 
+The first two are commonly used by those trained with an econometrics perspective, while you might see GEE more with those of a biostatistics perspective. GEE are in fact a generalization of the cluster-robust approach.  The nature of fixed effects models allow you to control for, but not investigate any cluster level effects.  This makes them a non-starter for many investigations, as those are typically of prime theoretical interest.  GEE approaches allow one to take into account the dependency in the data, but ignore what might be very interesting, i.e. the random effects and associated variance. There are also few tools for GEE in more complicated correlational structures beyond a single clustering variable.
 
 
 ### Growth curve models
+
+With longitudinal data, growth curve models are a latent variable approach that is commonly used in these situations. With appropriate setup, they will duplicate the results of a mixed model.  In my opinion, there are few reasons to use a growth curve approach over a mixed model, and many reasons not to, not least of which is that effects which would be simple to interpret in the mixed model approach are now a source of confusion to applied researchers in the growth curve model, even though it's the same thing.  Furthermore, indirect effects, growth mixture models and other extensions common in the latent variable approach are more easily implemented in the mixed model approach.  In short, only the most complicated models would perhaps require a growth curve model, but would also bring with it many other complications.
+
 
 
 ## Sample sizes
@@ -551,11 +706,6 @@ Mixed models work even with no more than two and some singletons
 
 
 
-## Crossed vs. Nested
-
-
-## GLMM and beyond
-
 <!--chapter:end:10_issues.Rmd-->
 
 # Appendix
@@ -563,13 +713,40 @@ Mixed models work even with no more than two and some singletons
 
 ## Data
 
-Note that I have converted these from their original SPSS format to R data.frames saved within RData files. I also cleaned them up with better names/labesl etc.
+Note that I have converted these from their original SPSS format to R data.frames saved within RData files. I also cleaned them up with better names/labels etc. Most of the description is taken from Joop Hox's text appendix.
 
 - <span class="emph">GPA</span>: The GPA data are a longitudinal data set, where 200 college students have been followed 6 consecutive semesters. In this data set, there are GPA measures on 6 consecutive occasions, with a JOB status variable (how many hours worked) for the same 6 occasions. There are two student-level explanatory variables: the gender (1= male, 2= female) and the high school GPA. There is also a dichotomous student-level outcome variable, which indicates whether a student has been admitted to the university of their choice. Since not every student applies to a university, this variable has many missing values. 
 
+- <span class="emph">pupils</span>: Assume that we have data from 1000 pupils who have attended 100 different primary schools, and subsequently went on to 30 secondary schools. Similar to the situation where we have pupils within schools and neighborhoods, we have a cross-classified structure. Pupils are nested within primary and within secondary schools, with primary and secondary schools crossed. In other words: pupils are nested within the cross-classification of primary and secondary schools. In our example, we have a response variable achievement which is measured in secondary school. We have two explanatory variables at the pupil level: pupil gender (0 = male, 1 = female) and a six-point scale for pupil socioeconomic status, pupil ses. We have at the school level a dichotom- ous variable that indicates if the school is public (denom = 0) or denominational (denom = 1). Since we have both primary and secondary schools, we have two such variables (named pdenom for the primary school and sdenom for the secondary school).
+
+
 - <span class="emph">nurses</span>: The data in this example are from a hypothetical study on stress in hospitals. The data are from nurses working in wards nested within hospitals. In each of 25 hospitals, four wards are selected and randomly assigned to an experimental and control condition. In the experimental condition, a training program is offered to all nurses to cope with job- related stress. After the program is completed, a sample of about 10 nurses from each ward is given a test that measures job-related stress. Additional variables are: nurse age (years), nurse experience (years), nurse gender (0 = male, 1 = female), type of ward (0 = general care, 1 = special care), and hospital size (0 = small, 1 = medium, 2 = large). This is an example of an experiment where the experimental intervention is carried out at the group level. In biomedical research this design is known as a cluster randomized trial. They are quite common also in educational and organizational research, where entire classes or schools are assigned to experimental and control conditions. Since the design variable Experimental versus Control group (ExpCon) is manipulated at the second (ward) level, we can study whether the experimental effect is different in different hospitals, by defining the regression coefficient for the ExpCon variable as random at the hospital level. In this example, the variable ExpCon is of main interest, and the other variables are covariates. Their function is to control for differences between the groups, which should be small given that randomization is used, and to explain variance in the outcome variable stress. To the extent that they are successful in explaining variance, the power of the test for the effect of ExpCon will be increased. Therefore, although logically we can test if explanatory variables at the first level have random coefficients at the second or third level, and if explanatory variables at the second level have random coefficients at the third level, these possibilities are not pursued. We do test a model with a random coefficient for ExpCon at the third level, where there turns out to be significant slope variation. This varying slope can be predicted by adding a cross-level interaction between the variables ExpCon and HospSize. In view of this interaction, the variables ExpCon and HospSize have been centered on their overall mean. 
 
-- <span class="emph">pupils</span>: Assume that we have data from 1000 pupils who have attended 100 different primary schools, and subsequently went on to 30 secondary schools. Similar to the situation where we have pupils within schools and neighborhoods, we have a cross-classified structure. Pupils are nested within primary and within secondary schools, with primary and secondary schools crossed. In other words: pupils are nested within the cross- classification of primary and secondary schools. Goldstein (1994) introduces a formal description of these models, which will be followed here. In our example, we have a response variable achievement which is measured in secondary school. We have two explanatory variables at the pupil level: pupil gender (0 = male, 1 = female) and a six-point scale for pupil socioeconomic status, pupil ses. We have at the school level a dichotom- ous variable that indicates if the school is public (denom = 0) or denominational (denom = 1). Since we have both primary and secondary schools, we have two such variables (named pdenom for the primary school and sdenom for the secondary school).
+
+
+## Programming languages
+
+R has more mixed modeling capabilities than anything else out there.  However there are other options.
+
+- <span class="pack">lme4</span>: generalized linear mixed models; extremely efficient
+- <span class="pack">nlme</span>: non-linear mixed models but only for the gaussian case.
+- <span class="pack">mgcv</span>: provides means to use both lme4 or nlme, extends distributional families, correlated residuals, and all that additive model stuff too
+- <span class="pack">rstanarm</span>:  Bayesian with lme4 level options
+- <span class="pack">brms</span>: Bayesian with possibly the most extensive mixed model capabilities
+- <span class="pack">ordinal</span>: for various types of ordinal models
+
+
+
+- Python: the [statsmodels](http://www.statsmodels.org/stable/mixed_linear.html) module has basic capabilities for mixed models but not too many frills (e.g. no crossed random effects).
+- Julia: one of the lme4 developers develops a [MixedModels](https://github.com/dmbates/MixedModels.jl) package for Julia
+
+### Proprietary
+
+Among the standard stats packages, I can only recommend Stata for both ease of implementation and flexiblity in modeling. SAS and SPSS both have non-intuitive and needlessly verbose syntax, and, while SAS is a fairly good tool for mixed models (from my understanding), I've seen SPSS consistently struggle with even simple models.  
+
+Mplus has a lot of functionality both for standard mixed models and growth curve models, though between <span class="pack">lavaan</span>, <span class="pack">mediation</span>, and the rest of R, there is little need to use Mplus except for very complicated multilevel SEM, which requires very large samples and a lot of theoretical justification.
+
+I will also say that there is zero reason to use mixed model specfic software like HLM.  The days for such hijinks have long since passed.
 
 <!--chapter:end:1000_appendix.Rmd-->
 

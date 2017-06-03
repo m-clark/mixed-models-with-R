@@ -1,15 +1,15 @@
-# Clustered Data
+# Correlated Data
 
 
 
 ## Random Intercepts model
 
-For the following we'll demonstrate the simplest[^vcmodel] and most common case of a mixed model, that in which we have a single random effect added to the standard regression situation.  We'll start with some data to get our bearings.
+For the following we'll demonstrate the simplest[^vcmodel] and most common case of a mixed model, that in which we have a single random effect added to the standard regression situation.  For reasons that will hopefully become clear later, this is commonly called a random intercepts model. We will see an extension of it later.
 
 
 ## Example: student GPA
 
-For the following we'll assess factors predicting college grade point average (GPA).  Each of the 200 students is assessed for six occasions (each semester for the first three years), so we have observations nested within students. We have other variables such as job status, sex, high school gpa.  Some will be in both labeled and numeric form. See the [appendix][Appendix] for details.
+For the following we'll assess factors predicting college grade point average (GPA).  Each of the 200 students is assessed for six occasions (each semester for the first three years), so we have observations nested within students. We have other variables such as job status, sex, and high school gpa.  Some will be in both labeled and numeric form. See the [appendix][Appendix] for details.
 
 ```{r gpa_setup, echo=FALSE, eval=FALSE}
 # MC Note: either the job label is incorrect or this variable makes no sense. 
@@ -43,10 +43,10 @@ DT::datatable(gpa,
 
 ## The standard regression model
 
-Now for the underlying model. We can show the underlying model in a couple different ways. First we start with just a standard regression.
+Now for the underlying model. We can show it in a couple different ways. First we start with just a standard regression to get our bearings.
 
 
-$$gpa = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot occasion + \epsilon$$
+$$\mathscr{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathscr{occasion} + \epsilon$$
 
 We have coefficients for the intercept and the effect of time.  The error $\epsilon$ is assumed to be normally distributed with mean 0 and some standard deviation $\sigma$.
 
@@ -56,20 +56,15 @@ $$\epsilon \sim \mathscr{N}(0, \sigma)$$
 
 ##### Initial depiction
 
-Now we show one way of showing it as a mixed model that includes an effect of student. This depiction shows that students are an additional source of variance.
+Now we show one way of showing it as a mixed model that includes a unique effect for each student. Consider the following model for a single student[^notation]. This depiction shows that the student-specific effect can be seen as an additional source of variance.
 
 
-$$gpa = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot occasion + (\mathrm{effect}_{\mathscr{student}} + \epsilon)$$
+$$\mathscr{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathscr{occasion} + (\mathrm{effect}_{\mathscr{student}} + \epsilon)$$
+If we rearrange it, we can instead focus on model coefficients.
 
+$$\mathscr{gpa} = (b_{\mathrm{intercept}} + \mathrm{effect}_{\mathscr{student}}) + b_{\mathrm{occ}}\cdot \mathscr{occasion} +  \epsilon$$
 
-
-##### As a multi-level model
-
-This next depcition is commonly seen in the multilevel modeling picture.  It is shown into two parts, one at the observation level and one at the student level.  After 'plugging in', it is identical to the previous.
-
-$$gpa = b_{\mathrm{int\_student}} + b_{\mathrm{occ}}\cdot \mathrm{occasion} + \epsilon$$
-
-$$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + \mathrm{effect}_{\mathrm{student}}$$
+In this way, we'll have student-specific intercepts, as each person will have their own unique effect added to the overall intercept, resulting in a different intercept for each person. As such this is often called a random intercepts model.
 
 In either case, we (usually) assume the following for the student effects.  
 
@@ -77,8 +72,21 @@ In either case, we (usually) assume the following for the student effects.
 $$\mathrm{effect}_{\mathrm{student}} \sim \mathscr{N}(0, \tau)$$
 
 
-Both are normally distributed with mean of zero and some estimated standard deviation. In other words, conceptually the only difference between the mixed model and a standard regression is the student effect, which is on average no effect, but specifically varies from student to student with some standard deviation ($\tau$).
+Thus the student effects are random, and specifically are normally distributed with mean of zero and some estimated standard deviation. In other words, conceptually the only difference between the mixed model and a standard regression is the student effect, which is *on average* no effect, but specifically varies from student to student with some standard deviation ($\tau$).
 
+
+
+##### As a multi-level model
+
+This next depcition is commonly seen in the multilevel modeling literature.  It is shown as a two part model, one at the observation level and one at the student level.  
+
+$$\mathrm{gpa} = b_{\mathrm{int\_student}} + b_{\mathrm{occ}}\cdot \mathrm{occasion} + \epsilon$$
+
+$$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + \mathrm{effect}_{\mathrm{student}}$$
+
+However, after 'plugging in' the second level part to the first, it is identical to the previous.
+
+Note how we don't have a student-specific effect for occasion.  In this context, occasion is said to be a fixed effect only, and there is no random component. This definitely does not have to be the case though, as we'll see later.
 
 ## Application
 
@@ -89,18 +97,21 @@ It always helps to look before we leap, so let's do so.  Here we plot GPA vs. oc
 ```{r spaghetti, echo=FALSE}
 set.seed(1234)
 gpa_lm = lm(gpa ~ occasion, data=gpa)
-sample_students = gpa %>% filter(student %in% sample(1:200, 10))
-occasion_sample = gpa$occasion[gpa$student %in% sample_students$student]
-gpa_sample = gpa$gpa[gpa$student %in% sample_students$student]
+# sample_students = gpa %>% filter(student %in% sample(1:200, 10))
+# occasion_sample = gpa$occasion[gpa$student %in% sample_students$student]
+# gpa_sample = gpa$gpa[gpa$student %in% sample_students$student]
 gpa %>% 
   modelr::add_predictions(gpa_lm, var='all') %>% 
-  group_by(student) %>% 
+  mutate(select = factor(student %in% sample(1:200, 10))) %>% 
+  group_by(student, select) %>% 
   plot_ly %>% 
-  add_lines(x=~occasion, y=~gpa, opacity=.2, color=I('#03b3ff'), showlegend=F) %>%
-  add_paths(x=occasion_sample, y=gpa_sample, color=I('#ff5503'), opacity=.5, showlegend=F) %>% 
-  add_lines(x=~occasion, y=~all, color=I('#b2001d')) %>% 
+  add_lines(x=~occasion, y=~gpa, opacity=.35, color=~select, colors=c('#03b3ff', '#ff5503'), showlegend=F) %>%
+  # add_paths(x=occasion_sample, y=gpa_sample, color=I('#ff5503'), opacity=.5, showlegend=F) %>% 
+  add_lines(x=~occasion, y=~all, color=I('#b2001d'), opacity=.85) %>% 
   theme_plotly()
 ```
+
+<br>
 
 All student paths are shown in blue, with a sample of 10 shown in orange. The overall trend as estimated by the regression we'll do later is shown in red. Two things stand out.  One is that students have a lot of variability in starting out. Secondly, while the general trend in gpa is upward over time as we'd expect, individual students may vary in that trajectory.
 
@@ -112,7 +123,7 @@ So let's get started. First, we'll look at the regression and only the time tren
 load('data/gpa.RData')
 gpa_lm = lm(gpa ~ occasion, data=gpa)
 summary(gpa_lm)
-pander(summary(gpa_lm))
+pander(summary(gpa_lm), round=3)
 gpa_lm_by_group = gpa %>% 
   split(.$student) %>% 
   map(~lm(gpa ~ occasion, data=.x)) %>% 
@@ -125,11 +136,11 @@ The above tells us that as we move from semester to semester, we can expect GPA 
 
 #### Regression by cluster
 
-An alternative approach would be to run separate regressions for every student.  However, there are many drawbacks to this- it's not easily summarized when there are many groups, typically there would be very little data to do so, and the models are overcontextualized, meaning they ignore what students have in common.  We'll compare this result to the mixed model later.
+An alternative approach would be to run separate regressions for every student.  However, there are many drawbacks to this- it's not easily summarized when there are many groups, typically there would be very little data within each cluster to do so, and the models are overcontextualized, meaning they ignore what students have in common.  We'll compare this result to the mixed model later.
 
 #### Mixed model
 
-Next we run a mixed model that will allow for a student specific effect.  Such a model is easily conducted in R, specifically with the package <span class="pack">lme4</span>.  In the following, the code will look just like what you used for regression with lm, but with an additional component specifying the group effect.  The `(1|student)` means that we are allowing the intercept, represented by `1`, to vary by student. With the mixed model, we get the same results as the regression, but with more to talk about.
+Next we run a mixed model that will allow for a student specific effect.  Such a model is easily conducted in R, specifically with the package <span class="pack">lme4</span>.  In the following, the code will look just like what you used for regression with <span class="func">lm</span>, but with an additional component specifying the group effect.  The `(1|student)` means that we are allowing the intercept, represented by `1`, to vary by student. With the mixed model, we get the same results as the regression, but with more to talk about.
 
 
 ```{r gpa_mixed, eval=-3}
@@ -156,10 +167,19 @@ confint(gpa_mixed)
 ```
 
 ```{r gpa_mixed_ci_pretty, echo=FALSE}
-tidy(gpa_mixed, conf.int=T) %>% 
-  mutate_if(is.numeric, arm::fround, digits=2) %>% 
-  mutate_all(function(x) ifelse(stringr::str_trim(x)=='NA', '', x)) %>%
-  pander(justify='lrrrrrc', split.cells=Inf, split.tables=Inf)  
+# tidy(gpa_mixed, conf.int=T, conf.method='boot') %>% 
+#   mutate_if(is.numeric, arm::fround, digits=2) %>% 
+#   mutate_all(function(x) ifelse(stringr::str_trim(x)=='NA', '', x)) %>%
+#   pander(justify='lrrrrrc', split.cells=Inf, split.tables=Inf)  
+
+confint(gpa_mixed) %>% 
+  data.frame(rn = rownames(.)) %>% 
+  mutate(rn = c('student', 'residual', 'Intercept', 'occasion')) %>% 
+  select(rn, X2.5.., X97.5..) %>% 
+  rename(' '=rn,
+         `2.5%` = X2.5..,
+         `97.5%` = X97.5..) %>% 
+  pander(justify='lrr', round=3)
 ```
 
 
@@ -192,16 +212,16 @@ Another way to interpret the variance output is via the <span class="emph">intra
 
 Note our depiction of a mixed model as a multilevel model.
 
-$$gpa = b_{\mathrm{int\_student}} + b_{\mathrm{occ}}\cdot \mathrm{occasion} + \epsilon$$
+$$\mathrm{gpa} = b_{\mathrm{int\_student}} + b_{\mathrm{occ}}\cdot \mathrm{occasion} + \epsilon$$
 
 $$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + \mathrm{effect}_{\mathrm{student}}$$
 If we add student a student level covariate, e.g sex, to the model, we then have the following.
 
 $$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + b_{sex}\cdot \mathrm{sex} +  \mathrm{effect}_{\mathrm{student}}$$
 
-Which, after plugging in we still have the same model as before, just with an additional predictor.
+Which, after plugging in, we still have the same model as before, just with an additional predictor.
 
-$$gpa = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot occasion+ b_{sex}\cdot \mathrm{sex} + (\mathrm{effect}_{\mathscr{student}} + \epsilon)$$
+$$\mathrm{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathrm{occasion}+ b_{sex}\cdot \mathrm{sex} + (\mathrm{effect}_{\mathscr{student}} + \epsilon)$$
 
 Thus, adding cluster level covariates doesn't have any unusual effect on how we think about the model[^mlevel]. We simply add them to our set of predictor variables. Note also, that we can create cluster level covariates as means or some other summary of the observation level variables.  This is especially common when the clusters represent geographical units and observations are people.
 
@@ -244,6 +264,7 @@ What happened to the cluster level variance after adding cluster level covariate
 
 
 
+[^notation]: Note that I leave out the observation level subscript to keep things clean. I find that multilevel style notation quickly becomes unwieldy, and don't wish to reproduce it.  It also tends to add confusion to a lot of applied researchers starting out with mixed models.
 
 [^vcmodel]: Actually, the simplest model would have no covariates at all, just <span class="emph">variance components</span>.  Such a model can be interesting to look at while exploring your data, but would probably never suffice to tell the story you desire to.
 

@@ -3,35 +3,41 @@
 
 ## Alternative approaches
 
-Alternative approaches used in clustered data situations include:
+I have a [document](https://m-clark.github.io/docs/clustered/) that goes into more detail about many approaches to dealing with clustered data, but we'll briefly talk about some here. Alternative approaches used in clustered data situations include:
 
-- Using cluster-robust standard errors
 - Fixed effects models (also panel linear models with fixed, as opposed to random, effects)
+- Using cluster-robust standard errors
 - Generalized estimating equations
 
-The first two are commonly used by those trained with an econometrics perspective, while you might see GEE more with those of a biostatistics perspective. 
+The first two are commonly used by those trained with an econometrics perspective, while you might see GEE more with those of a biostatistics perspective. GEE are in fact a generalization of the cluster-robust approach.  The nature of fixed effects models allow you to control for, but not investigate any cluster level effects.  This makes them a non-starter for many investigations, as those are typically of prime theoretical interest.  GEE approaches allow one to take into account the dependency in the data, but ignore what might be very interesting, i.e. the random effects and associated variance. There are also few tools for GEE in more complicated correlational structures beyond a single clustering variable.
 
 
 ### Growth curve models
+
+With longitudinal data, growth curve models are a latent variable approach that is commonly used in these situations. With appropriate setup, they will duplicate the results of a mixed model.  In my opinion, there are few reasons to use a growth curve approach over a mixed model, and many reasons not to, not least of which is that effects which would be simple to interpret in the mixed model approach are now a source of confusion to applied researchers in the growth curve model, even though it's the same thing.  Furthermore, indirect effects, growth mixture models and other extensions common in the latent variable approach are more easily implemented in the mixed model approach.  In short, only the most complicated models would perhaps require a growth curve model, but would also bring with it many other complications.  See more [here](https://m-clark.github.io/docs/sem/latent-growth-curves.html).
+
 
 
 ## Sample sizes
 
 ### Small number of clusters
 
-Hard to estimate variance with small nclus
+Think about how many values of some variable you'd need before you felt comfortable with statistics based on it, especially standard deviation/variance.  That's at play with mixed models, in the sense you'd like to have enough groups to adequately assess the variance components. Mixed models will run with very small numbers, though the estimates will generally be biased.  I have a demo [here](https://m-clark.github.io/docs/mixedModels/growth_vs_mixed_sim.html) if interested.
+
+One way to deal with this is to move to the Bayesian context, which will automatically induce some regularization  in parameter estimates.
 
 ### Small N within cluster
 
-Mixed models work even with no more than two and some singletons
+Mixed models work even with no more than two and some singletons. Even in the simple case of pre-post design, mixed models are entirely applicable, though limited (you can't have random slopes).  So whenever you have clustering of some kind, you should consider mixed models.
 
 
 ### Balanced/Missing values
 
+We've primarily been looking at <span class="emph">balanced</span> data, where each clusters have the same number of observations within them.  There is no requirement for this, and in many cases we wouldn't even expect it, e.g. people within geographical units.
+
+However, if data is only missing on the outcome, or a mix of variables, we essentially have the same issue as with typical data situations, and will have the same considerations for dealing with missingness.  If you don't lose much data, the practical gain by ignoring missingness generally outweighs the headache that can come with, for example, multiple imputation[^mi], even in the best of settings. On the other hand, longitudinal data has special considerations, as there is increasing dropout over time.
 
 
 
-## Crossed vs. Nested
 
-
-## GLMM and beyond
+[^mi]: Multiple imputation is straightforward only in theory.  In practice it becomes a major pain to go very far beyond getting the parameter estimates for simple models.  Full information maximum likelihood is little implemented outside of SEM software/packages.

@@ -1,4 +1,4 @@
-# Random Slopes
+# More Random Effects
 
 Previously we've looked at random intercepts, but any observation level covariate effect could be allowed to vary by cluster as well.
 
@@ -98,7 +98,7 @@ Here we can see that the mixed model intercepts are generally not as extreme, i.
 
 #### Sleep revisited
 
-Run the sleep study model with random coefficient for the Days effect. 
+Run the sleep study model with random coefficient for the Days effect, and interpret the results.
 
 ```{r sleepstudy2}
 library(lme4)

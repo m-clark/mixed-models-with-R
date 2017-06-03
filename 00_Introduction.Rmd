@@ -2,18 +2,29 @@
 
 ## Overview
 
-Mixed models are an extremely useful modeling tool for clustered data situations. It is quite common to have data in which we have repeated measurements for the units of observation, or in which the units of observation are otherwise clustered (e.g. students within school, cities within geographic region).   While there are different ways to approach such a situation, mixed models are far and away a common and powerful tool to do so.
+Mixed models are an extremely useful modeling tool for correlated data, where the correlation typically arises from the observations being clustered in some way. It is quite common to have data in which we have repeated measurements for the units of observation, or in which the units of observation are otherwise clustered (e.g. students within school, cities within geographic region).   While there are different ways to approach such a situation, mixed models are a very common and powerful tool to do so.
 
 ### Goals
 
 The goal of this workshop is primarily to provide a sense of when one would use mixed models and a variety of standard techniques.  Additionally, we'll have exercises to practice.  The document is very applied in nature, and only assumes a basic understanding of standard regression models.
 
 
+Note the following color coding used in this document:
+
+- <span class="emph">emphasis</span>
+- <span class="pack">package</span>
+- <span class="func">function</span>
+- <span class="objclass">object/class</span>
+- [link]()
+
+
+
+
 ## Terminology
 
 For the uninitiated, the terminology surrounding mixed models, especially across disciplines, can be a bit daunting.
 
-Some terms you might come across regarding mixed models:
+Some terms you might come across regarding these types of models:
 
 - Variance components
 - Random intercepts and slopes
@@ -26,7 +37,7 @@ Some terms you might come across regarding mixed models:
 - Growth curve models (possibly Latent GCM)
 - Mixed effects models
 
-All describe types of mixed models.  Some might be more historical, others are more often seen in a specific discipline, others might refer to a certain data structure (e.g. multilevel clustering), and still others are special cases. <span class='emph'>Mixed effects</span>, or simply mixed, models generally refer to a mixture of fixed and random effects.  I prefer the term mixed models because it is simple and no specific structure is implied[^mixmeth].  <span class='emph'>Fixed effects</span>, is perhaps a poor but nonetheless stubborn term for the typical main effects one would see in a linear regression model, i.e. the non-random part of a mixed model, and in some contexts they are referred to as the *population average* effect.
+All describe types of mixed models.  Some might be more historical, others are more often seen in a specific discipline, others might refer to a certain data structure (e.g. multilevel clustering), and still others are special cases. <span class='emph'>Mixed effects</span>, or simply mixed, models generally refer to a mixture of fixed and random effects.  I prefer the term mixed models because it is simple and no specific structure is implied.  <span class='emph'>Fixed effects</span>, is perhaps a poor but nonetheless stubborn term for the typical main effects one would see in a linear regression model, i.e. the non-random part of a mixed model, and in some contexts they are referred to as the *population average* effect.
 
 
 ### Kinds of clustering
