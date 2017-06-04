@@ -26,7 +26,7 @@ In such a case we have observations clustered within both person and image, but 
 
 #### Example: Student achievement
 
-For our own demonstration we'll look at achievment scores for students.  The sources of dependency are due to students having gone to the same primary or secondary schools.  However, in this example, going to a primary school doesn't necessarily mean you'll go to a specific secondary school.  Note also that there are no repeated measures, we see each student only one. Here's a quick look a the data.
+For our own demonstration we'll look at achievement scores for students.  The sources of dependency are due to students having gone to the same primary or secondary schools.  However, in this example, going to a primary school doesn't necessarily mean you'll go to a specific secondary school.  Note also that there are no repeated measures, we see each student only one. Here's a quick look a the data, and for more detail, check the [appendix][Data].
 
 
 ```{r pupil_nurses_setup, echo=FALSE, eval=FALSE}
@@ -47,6 +47,7 @@ nurses = read_sav('data/joop_hox_data2/2 Basic Model/nurses.sav') %>%
   as_factor() %>% 
   rename(experience = experien,
          treatment = expcon) %>% 
+  mutate(treatment = factor(treatment, labels=c('Ctrl', 'Training'))) %>% 
   mutate(age = as.numeric(as.character(age)))
 save(nurses, file='data/nurses.RData')
 ```
@@ -101,10 +102,11 @@ Note that we have the usual extensions here if desired.  As an example, we could
 
 ### Hierarchical Structure
 
-Now that we have looked at cross-classified models, we can examine hierarchical 
+Now that we have looked at cross-classified models, we can examine hierarchical cluster structuring.  In this situation we have clusters nested within other clusters, which may be nested within still other clusters.  A typical example might be cities, within counties, within states.
 
 #### Example: Nurses and Stress
 
+For our demonstration we'll use the nurses data set. Here we are interested in the effect of a training program (`treatment`) on stress levels (on a scale of 1-7) of nurses.  In this scenario, nurses are nested within wards, which themselves are nested within hospitals, so we will have random effects pertaining to ward (within hospital) and hospital. For more information see the [appendix][Data].
 
 ```{r nurses_data, echo=1}
 load('data/nurses.RData')
@@ -117,16 +119,29 @@ DT::datatable(nurses,
               rownames=F)
 ```
 
+<br>
+<br>
+
+For the model we examine effects of the treatment as well as several other covariates, at least one at each of the nurse, ward, and hospital levels. Again, when it comes to the fixed effects portion, you can simply think about that part as you would any standard regression, we just add covariates as theory/exploration would suggest.  To incoprate this type of random effects structure is not too different from the cross-classified approach, but does add a slight change.
 
 ```{r hierarchical, eval=1}
-nurses_hierarchical = lmer(stress ~ age  + gender + experience + treatment + wardtype + hospsize 
-                           + (1|hospital) + (1|hospital:ward), data = nurses)
+nurses_hierarchical = lmer(stress ~ age  + gender + experience 
+                           + treatment + wardtype + hospsize 
+                           + (1|hospital) + (1|hospital:wardid), data = nurses)
+nurses_hierarchical = lmer(stress ~ age  + gender + experience 
+                           + treatment + wardtype + hospsize 
+                           + (1|hospital/wardid), data = nurses) # same thing!
 summary(nurses_hierarchical, correlation=F)
 ```
 
 ```{r hierarchical_fixed, echo=FALSE}
-pander(tidy(nurses_hierarchical, 'fixed', conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=2))
+tidy(nurses_hierarchical, 'fixed', conf.int=T) %>% 
+         mutate_if(is.numeric, arm::fround, digits=2) %>% 
+  pander(justify='lrrrrr')
 ```
+
+As far as the fixed effects go, about the only thing that doesn't have a statistical effect is ward type.
+
 
 ```{r hierarchical_random, echo=FALSE}
 # note tidy doesn't work with multiple random effects and conf.int
@@ -136,9 +151,55 @@ hierarch_var_cor = tidy(VarCorr(nurses_hierarchical)) %>%
 hierarch_var_cor %>%  
   mutate_if(is.numeric, arm::fround, digits=3) %>% 
   mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
-  pander()
-
+  pander(justify='lcrr')
 ```
+
+
+### Crossed vs. Nested
+
+The following shows the difference in the results from treating ward as nested vs. crossed. Notice anything different?
+
+```{r crossed_vs_nested, echo=1:2}
+nurses_hierarchical = lmer(stress ~ age  + gender + experience 
+                           + treatment + wardtype + hospsize 
+                           + (1|hospital) + (1|hospital:wardid), data = nurses)
+nurses_crossed = lmer(stress ~ age  + gender + experience 
+                           + treatment + wardtype + hospsize 
+                           + (1|hospital) + (1|wardid), data = nurses)
+hierarch_var_cor %>%  
+  mutate_if(is.numeric, arm::fround, digits=3) %>% 
+  mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
+  pander(justify='lcrr')
+
+crossed_var_cor = tidy(VarCorr(nurses_crossed)) %>% 
+  select(-var2) %>%
+  rename(variance=vcov, sd=sdcor)
+crossed_var_cor %>%  
+  mutate_if(is.numeric, arm::fround, digits=3) %>% 
+  mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
+  pander(justify='lcrr')
+```
+
+
+No? Good, you're not crazy.  Here's a quote from the [lme4 text](http://lme4.r-forge.r-project.org/book/Ch2.pdf), section 2.2.1.1, which is definitely worth your time.
+
+> The blurring of mixed-effects models with the concept of multiple,
+hierarchical levels of variation results in an unwarranted emphasis on 'levels'
+when defining a model and leads to considerable confusion. It is perfectly
+legitimate to define models having random effects associated with non-nested
+factors. The reasons for the emphasis on defining random effects with respect to
+nested factors only are that such cases do occur frequently in practice and that
+some of the computational methods for estimating the parameters in the models
+can only be easily applied to nested factors. 
+>
+This is not the case for the methods used in the lme4 package. Indeed there is
+nothing special done for models with random effects for nested factors. When
+random effects are associated with multiple factors exactly the same
+computational methods are used whether the factors form a nested sequence or are
+partially crossed or are completely crossed.
+
+So there you have it.  When it comes to <span class="pack">lme4</span>, crossed vs. nested is simply a state of mind.
+
 
 ## Correlational Structure
 
@@ -164,7 +225,7 @@ cbind(rownames(vc), vc[,1:2]) %>%
   pander
 ```
 
-Notice first that the fixed effect for occasion is the same as [before][Mixed model]. The variance estimates have changed slightly along with the variances of the fixed effects (i.e. the standard errors). The main thing is that we have a new paramter `Phi`, that represents our AR correlation, with value of `r round(coef(corr_res$model$corStruct, unconstrained = F), 3)`. This suggests at least some correlation exists among the residuals for observations next to each other in time, though it diminishes quickly as observations grow further apart.
+Notice first that the fixed effect for occasion is the same as [before][Mixed model]. The variance estimates have changed slightly along with the variances of the fixed effects (i.e. the standard errors). The main thing is that we have a new parameter `Phi`, that represents our autocorrelation, with value of `r round(coef(corr_res$model$corStruct, unconstrained = F), 3)`. This suggests at least some correlation exists among the residuals for observations next to each other in time, though it diminishes quickly as observations grow further apart.
 
 
 ## Generalized Linear Mixed Models

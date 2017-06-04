@@ -28,7 +28,7 @@ R has more mixed modeling capabilities than anything else out there.  However th
 
 
 - Python: the [statsmodels](http://www.statsmodels.org/stable/mixed_linear.html) module has basic capabilities for mixed models but not too many frills (e.g. no crossed random effects).
-- Julia: one of the lme4 developers develops a [MixedModels](https://github.com/dmbates/MixedModels.jl) package for Julia
+- Julia: one of the <span class="pack">lme4</span> authors develops a [MixedModels](https://github.com/dmbates/MixedModels.jl) package for Julia
 
 ### Proprietary
 

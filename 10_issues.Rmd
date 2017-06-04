@@ -28,7 +28,7 @@ One way to deal with this is to move to the Bayesian context, which will automat
 
 ### Small N within cluster
 
-Mixed models work even with no more than two and some singletons. Even in the simple case of pre-post design, mixed models are entirely applicable, though limited (you can't have random slopes).  So whenever you have clustering of some kind, you should consider mixed models.
+Mixed models work even with no more than two in each cluster and some singletons. Even in the simple case of pre-post design, mixed models are entirely applicable, though limited (you can't have random slopes).  So whenever you have clustering of some kind, you should consider mixed models.
 
 
 ### Balanced/Missing values

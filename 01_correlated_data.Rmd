@@ -9,7 +9,7 @@ For the following we'll demonstrate the simplest[^vcmodel] and most common case 
 
 ## Example: student GPA
 
-For the following we'll assess factors predicting college grade point average (GPA).  Each of the 200 students is assessed for six occasions (each semester for the first three years), so we have observations nested within students. We have other variables such as job status, sex, and high school gpa.  Some will be in both labeled and numeric form. See the [appendix][Appendix] for details.
+For the following we'll assess factors predicting college grade point average (GPA).  Each of the 200 students is assessed for six occasions (each semester for the first three years), so we have observations nested within students. We have other variables such as job status, sex, and high school GPA.  Some will be in both labeled and numeric form. See the [appendix][Appendix] for details.
 
 ```{r gpa_setup, echo=FALSE, eval=FALSE}
 # MC Note: either the job label is incorrect or this variable makes no sense. 
@@ -78,7 +78,7 @@ Thus the student effects are random, and specifically are normally distributed w
 
 ##### As a multi-level model
 
-This next depcition is commonly seen in the multilevel modeling literature.  It is shown as a two part model, one at the observation level and one at the student level.  
+This next depiction is commonly seen in the multilevel modeling literature.  It is shown as a two part model, one at the observation level and one at the student level.  
 
 $$\mathrm{gpa} = b_{\mathrm{int\_student}} + b_{\mathrm{occ}}\cdot \mathrm{occasion} + \epsilon$$
 
@@ -113,7 +113,7 @@ gpa %>%
 
 <br>
 
-All student paths are shown in blue, with a sample of 10 shown in orange. The overall trend as estimated by the regression we'll do later is shown in red. Two things stand out.  One is that students have a lot of variability in starting out. Secondly, while the general trend in gpa is upward over time as we'd expect, individual students may vary in that trajectory.
+All student paths are shown in blue, with a sample of 10 shown in orange. The overall trend as estimated by the regression we'll do later is shown in red. Two things stand out.  One is that students have a lot of variability in starting out. Secondly, while the general trend in GPA is upward over time as we'd expect, individual students may vary in that trajectory.
 
 #### Standard regression
 
@@ -136,7 +136,7 @@ The above tells us that as we move from semester to semester, we can expect GPA 
 
 #### Regression by cluster
 
-An alternative approach would be to run separate regressions for every student.  However, there are many drawbacks to this- it's not easily summarized when there are many groups, typically there would be very little data within each cluster to do so, and the models are overcontextualized, meaning they ignore what students have in common.  We'll compare this result to the mixed model later.
+An alternative approach would be to run separate regressions for every student.  However, there are many drawbacks to this- it's not easily summarized when there are many groups, typically there would be very little data within each cluster to do so, and the models are over-contextualized, meaning they ignore what students have in common.  We'll compare this result to the mixed model later.
 
 #### Mixed model
 
@@ -160,7 +160,7 @@ tidy(VarCorr(gpa_mixed)) %>%
 ```
 
 
-First we see that the coefficients for the intercept and time are the same[^lmlmercoef], as would be their interpretation.  The standard errors, on the other hand are different here, though in the end our conclusion as far as stistical significance goes would be the same. However, the <span class="pack">lme4</span> does not provide p-values.  There is a reason for this, namely that with mixed models we are essentialy dealing with two sample sizes, the N cluster and N observations, the effective degrees of freedom lies somewhere in between. Other programs provide p-values as if there is no issue, and without telling you *which* approach they use to calculate them (there are several).  However, it's easy enough to get confidence intervals with <span class="pack">lme4</span> as follows.
+First we see that the coefficients for the intercept and time are the same[^lmlmercoef], as would be their interpretation.  The standard errors, on the other hand are different here, though in the end our conclusion as far as statistical significance goes would be the same. However, the <span class="pack">lme4</span> does not provide p-values.  There is a reason for this, namely that with mixed models we are essentially dealing with two sample sizes, the N cluster and N observations, the effective degrees of freedom lies somewhere in between. Other programs provide p-values as if there is no issue, and without telling you *which* approach they use to calculate them (there are several).  However, it's easy enough to get confidence intervals with <span class="pack">lme4</span> as follows.
 
 ```{r gpa_mixed_ci, eval=FALSE}
 confint(gpa_mixed)
@@ -183,7 +183,7 @@ confint(gpa_mixed) %>%
 ```
 
 
-One thing that's new compared to the standard regression output is the estimated variance/standard deviation of the student effect ($\tau$ in our formula depiction from before).  This tells us how much, on average, gpa bounces around as we move from student to student. In other words, even after making a prediction based on time point, each student has their own unique deviation, and that value is the estimated average deviation.  Note that scores move due to the student more than double what they move based on a semester change.
+One thing that's new compared to the standard regression output is the estimated variance/standard deviation of the student effect ($\tau$ in our formula depiction from before).  This tells us how much, on average, GPA bounces around as we move from student to student. In other words, even after making a prediction based on time point, each student has their own unique deviation, and that value is the estimated average deviation.  Note that scores move due to the student more than double what they move based on a semester change.
 
 What's more, we can actually get estimates of the student effects.  I show two ways for the first five students, as random effect and as random intercept (i.e. effect + intercept).
 
@@ -235,7 +235,7 @@ Mixed models allow for us to take into account clustering in the data.  If this 
 
 ### Sleep
 
-For this exercise, we'll use the sleep study data from the <span class="pack">lme4</span> package.  The followin describes it.
+For this exercise, we'll use the sleep study data from the <span class="pack">lme4</span> package.  The following describes it.
 
 > The average reaction time per day for subjects in a sleep deprivation study. On day 0 the subjects had their normal amount of sleep. Starting that night they were restricted to 3 hours of sleep per night. The observations represent the average reaction time (in milliseconds) on a series of tests given each day to each subject.
 
@@ -251,7 +251,7 @@ Run a mixed model with Days as a covariate and a random intercept for Subject.
 
 ### Cluster level covariate
 
-Rerun the mixed model with the GPA data adding the cluster level covariate of `sex`, or high school gpa (`highgpa`), or both.  Interpret all aspects of the results.
+Rerun the mixed model with the GPA data adding the cluster level covariate of `sex`, or high school GPA (`highgpa`), or both.  Interpret all aspects of the results.
 
 ```{r gpa_cluster, echo=F, eval=FALSE}
 gpa_mixed_cluster_level = lmer(gpa ~ occasion + sex + highgpa + (1|student), gpa)
@@ -270,4 +270,4 @@ What happened to the cluster level variance after adding cluster level covariate
 
 [^lmlmercoef]: This will not always be the case, e.g. with unbalanced data, but they should be fairly close.
 
-[^mlevel]: This is why the multilevel depiction is subpar, and leads many to confusion at times.  You have a target variable and predictor variables based on theory.  Whether they are cluster level variables or if there are interactions doesn't have anything to do with the data structure.  However, if you depict the model in multilevel fashion, the final model must adhere to the 'plugged in' result.
+[^mlevel]: This is why the multilevel depiction is subpar, and leads many to confusion at times.  You have a target variable and predictor variables based on theory.  Whether they are cluster level variables or if there are interactions doesn't have anything to do with the data structure as much as it does the theoretical implications.  However, if you depict the model in multilevel fashion, the final model must adhere to the 'plugged in' result.  So if, e.g. you posit a cluster level variable for a random slope, you *must* include the implied interaction of the cluster level and observation level covariates.
