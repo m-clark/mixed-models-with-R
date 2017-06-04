@@ -1,0 +1,17 @@
+#HLM2 MDM CREATION TEMPLATE
+vknown:n
+growthmodel:y
+rawdattype:spss
+l1fname:D:\MLMbook\New or Corrected Data\12 Issues\estrlong.sav
+l2fname:D:\MLMbook\New or Corrected Data\12 Issues\estrone.sav
+l1missing:n
+timeofdeletion:now
+mdmname:estrone.mdm
+*begin l1vars
+level2id:SUBJECT
+LOG_ESTR    
+*end l1vars
+*begin l2vars
+level2id:SUBJECT
+ LOGMEAN    
+*end l2vars

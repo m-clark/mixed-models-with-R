@@ -30,7 +30,7 @@ For our own demonstration we'll look at achievement scores for students.  The so
 
 
 ```{r pupil_nurses_setup, echo=FALSE, eval=FALSE}
-pupils = read_sav('data/joop_hox_data2/9 CrossClass/pupcross.sav') %>% 
+pupils = read_sav('data/raw_data/joop_hox_data2/9 CrossClass/pupcross.sav') %>% 
   as_factor() %>% 
   mutate(ACHIEV = as.numeric(as.character(ACHIEV)),
          PUPSEX = factor(PUPSEX, labels=c('male', 'female')) ) %>% 
@@ -43,7 +43,7 @@ pupils = read_sav('data/joop_hox_data2/9 CrossClass/pupcross.sav') %>%
          secondary_denominational=SDENOM)  
 save(pupils, file='data/pupils.RData')
 
-nurses = read_sav('data/joop_hox_data2/2 Basic Model/nurses.sav') %>% 
+nurses = read_sav('data/raw_data/joop_hox_data2/2 Basic Model/nurses.sav') %>% 
   as_factor() %>% 
   rename(experience = experien,
          treatment = expcon) %>% 
@@ -289,11 +289,108 @@ Notice first that the fixed effect for occasion is the same as [before][Mixed mo
 
 ## Generalized Linear Mixed Models
 
+Just as generlized linear models extend the standard linear model, we can generalize (linear) mixed models to <span class="emph">generalized linear mixed models</span>.  Furthermore, there is nothing keeping us to only exponential family, as other packages would potentially allow for many other reponse distributions.
 
+For this example we'll do a 
+
+```{r speed_dating, echo=FALSE, eval=FALSE}
+speed_dating0 = readr::read_csv('data/raw_data/ARM_Data/Speed Dating Data.csv')
+speed_dating = speed_dating0 %>% 
+  select(1:17, attr, sinc, intel, fun, amb, shar, dec) %>% 
+  rename(id_win_wave=id,
+         sex = gender,
+         partner_id=pid,
+         n_met_in_wave=round,
+         partner_age = age_o,
+         partner_race = race_o,
+         attractive = attr, 
+         sincere = sinc, 
+         intelligent = intel, 
+         fun = fun, 
+         ambitious = amb, 
+         shared_interests = shar,
+         decision=dec) %>% 
+  mutate(decision = factor(decision, labels=c('No', 'Yes')),
+         sex = factor(sex, labels=c('Female', 'Male')),
+         samerace = factor(samerace, labels=c('No', 'Yes')),
+         attractive_sc=scale(attractive)[,1],
+         sincere_sc=scale(sincere)[,1],
+         intelligent_sc=scale(intelligent)[,1],
+         fun_sc=scale(fun)[,1],
+         ambitious_sc=scale(ambitious)[,1],
+         shared_interests_sc=scale(shared_interests)[,1]) %>% 
+  group_by(iid) %>% 
+  mutate(never_always = if_else(all(decision=='Yes') | all(decision=='No'), 1, 0)) %>% 
+  ungroup() %>% 
+  filter(never_always == 0) %>%  # as in Fahrmeier
+  select(-never_always)
+# describeAll(speed_dating)
+save(speed_dating, file='data/speed_dating.RData')
+```
+
+```{r glmm_init, eval=FALSE, echo=FALSE}
+# pretty much dupes fahrmeier although their table has a typo, and their would be 500, not 390 individuals after getting rid of constant
+# sd_model = glmer(decision ~ sex*attractive_sc + sex*shared_interests_sc
+#                  + (1|iid), data=speed_dating, family=binomial)   
+load('data/speed_dating.RData')
+sd_model = glmer(decision ~ sex + samerace + attractive_sc + sincere_sc
+                 + intelligent_sc 
+                 + (1|iid), data=speed_dating, family=binomial)
+summary(sd_model, correlation=F)
+glmm_var_cor = tidy(VarCorr(sd_model)) %>%   # because for some reason knitr can't find an object it just used in the previous chunk.
+  select(-var2) %>% 
+  rename(variance=vcov, sd=sdcor) %>%  
+  mutate_if(is.numeric, arm::fround, digits=2) #%>% 
+  # mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
+  # pander()
+save(sd_model, glmm_var_cor, file='data/speed_dating_model.RData')
+```
+
+```{r glmm_speed_dating, eval=FALSE}
+load('data/speed_dating.RData')
+sd_model = glmer(decision ~ sex + samerace + attractive_sc + sincere_sc
+                 + intelligent_sc 
+                 + (1|iid), data=speed_dating, family=binomial)
+summary(sd_model, correlation=F)
+```
+
+
+```{r glmm_fixed, echo=FALSE}
+load('data/speed_dating_model.RData')
+pander(tidy(sd_model, 'fixed', conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=2))
+
+```
+
+The fixed effects results are as expected for the attributes, with attractiveness being a very strong effect in particular.  In addition, having a partner of the same race had a positive effect while sex of the particpant was statistically negligble.
+
+```{r glmm_random, echo=FALSE, eval=TRUE}
+pander(glmm_var_cor)
+```
+
+
+For the variance components, notice that there is no residual variance. This is because we are not modeling with the normal distribution for the response, thus there is no $\sigma$ to estimate.  However, the result suggests that there is quite a bit of variability from person to person.
 
 
 ## Exercises
 
-[^lmerho]: While I'm extremely grateful to the work put forth by those involved with lme4, making it probably the best mixed model package out there, this feature request has been made by its users for over a decade.  
+
+### Patents
+
+Do a poisson mixed effect model using the [patent data][Data].  Predict the number of citations (`ncit`) based on whether there was opposition (`opposition`) and if it was for the biotechnology/pharmacuetical industry (`biopharm`). Use year as a random effect to account for unspecified economic conditions.  
+
+```{r patent_setup, echo=FALSE, eval=FALSE}
+patents0 = read_tsv('data/raw_data/patent.raw')
+patents = patents0 %>% 
+  rename(opposition = opp) 
+save(patents, file='data/patents.RData')
+glmer(ncit ~ opposition +  biopharm + (1|year), data=patents, family='poisson')
+```
+
+Interestingly, one can model overdispersion in a Poisson model by specifying an random intercept for each observation (`subject` in the data).  In other words, no clustering or grouped structure is necessary.
+
+
+
+[^lmerho]: While I'm extremely grateful to the work put forth by those involved with <span class="pack">lme4</span>, making it probably the best mixed model package out there, this feature request has been made by its users for over a decade.
 
 [^crossed_notation]: I don't show the formal model here as we did before, but this is why depicting mixed models solely as 'multilevel' becomes a bit problematic in my opinion. In the standard mixed model notation it's straightforward though, you just add an addition random effect term, just as we do in the actual model syntax.
+

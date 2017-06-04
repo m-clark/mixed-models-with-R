@@ -18,7 +18,7 @@ For the following we'll assess factors predicting college grade point average (G
 # hell do you 'simulate' a factor that only has 3 of 5 levels and one category
 # that makes up 97% of the data? Avoid or change.
 
-gpa = read_spss('data/joop_hox_data2/5 Longitudinal/gpa2long.sav') %>% 
+gpa = read_spss('data/raw_data/joop_hox_data2/5 Longitudinal/gpa2long.sav') %>% 
   mutate(highgpa=as.numeric(highgpa),
          occasion = as.numeric(occas) %>%  # to get rid of stupid labels
   as_factor
@@ -51,6 +51,11 @@ $$\mathscr{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathscr{occasi
 We have coefficients for the intercept and the effect of time.  The error $\epsilon$ is assumed to be normally distributed with mean 0 and some standard deviation $\sigma$.
 
 $$\epsilon \sim \mathscr{N}(0, \sigma)$$
+
+An alternate way to write the model which puts emphasis on the underlying data generating process for $y$ is
+
+$$\mathscr{gpa} \sim \mathscr{N}(\mu, \sigma)$$
+$$\mu = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathscr{occasion}$$
 
 ## The mixed model
 

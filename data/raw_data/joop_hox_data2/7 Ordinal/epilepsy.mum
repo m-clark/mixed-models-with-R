@@ -1,0 +1,93 @@
+[Main]
+Type=Mixed Up Model Settings
+DataFile=D:\MLMbook\New or Corrected Data\7 Ordinal Data\Epilepsy.ss3
+Version=0.3
+ModelType=count
+Region=American
+[Configuration]
+Level2ID=1
+Level3ID=-1
+DepVarType=3
+DepVar=2
+DepVarCatNum=0
+DepVarCats=
+WriteBayes=0
+ConvCritera=0.0001
+EMiterations=100
+RepVarTerms=1
+AutoCor=0
+ErrorForm=0
+AutoTerms=0
+UnitWeight=0
+WeightCol1=-1
+WeightCol2=-1
+WeightCol3=-1
+FuncModel=0
+OptMeth=1
+NumQuad=20
+Quadrature=0
+Prior=0
+[Variables]
+FixedNum=3
+FixedInt=1
+Fixed=3, 6
+Random2Num=1
+Rand2Int=1
+Random2=
+Random3Num=1
+Rand3Int=1
+Random3=
+GenerateMeans=0
+MeansCol=-1
+TimeCol=-1
+GenerateCrossTab=0
+CrossTabCol=-1
+[StartingValues]
+Starting=0
+ErrorVariance=1
+StartFixed=0, 0, 0
+StartCov2=1
+StartCov3=, 
+Thresholds=-2
+StartAuto=, , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , 
+StartThresh=, , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , , 
+[MissingValues]
+Missing=0
+[Patterns]
+ExpVar=0
+Random2=0
+Random3=0
+FixPat=, 
+Cov2Pat=, 
+Cov3Pat=, 
+[Advanced]
+ExpVarIncInt=0
+ExpVarInter=0
+RightCensor=0
+CensorCol=-1
+ModelTerms=0
+TimeOffset=0
+OffsetCol=-1
+DistModelCont=0
+EstScaleCont=0
+RandomThresh2=0
+RandomThresh3=0
+RefCat=0
+DistModelCount=0
+EstScaleCount=0
+Dispersion=1.0
+DistModelBinary=0
+EstScaleBinary=0
+NumTrials=-1
+[Transforms]
+Number=0
+NumExpVar=1
+ExpVar=1, 1, 1, 3, 
+NumRandom2=1
+Random2=1, 1, 1, 3, 
+NumRandom3=1
+Random3=1, 1, 1, 3, 
+NumThresholds=1
+Thresholds=1, 1, 1, 3, 
+NumInteractions=1
+Interactions=1, 1, 1, 3, 
