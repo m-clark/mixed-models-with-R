@@ -62,3 +62,5 @@ An excellent modeling book can be found in [Data Analysis Using Regression and M
 On the applied side, CSCAR's own Brady West has a book- [Linear Mixed Models: A Practical Guide Using Statistical Software ](http://www-personal.umich.edu/~bwest/almmussp.html). It shows examples in a variety of programming formats while still not glossing the details you need to know.
 
 For intermediate to advanced treatment I find Fahrmeier et al. [Regression - Models, Methods and Applications](http://www.springer.com/us/book/9783642343322) to be very good.  It will also tie mixed models to spatial and nonparametric approaches.
+
+There is literally [a book on mixed models with lme4](http://lme4.r-forge.r-project.org/lMMwR/lrgprt.pdf) by Douglas Bates, one of the developers. While dated with regard to <span class="pack">lme4</span>, it's definitely not in general and worth having around.

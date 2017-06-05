@@ -35,9 +35,15 @@ Mixed models work even with no more than two in each cluster and some singletons
 
 We've primarily been looking at <span class="emph">balanced</span> data, where each clusters have the same number of observations within them.  There is no requirement for this, and in many cases we wouldn't even expect it, e.g. people within geographical units.
 
-However, if data is only missing on the outcome, or a mix of variables, we essentially have the same issue as with typical data situations, and will have the same considerations for dealing with missingness.  If you don't lose much data, the practical gain by ignoring missingness generally outweighs the headache that can come with, for example, multiple imputation[^mi], even in the best of settings. On the other hand, longitudinal data has special considerations, as there is increasing dropout over time.
+However, if data is only missing on the outcome, or a mix of variables, we essentially have the same issue as with typical data situations, and will have the same considerations for dealing with missingness.  If you don't lose much data, the practical gain by ignoring missingness generally outweighs the complexities that can come with, for example, multiple imputation[^mi], even in the best of settings. By default, mixed models assume missing at random.  On the other hand, longitudinal data has special considerations, as there is increasing dropout over time.
 
 
 ## Model Comparison
 
+Model comparison takes place in the usual way in the sense of potentially having statistical tests and information criteria.  Unfortunately, the typical likelihood ratio tests one might use in standard settings are not so straightforward here. For example, at a minimum you'd have to change the default estimation from REML to ML, and the models must have the same random effects structure, in order to compare models with different fixed effects for the resulting test p-value to be correct.  It works the other way to compare models with different random effects structure.
+
+In my opinion, model selection involves considerations of theory, parsimony, and prediction, and those tests do not. I'm not partial to such tests even in the standard setting, and would use AIC here to potentially aid (not make) a model choice if I thought it was necessary, as I would there[^lrtest]. In general though, trying to determine a 'best' model with one set of data is a problematic endeavor at best, and at worst, completely misguided.
+
 [^mi]: Multiple imputation is straightforward only in theory.  In practice it becomes a major pain to go very far beyond getting the parameter estimates for simple models.  Full information maximum likelihood is little implemented outside of SEM software/packages.
+
+[^lrtest]: If you really want them see the <span class="pack">lmertest</span> package.  Note also that AIC does not come with a free lunch.  See the <span class="pack">cAIC4</span> package and references therein.

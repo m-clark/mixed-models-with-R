@@ -271,7 +271,7 @@ What happened to the cluster level variance after adding cluster level covariate
 
 [^notation]: Note that I leave out the observation level subscript to keep things clean. I find that multilevel style notation quickly becomes unwieldy, and don't wish to reproduce it.  It also tends to add confusion to a lot of applied researchers starting out with mixed models.
 
-[^vcmodel]: Actually, the simplest model would have no covariates at all, just <span class="emph">variance components</span>.  Such a model can be interesting to look at while exploring your data, but would probably never suffice to tell the story you desire to.
+[^vcmodel]: Actually, the simplest model would have no covariates at all, just <span class="emph">variance components</span>, with no correlations among the random effects.  Such a model can be interesting to look at while exploring your data, but would probably never suffice on its own to tell the story you desire to.
 
 [^lmlmercoef]: This will not always be the case, e.g. with unbalanced data, but they should be fairly close.
 

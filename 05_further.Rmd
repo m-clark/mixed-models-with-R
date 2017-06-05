@@ -1,12 +1,25 @@
 # Going Further
 
-## Response distributions
+This section covers topics that are generally beyond the scope of what would be covered in the workshop, but will be added to over time.
+
+## Other distributions
+
+As noted in the GLMM section, we are not held to use only GLM family distributions regarding the target variable.  However the tools you have available to do so will quickly diminish.  However, a couple packages could help in this regard with simpler random effects structures.  For example, the <span class="pack">mgcv</span> package allows one access to a variety of response distributions, such as $t$, negative binomial, beta, zero-inflated poisson and more.  If you only have random intercepts you might try it.  If you're willing to go Bayesian, you'll have even more options with <span class="pack">rstanarm</span> and <span class="pack">brms</span>.  I've personally had success with ordinal, beta, truncated normal and more with <span class="pack">brms</span> in particular.
 
 
+Note also that nothing says that the random effects must come from a normal distribution either.  You probably are going to need some notably strong theoretical reasons for trying something else though.  However, it does come up for some folks.  You'll almost certainly need to use a specialized approach, as most mixed model tools do not offer such functionality.
 
 ## Other contexts
 
-Spatial, Frailty models, IRT, GP, Bayesian, multi-membership/adjacency structures (see brms vignette), phylogenetic
+- Spatial
+- Frailty models
+- IRT: See Boeck et al. (2011) The Estimation of Item Response Models with the lmer Function from the lme4 Package in R. http://m-clark.github.io/docs/sem/item-response-theory.html
+- GP
+- Bayesian
+- multi-membership/adjacency structures (see brms vignette)
+- phylogenetic
+- surveys-mrp-post hoc
+- growth mixture models
 
 
 ## Nonlinear Mixed Effects

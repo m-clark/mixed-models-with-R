@@ -217,7 +217,7 @@ $$\mu = b_0 + b_1\cdot \mathrm{time} + b_2\cdot x_1 ...$$
 
 However, instead of just plopping an $\epsilon$ at the end, we want to go further in defining the entire residual variance/covariance structure for all three time points.
 
-Before, we were implicitly modeling it as this. We have constant variance and no covariance.
+In the simplest setting we have constant variance and no covariance.
 
 $$\Sigma = 
 \left[
@@ -228,15 +228,17 @@ $$\Sigma =
 \end{array}\right]$$
 
 
-Now we actually want to get at the underlying correlation.  So something like this, where $\rho$ represents the residual correlation.
+Now we actually want to get at the underlying correlation.  So now we have something like this, where $\rho$ represents the residual correlation.
 
 $$\Sigma = 
 \left[
 \begin{array}{ccc} 
-\sigma^2 & \rho_1   & \rho_2   \\
-\rho_1   & \sigma^2 & \rho_3   \\
-\rho_2   & \rho_3   & \sigma^2 \\
+1 & \rho_1   & \rho_2   \\
+\rho_1   & 1 & \rho_3   \\
+\rho_2   & \rho_3   & 1 \\
 \end{array}\right]$$
+
+
 
 In this case we'd estimate a different correlation for all time point pairs.  This is typically described as an <span class="">unstructured</span> or simply symmetric correlation structure. If you are familiar with repeated measures ANOVA, which is a [special case of a mixed model](https://m-clark.github.io/docs/mixedModels/anovamixed.html), you may recall that the usual assumption is a <span class="emph">sphericity</span>, a relaxed form of <span class="emph">compound symmetry</span>, where all the correlations have the same value, i.e. $\rho_1=\rho_2=\rho_3$, and all variances are equal.
 
@@ -245,10 +247,10 @@ Another very commonly used correlation structure is an <span class="emph">autoco
 $$\Sigma = 
 \left[
 \begin{array}{cccc} 
-\sigma^2 & \rho     & \rho^2   & \rho^3   \\
-\rho     & \sigma^2 & \rho     & \rho^2   \\
-\rho^2   & \rho     & \sigma^2 & \rho     \\
-\rho^3   & \rho^2   & \rho     & \sigma^2 \\
+1 & \rho     & \rho^2   & \rho^3   \\
+\rho     & 1 & \rho     & \rho^2   \\
+\rho^2   & \rho     & 1 & \rho     \\
+\rho^3   & \rho^2   & \rho     & 1 \\
 \end{array}\right]$$
 
 
@@ -257,10 +259,10 @@ If $\rho$ was estimated to be .5, it would look like the following.
 $$\Sigma = 
 \left[
 \begin{array}{cccc} 
-\sigma^2 & .5       & .25      & .06   \\
-.5       & \sigma^2 & .5       & .25  \\
-.25      & .5       & \sigma^2 & .5    \\
-.06      & .25      &  .5      & \sigma^2 \\
+1 & .5       & .25      & .06   \\
+.5       & 1 & .5       & .25  \\
+.25      & .5       & 1 & .5    \\
+.06      & .25      &  .5      & 1 \\
 \end{array}\right]$$
 
 Again, the main point is that points further apart in time are assumed to have less correlation. 
