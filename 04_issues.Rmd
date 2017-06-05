@@ -38,6 +38,6 @@ We've primarily been looking at <span class="emph">balanced</span> data, where e
 However, if data is only missing on the outcome, or a mix of variables, we essentially have the same issue as with typical data situations, and will have the same considerations for dealing with missingness.  If you don't lose much data, the practical gain by ignoring missingness generally outweighs the headache that can come with, for example, multiple imputation[^mi], even in the best of settings. On the other hand, longitudinal data has special considerations, as there is increasing dropout over time.
 
 
-
+## Model Comparison
 
 [^mi]: Multiple imputation is straightforward only in theory.  In practice it becomes a major pain to go very far beyond getting the parameter estimates for simple models.  Full information maximum likelihood is little implemented outside of SEM software/packages.

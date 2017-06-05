@@ -1,0 +1,15 @@
+# Going Further
+
+## Response distributions
+
+
+
+## Other contexts
+
+Spatial, Frailty models, IRT, GP, Bayesian, multi-membership/adjacency structures (see brms vignette), phylogenetic
+
+
+## Nonlinear Mixed Effects
+
+
+## Connections

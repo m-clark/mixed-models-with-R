@@ -46,9 +46,12 @@ save(pupils, file='data/pupils.RData')
 nurses = read_sav('data/raw_data/joop_hox_data2/2 Basic Model/nurses.sav') %>% 
   as_factor() %>% 
   rename(experience = experien,
-         treatment = expcon) %>% 
-  mutate(treatment = factor(treatment, labels=c('Ctrl', 'Training'))) %>% 
-  mutate(age = as.numeric(as.character(age)))
+         treatment = expcon,
+         sex = gender) %>% 
+  mutate(treatment = factor(treatment, labels=c('Ctrl', 'Training')),
+         age = as.numeric(as.character(age)),
+         sex = factor(sex, labels=c('Male', 'Female'))) %>% 
+  select(-starts_with('Z'), -starts_with('C'))
 save(nurses, file='data/nurses.RData')
 ```
 
@@ -66,7 +69,7 @@ DT::datatable(pupils,
 <br>
 <br>
 
-For our mixed model we'll look at the effects for `sex` and socioeconomic status, `ses`, a six level variable from low to high on scholastic achievement.  The range of achievement scores is roughly `r round(min(pupils$achievement))` to `r round(max(pupils$achievement))`, with mean of `r round(mean(pupils$achievement), 1)` and standard deviation `r round(sd(pupils$achievement), 1)`.  We'll take into account the clustering at primary school and secondary school.  To incorporate the additional structure in <span class="pack">lme4</span> syntax is very easy, we just do as we did before[^crossed_notation].
+For our mixed model we'll look at the effects for `sex` and socioeconomic status, `ses`, a six level variable from low to high, on scholastic achievement.  The range of achievement scores is roughly `r round(min(pupils$achievement))` to `r round(max(pupils$achievement))`, with mean of `r round(mean(pupils$achievement), 1)` and standard deviation `r round(sd(pupils$achievement), 1)`.  We'll take into account the clustering at primary school and secondary school.  To incorporate the additional structure in <span class="pack">lme4</span> syntax is very easy, we just do as we did before for both grouping factors[^crossed_notation].
 
 ```{r cross_classified, eval=1}
 pupils_crossed = lmer(achievement ~ sex + ses 
@@ -94,7 +97,7 @@ crossed_var_cor %>%
 
 ```
 
-When we look at the variance components we see that primary and secondary school does contribute about `r round(sum(crossed_var_cor$variance[1:2])/sum(crossed_var_cor$variance)*100)`% of the total variance.  Most of the variance attributable to school comes from the primary school.
+When we look at the variance components we see that primary and secondary school contributes about `r round(sum(crossed_var_cor$variance[1:2])/sum(crossed_var_cor$variance)*100)`% of the total variance.  Most of the variance attributable to school comes from the primary school.
 
 Note that we have the usual extensions here if desired.  As an example, we could also do random slopes for student level characteristics.
 
@@ -102,7 +105,7 @@ Note that we have the usual extensions here if desired.  As an example, we could
 
 ### Hierarchical Structure
 
-Now that we have looked at cross-classified models, we can examine hierarchical cluster structuring.  In this situation we have clusters nested within other clusters, which may be nested within still other clusters.  A typical example might be cities, within counties, within states.
+Now that we have looked at cross-classified models, we can examine hierarchical cluster structuring.  In this situation we have clusters nested within other clusters, which may be nested within still other clusters.  A typical example might be cities within counties, and counties within states.
 
 #### Example: Nurses and Stress
 
@@ -122,13 +125,13 @@ DT::datatable(nurses,
 <br>
 <br>
 
-For the model we examine effects of the treatment as well as several other covariates, at least one at each of the nurse, ward, and hospital levels. Again, when it comes to the fixed effects portion, you can simply think about that part as you would any standard regression, we just add covariates as theory/exploration would suggest.  To incoprate this type of random effects structure is not too different from the cross-classified approach, but does add a slight change.
+For the model we examine effects of the treatment as well as several other covariates, at least one at each of the nurse, ward, and hospital levels. Again, when it comes to the fixed effects portion, you can simply think about that part as you would any standard regression, we just add covariates as theory/exploration would suggest.  To incorporate this type of random effects structure is not too different from the cross-classified approach, but does add a slight change.
 
 ```{r hierarchical, eval=1}
-nurses_hierarchical = lmer(stress ~ age  + gender + experience 
+nurses_hierarchical = lmer(stress ~ age  + sex + experience 
                            + treatment + wardtype + hospsize 
                            + (1|hospital) + (1|hospital:wardid), data = nurses)
-nurses_hierarchical = lmer(stress ~ age  + gender + experience 
+nurses_hierarchical = lmer(stress ~ age  + sex + experience 
                            + treatment + wardtype + hospsize 
                            + (1|hospital/wardid), data = nurses) # same thing!
 summary(nurses_hierarchical, correlation=F)
@@ -140,7 +143,7 @@ tidy(nurses_hierarchical, 'fixed', conf.int=T) %>%
   pander(justify='lrrrrr')
 ```
 
-As far as the fixed effects go, about the only thing that doesn't have a statistical effect is ward type.
+As far as the fixed effects go, about the only thing that doesn't have a statistical effect is ward type[^signflip].  
 
 
 ```{r hierarchical_random, echo=FALSE}
@@ -154,16 +157,17 @@ hierarch_var_cor %>%
   pander(justify='lcrr')
 ```
 
+Concerning the random effects, there appears to be quite a bit of variability from ward to ward especially, but also hospital.  Recall that stress is a 7 point scale, so from ward to ward we can expect scores to bounce around about half a  point on average, which is quite dramatic in my opinion. 
 
 ### Crossed vs. Nested
 
 The following shows the difference in the results from treating ward as nested vs. crossed. Notice anything different?
 
 ```{r crossed_vs_nested, echo=1:2}
-nurses_hierarchical = lmer(stress ~ age  + gender + experience 
+nurses_hierarchical = lmer(stress ~ age  + sex + experience 
                            + treatment + wardtype + hospsize 
                            + (1|hospital) + (1|hospital:wardid), data = nurses)
-nurses_crossed = lmer(stress ~ age  + gender + experience 
+nurses_crossed = lmer(stress ~ age  + sex + experience 
                            + treatment + wardtype + hospsize 
                            + (1|hospital) + (1|wardid), data = nurses)
 hierarch_var_cor %>%  
@@ -236,7 +240,7 @@ $$\Sigma =
 
 In this case we'd estimate a different correlation for all time point pairs.  This is typically described as an <span class="">unstructured</span> or simply symmetric correlation structure. If you are familiar with repeated measures ANOVA, which is a [special case of a mixed model](https://m-clark.github.io/docs/mixedModels/anovamixed.html), you may recall that the usual assumption is a <span class="emph">sphericity</span>, a relaxed form of <span class="emph">compound symmetry</span>, where all the correlations have the same value, i.e. $\rho_1=\rho_2=\rho_3$, and all variances are equal.
 
-Another very commonly used correlation stucture is an <span class="emph">autocorrelation</span> structure, of lag order one, for the residuals.  What this means is that we assume the residuals at one time point apart correlate with some value $\rho$, observations at two time points apart correlate $\rho^2$, and so on.  As such we only need to estimate $\rho$, while the rest are then automatically determined.  Here's what it'd look like for four time points.
+Another very commonly used correlation structure is an <span class="emph">autocorrelation</span> structure, of lag order one, for the residuals.  What this means is that we assume the residuals at one time point apart correlate with some value $\rho$, observations at two time points apart correlate $\rho^2$, and so on.  As such we only need to estimate $\rho$, while the rest are then automatically determined.  Here's what it'd look like for four time points.
 
 $$\Sigma = 
 \left[
@@ -283,15 +287,18 @@ cbind(rownames(vc), vc[,1:2]) %>%
   rename(' ' = V1) %>% 
   pander
 ```
+<br>
 
 Notice first that the fixed effect for occasion is the same as [before][Mixed model]. The variance estimates have changed slightly along with the variances of the fixed effects (i.e. the standard errors). The main thing is that we have a new parameter called `Phi` in the <span class="pack">nlme</span> output,  that represents our autocorrelation, with value of `r round(coef(corr_res$model$corStruct, unconstrained = F), 3)`. This suggests at least some correlation exists among the residuals for observations next to each other in time, though it diminishes quickly as observations grow further apart.
 
 
 ## Generalized Linear Mixed Models
 
-Just as generlized linear models extend the standard linear model, we can generalize (linear) mixed models to <span class="emph">generalized linear mixed models</span>.  Furthermore, there is nothing keeping us to only exponential family, as other packages would potentially allow for many other reponse distributions.
+Just as generalized linear models extend the standard linear model, we can generalize (linear) mixed models to <span class="emph">generalized linear mixed models</span>.  Furthermore, there is nothing keeping us to only exponential family, as other packages would potentially allow for many other response distributions.
 
-For this example we'll do a 
+For this example we'll do a logistic regression in the mixed model setting. In this case, we'll use the speed dating data set. In the speed dating events, the experiment randomly assigned each participant to ten short dates (four minutes) with participants of the opposite sex. For each date, each person rated six attributes (attractive, sincere, intelligent, fun, ambitious, shared interests) of the other person on a 10-point scale and wrote down whether he or she would like to see the other person again.
+
+Our target variable is whether the participant would be willing to date the person again (`decision`).  To keep things simple the predictors will be limited to the sex of the participant (`sex`), whether the partner was of the same race (`samerace`), and three of the attribute ratings the participant gave of their partner- attractiveness (`attractive`), sincerity (`sincere`), and intelligence (`intelligent`). The latter have been scaled to have zero mean and standard deviation of one (`_sc`).
 
 ```{r speed_dating, echo=FALSE, eval=FALSE}
 speed_dating0 = readr::read_csv('data/raw_data/ARM_Data/Speed Dating Data.csv')
@@ -358,15 +365,18 @@ summary(sd_model, correlation=F)
 ```{r glmm_fixed, echo=FALSE}
 load('data/speed_dating_model.RData')
 pander(tidy(sd_model, 'fixed', conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=2))
-
 ```
+<br>
 
-The fixed effects results are as expected for the attributes, with attractiveness being a very strong effect in particular.  In addition, having a partner of the same race had a positive effect while sex of the particpant was statistically negligble.
+The fixed effects results are as expected for the attributes, with attractiveness being a very strong effect in particular.  In addition, having a partner of the same race had a positive effect while sex of the participant was statistically negligible.  You are free to exponentiate the coefficients to get the odds ratios if desired, just as you would with standard logistic regression.
+
+<br>
 
 ```{r glmm_random, echo=FALSE, eval=TRUE}
 pander(glmm_var_cor)
 ```
 
+<br>
 
 For the variance components, notice that there is no residual variance. This is because we are not modeling with the normal distribution for the response, thus there is no $\sigma$ to estimate.  However, the result suggests that there is quite a bit of variability from person to person.
 
@@ -376,7 +386,7 @@ For the variance components, notice that there is no residual variance. This is 
 
 ### Patents
 
-Do a poisson mixed effect model using the [patent data][Data].  Predict the number of citations (`ncit`) based on whether there was opposition (`opposition`) and if it was for the biotechnology/pharmacuetical industry (`biopharm`). Use year as a random effect to account for unspecified economic conditions.  
+Do a Poisson mixed effect model using the [patent data][Data].  Predict the number of citations (`ncit`) based on whether there was opposition (`opposition`) and if it was for the biotechnology/pharmaceutical industry (`biopharm`). Use year as a random effect to account for unspecified economic conditions.  
 
 ```{r patent_setup, echo=FALSE, eval=FALSE}
 patents0 = read_tsv('data/raw_data/patent.raw')
@@ -394,3 +404,4 @@ Interestingly, one can model overdispersion in a Poisson model by specifying an 
 
 [^crossed_notation]: I don't show the formal model here as we did before, but this is why depicting mixed models solely as 'multilevel' becomes a bit problematic in my opinion. In the standard mixed model notation it's straightforward though, you just add an addition random effect term, just as we do in the actual model syntax.
 
+[^signflip]: Setting aside our discussion to take a turn regarding regression modeling more generally, this is a good example of 'surprising' effects not being so surprising when you consider them more closely.  Take a look at the effect of experience. More experience means less stress, this is probably not surprising.  Now look at the age effect. It's positive! But wouldn't older nurses have more experience? What's going on here? When interpreting experience, it is with age *held constant*, thus more experience helps with lowering stress no matter what your age.  With age, we're holding experience constant.  If experience doesn't matter, being older is affiliated with more stress, which might be expected given the type of very busy and high pressure work often being done (the mean age is `r median(nurses$age)`).  A good way to better understand this specifically is to look at predicted values when age is young, middle, and older vs. experience levels at low, middle, and high experience, possibly explicitly including the interaction of the two in the model.  Also note that if you take experience out of the model, the age effect is negative, which is expected, as it captures experience also.
