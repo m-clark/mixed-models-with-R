@@ -4,20 +4,30 @@ This section covers topics that are generally beyond the scope of what would be 
 
 ## Other distributions
 
-As noted in the GLMM section, we are not held to use only GLM family distributions regarding the target variable.  However the tools you have available to do so will quickly diminish.  However, a couple packages could help in this regard with simpler random effects structures.  For example, the <span class="pack">mgcv</span> package allows one access to a variety of response distributions, such as $t$, negative binomial, beta, zero-inflated poisson and more.  If you only have random intercepts you might try it.  If you're willing to go Bayesian, you'll have even more options with <span class="pack">rstanarm</span> and <span class="pack">brms</span>.  I've personally had success with ordinal, beta, truncated normal and more with <span class="pack">brms</span> in particular.
+As noted in the GLMM section, we are not held to use only GLM family distributions regarding the target variable.  However the tools you have available to do so will quickly diminish.  However, a couple packages could help in this regard with simpler random effects structures.  For example, the <span class="pack">mgcv</span> package allows one access to a variety of response distributions, such as $t$, negative binomial, beta, zero-inflated Poisson and more.  If you only have random intercepts you might try it.  If you're willing to go Bayesian, you'll have even more options with <span class="pack">rstanarm</span> and <span class="pack">brms</span>.  I've personally had success with ordinal, beta, truncated normal and more with <span class="pack">brms</span> in particular.
 
 
-Note also that nothing says that the random effects must come from a normal distribution either.  You probably are going to need some notably strong theoretical reasons for trying something else though.  However, it does come up for some folks.  You'll almost certainly need to use a specialized approach, as most mixed model tools do not offer such functionality.
+Note also that nothing says that the random effects must come from a normal distribution either.  You probably are going to need some notably strong theoretical reasons for trying something else though.  However, it does come up for some folks.  You'll almost certainly need to use a specialized approach, as most mixed model tools do not offer such functionality out of the box.
+
 
 ## Other contexts
 
-- Spatial
-- Frailty models
-- IRT: See Boeck et al. (2011) The Estimation of Item Response Models with the lmer Function from the lme4 Package in R. http://m-clark.github.io/docs/sem/item-response-theory.html
+Here is a list of some other contexts in which you can find random effects models, or extensions of mixed models into other situations.
+
+- Spatial models: It is often the case we want to take into account the geography of a situation. Spatial random effects allow one to do so in the continuous case, e.g. with latitude and longitude coordinates, as well as discrete, as with state. Typical random effects approaches, e.g. with a state random effect, would not correlate state effects.  One might capture geography incidentally, or via cluster level variables such as 'region' indicator.  However, if you're interested in a spatial random effect, use something that can account for it specifically.
+
+- Survival models: random effects models in the survival context are typically referred to as frailty models.  As a starting point, the <span class="pack">survival</span> package that comes with R can do such models.
+
+- Item Response Theory: Some IRT models can be estimated as a mixed model, or otherwise thought of as incorporating random effects. See Boeck et al. (2011) The Estimation of Item Response Models with the lmer Function from the lme4 Package in R. I also have some brief demonstration [here](http://m-clark.github.io/docs/sem/item-response-theory.html). 
+
+- Multi-membership: Sometimes observations may belong to more than one cluster of some grouping variable. For example, in a longitudinal setting some individuals may move to other cities or schools, staying in one place longer than another.  Depending on the specifics of the modeling setting, you may need to take a multi-membership approach to deal with this.
+
+- Phylogenetic models: In biology, models make take observations that are of the same species. While one can use species as an additional source of variance, the species are not independent as they may come from the same phylogenetic tree/branch.  Bayesian packages are available to do such models (e.g. <span class="pack">MCMCglmm</span> and <span class="pack">brms</span>).
+
+- Adjacency structures: Similar to spatial and phylogenetic models, the dependency among the groups/clusters themselves can be described in terms of a markov random field/undirected graph.  In simpler terms, one may think of a situation  where a binary adjacency matrix would denote connections among the nodes/cluster groups.  For example, the clustering may be due to individuals, which themselves might be friends with one another.  One way to deal with such a situation would be similar to spatial models for discrete random units.
+
 - GP
 - Bayesian
-- multi-membership/adjacency structures (see brms vignette)
-- phylogenetic
 - surveys-mrp-post hoc
 - growth mixture models
 
