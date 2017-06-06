@@ -31,23 +31,23 @@ market segments.
 
 ## Programming languages
 
-R has more mixed modeling capabilities than anything else out there.  However there are other options.
+R has more mixed modeling capabilities than anything else out there.  Here are other options within R.
 
 - <span class="pack">lme4</span>: generalized linear mixed models; extremely efficient
-- <span class="pack">nlme</span>: non-linear mixed models but only for the gaussian case.
+- <span class="pack">nlme</span>: (non-)linear mixed models but only for the gaussian case.
 - <span class="pack">mgcv</span>: provides means to use both lme4 or nlme, extends distributional families, correlated residuals, and all that additive model stuff too
 - <span class="pack">rstanarm</span>:  Bayesian with lme4 level options
-- <span class="pack">brms</span>: Bayesian with possibly the most extensive mixed model capabilities
+- <span class="pack">brms</span>: Bayesian with possibly the most extensive mixed model capabilities out there
 - <span class="pack">ordinal</span>: for various types of ordinal models
 
 
 
-- Python: the [statsmodels](http://www.statsmodels.org/stable/mixed_linear.html) module has basic capabilities for mixed models but not too many frills (e.g. no crossed random effects).
+- Python: the [statsmodels](http://www.statsmodels.org/stable/mixed_linear.html) module has basic capabilities for mixed models but not too many frills (e.g. no crossed random effects).  CSCAR directory Kerby Shedden has been part of this specific development.
 - Julia: one of the <span class="pack">lme4</span> authors develops a [MixedModels](https://github.com/dmbates/MixedModels.jl) package for Julia
 
 ### Proprietary
 
-Among the standard stats packages, I can only recommend Stata for both ease of implementation and flexiblity in modeling. SAS and SPSS both have non-intuitive and needlessly verbose syntax, and, while SAS is a fairly good tool for mixed models (from my understanding), I've seen SPSS consistently struggle with even simple models.  
+Among the standard stats packages, I can only recommend Stata for both ease of implementation and flexiblity in modeling. SAS and SPSS both have non-intuitive and needlessly verbose syntax, and, while SAS is a fairly good tool for mixed models (from my understanding), I've seen SPSS consistently struggle with even simple models, and its GUI interface, the only reason to use it, is not even remotely intuitive.
 
 Mplus has a lot of functionality both for standard mixed models and growth curve models, though between <span class="pack">lavaan</span>, <span class="pack">mediation</span>, and the rest of R, there is little need to use Mplus except for very complicated multilevel SEM, which requires very large samples and a lot of theoretical justification.
 
@@ -59,8 +59,10 @@ I will also say that there is zero reason to use mixed model specfic software li
 An excellent modeling book can be found in [Data Analysis Using Regression and Multilevel/Hierarchical Models](http://www.stat.columbia.edu/~gelman/arm/).  You will learn a great deal about statistical modeling in general, as the mixed model stuff only comprises the second part.
 
 
-On the applied side, CSCAR's own Brady West has a book- [Linear Mixed Models: A Practical Guide Using Statistical Software ](http://www-personal.umich.edu/~bwest/almmussp.html). It shows examples in a variety of programming formats while still not glossing the details you need to know.
+On the applied side, CSCAR's own Brady West has a book- [Linear Mixed Models: A Practical Guide Using Statistical Software ](http://www-personal.umich.edu/~bwest/almmussp.html). It shows examples in a variety of programming formats while not glossing over the details you need to know.
 
 For intermediate to advanced treatment I find Fahrmeier et al. [Regression - Models, Methods and Applications](http://www.springer.com/us/book/9783642343322) to be very good.  It will also tie mixed models to spatial and nonparametric approaches.
 
-There is literally [a book on mixed models with lme4](http://lme4.r-forge.r-project.org/lMMwR/lrgprt.pdf) by Douglas Bates, one of the developers. While dated with regard to <span class="pack">lme4</span>, it's definitely not in general and worth having around.
+There is literally [a book on mixed models with lme4](http://lme4.r-forge.r-project.org/lMMwR/lrgprt.pdf) by Douglas Bates, one of the developers. While dated with regard to <span class="pack">lme4</span>, it's definitely not in general, and worth having around.
+
+[Mixed model FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html)

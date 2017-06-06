@@ -25,7 +25,7 @@ gpa %>%
 ```
 
 <br>
-Let us now assume that the trend over time are worth allowing to vary by student.  Using <span class="pack">lme4</span>, this is quite straightforward.
+Let us now assume that the trend over time is allowed to vary by student.  Using <span class="pack">lme4</span>, this is quite straightforward.
 
 ```{r random_slope, eval=FALSE}
 gpa_mixed =  lmer(gpa ~ occasion + (1 + occasion|student), data=gpa)

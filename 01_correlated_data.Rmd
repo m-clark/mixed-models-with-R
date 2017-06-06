@@ -165,7 +165,9 @@ tidy(VarCorr(gpa_mixed)) %>%
 ```
 
 
-First we see that the coefficients for the intercept and time are the same[^lmlmercoef], as would be their interpretation.  The standard errors, on the other hand are different here, though in the end our conclusion as far as statistical significance goes would be the same. However, the <span class="pack">lme4</span> does not provide p-values.  There is a reason for this, namely that with mixed models we are essentially dealing with two sample sizes, the N cluster and N observations, the effective degrees of freedom lies somewhere in between. Other programs provide p-values as if there is no issue, and without telling you *which* approach they use to calculate them (there are several).  However, it's easy enough to get confidence intervals with <span class="pack">lme4</span> as follows.
+First we see that the coefficients for the intercept and time are the same[^lmlmercoef], as would be their interpretation.  The standard errors, on the other hand are different here, though in the end our conclusion as far as statistical significance goes would be the same. However, the <span class="pack">lme4</span> does not provide p-values.  There are [several reasons](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#why-doesnt-lme4-display-denominator-degrees-of-freedomp-values-what-other-options-do-i-have) for this, namely that with mixed models we are essentially dealing with different sample sizes, the $N_c$ within cluster, which may vary from cluster to cluster (and even be a single observation!), and N total observations, which puts us in kind of a fuzzy situation with regard to reference distributions, denominator degrees of freedom and how to approximate a 'best' solution. Other programs provide p-values automatically as if there is no issue, and without telling you *which* approach they use to calculate them (there are several).  Furthermore, those approximations may be very poor in some scenarios, or make assumptions that may not be appropriate for the situation[^fuzzyp].
+
+However, it's more straightforward to get confidence intervals, and we can do so with <span class="pack">lme4</span> as follows[^confint].
 
 ```{r gpa_mixed_ci, eval=FALSE}
 confint(gpa_mixed)
@@ -276,3 +278,7 @@ What happened to the cluster level variance after adding cluster level covariate
 [^lmlmercoef]: This will not always be the case, e.g. with unbalanced data, but they should be fairly close.
 
 [^mlevel]: This is why the multilevel depiction is subpar, and leads many to confusion at times.  You have a target variable and predictor variables based on theory.  Whether they are cluster level variables or if there are interactions doesn't have anything to do with the data structure as much as it does the theoretical implications.  However, if you depict the model in multilevel fashion, the final model must adhere to the 'plugged in' result.  So if, e.g. you posit a cluster level variable for a random slope, you *must* include the implied interaction of the cluster level and observation level covariates.
+
+[^fuzzyp]: Note that many common modeling situations involve a fuzzy p setting, but especially penalized regression approaches such as mixed, additive, ridge regression models etc.  Rather than be a bad thing, this usually is a sign you're doing something interesting, or handling complexity in an appropriate way.
+
+[^confint]: See `?confint.merMod` for details and options.
