@@ -202,7 +202,9 @@ random effects are associated with multiple factors, exactly the same
 computational methods are used whether the factors form a nested sequence or are
 partially crossed or are completely crossed.
 
-So there you have it.  When it comes to <span class="pack">lme4</span>, crossed vs. nested is simply a state of mind.
+See this [discussion also](https://stats.stackexchange.com/questions/228800/crossed-vs-nested-random-effects-how-do-they-differ-and-how-are-they-specified), as well as [this from the FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#nested-or-crossed) from one of the <span class="pack">lme4</span> developers. 
+
+So there you have it.  When it comes to <span class="pack">lme4</span>, crossed vs. nested is simply a state of mind (data).
 
 
 ## Residual Structure

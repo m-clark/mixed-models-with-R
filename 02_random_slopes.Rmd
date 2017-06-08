@@ -49,7 +49,7 @@ tidy(VarCorr(gpa_mixed)) %>%
 
 Note that since we have 0 as our starting semester, the intercept tells us what the average GPA is in the first semester.  The associated intercept variance tells us how much that starting GPA bounces around from student to student.
 
-The slope variance for occasion might not look like much in comparison, but slopes are on a notably different scale than the intercept.  Note that the mean slope for the semester to semester effect, our fixed effect, is `r round(fixef(gpa_mixed)[2], 2)`, but from student to student it bounces around half that.  Thus we could expect most students to fall somewhere between a flat effect of zero to more than double the population average. 
+The slope variance for occasion might not look like much in comparison, but slopes are on a notably different scale than the intercept.  Note that the mean slope for the semester to semester effect, our fixed effect, is `r round(fixef(gpa_mixed)[2], 2)`, but from student to student it bounces around half that.  Thus we could expect most students to fall somewhere between a flat effect of zero to more than double the population average[^sdslopes]. 
 
 Yet another point of interest is the correlation of the intercepts and slopes. In this case it's `r tidy(VarCorr(gpa_mixed)) %>% slice(3) %>% select(sdcor) %>%  round(2)`. That's pretty small, but the interpretation is the same as with any correlation.  In this case specifically, it tells us that those with lower intercepts would be associated with increased time trajectories.   This makes intuitive sense in that people are improving in general, and those at the bottom would have more room to improve.  However, this is very slight, and practically speaking we might not put too much weight on it.
 
@@ -91,6 +91,43 @@ gridExtra::grid.arrange(gint, gslopes, ncol=2)
 
 Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what otherwise would have been the by-group estimate, which would overfit.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models.
 
+
+### Visual prediction
+
+Let's compare our results visually. First there is the linear regression fit. We assume the same trend for everyone.  If we add the conditional predictions that include the subject specific effects from the mixed model, we now can also make subject specific predictions, greatly enhancing the practical use of the model.  As the code to create this plot (using <span class="pack">plotly</span>) was very easy, I go ahead and show it.
+
+```{r visualize_mixed_fit, echo=-1, eval=-1}
+going_down_now = factor(rep(coef(gpa_mixed)$student[,'occasion']<0, e=6), labels=c('Up', 'Down'))
+gpa %>% 
+  modelr::add_predictions(gpa_lm, var='lm') %>% 
+  modelr::add_predictions(gpa_mixed, var='mixed') %>% 
+  group_by(student) %>% 
+  plot_ly %>% 
+  add_lines(x=~occasion, y=~lm, opacity=1, color=I('#ff5503'), name='Standard\nRegression') %>%
+  add_lines(x=~occasion, y=~mixed, opacity=.2, color=I('#03b3ff'), name='Mixed\nModel') %>%
+  theme_plotly()
+```
+
+By contrast, the by-group approach is more noisy due to treating everyone independently.  Many more students are expected to have downward or flat trends relative to the mixed model (the mixed model only had `r sum(coef(gpa_mixed)$student[,'occasion']<0)` trends estimated to be negative).
+
+```{r visualize_bygroup_fit, echo=FALSE}
+gpa_lm_fits_by_group = gpa %>% 
+  split(.$student) %>% 
+  map(~lm(gpa ~ occasion, data=.x)) %>% 
+  map(fitted) %>% 
+  unlist
+going_down_now = factor(rep(gpa_lm_by_group[,'occasion']<0, e=6), labels=c('Up', 'Down'))
+gpa %>% 
+  modelr::add_predictions(gpa_lm, var='lm') %>% 
+  mutate(stufit=gpa_lm_fits_by_group) %>% 
+  group_by(student) %>% 
+  plot_ly %>% 
+  add_lines(x=~occasion, y=~lm, opacity=1, color=I('#ff5503'), name='Standard\nRegression') %>%
+  add_lines(x=~occasion, y=~stufit, color=~going_down_now, opacity=.2, color=I('#03b3ff'), name='By Group') %>%
+  theme_plotly()
+```
+
+
 ## Exercises
 
 #### Sleep revisited
@@ -101,3 +138,6 @@ Run the sleep study model with random coefficient for the Days effect, and inter
 library(lme4)
 data("sleepstudy")
 ```
+
+
+[^sdslopes]: In case it's not clear, I'm using the fact that we assume a normal distribution for the random effect of occasion.  A quick rule of thumb for a normal distribution is that 95% fall between $\pm$ 2 standard deviations of the mean.

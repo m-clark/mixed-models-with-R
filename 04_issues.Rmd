@@ -3,13 +3,13 @@
 
 ## Alternative approaches
 
-I have a [document](https://m-clark.github.io/docs/clustered/) that goes into more detail about many approaches to dealing with clustered data, but we'll briefly talk about some here. Alternative approaches used in clustered data situations include:
+I have a [document](https://m-clark.github.io/docs/clustered/) that goes into more detail about many approaches to dealing with clustered data, but we can briefly talk about some here. Common alternatives used in clustered data situations include:
 
 - Fixed effects models (also panel linear models with fixed, as opposed to random, effects)
 - Using cluster-robust standard errors
-- Generalized estimating equations
+- Generalized estimating equations (GEE)
 
-The first two are commonly used by those trained with an econometrics perspective, while you might see GEE more with those of a biostatistics perspective. GEE are in fact a generalization of the cluster-robust approach.  The nature of fixed effects models allow you to control for, but not investigate any cluster level effects.  This makes them a non-starter for many investigations, as those are typically of prime theoretical interest.  GEE approaches allow one to take into account the dependency in the data, but ignore what might be very interesting, i.e. the random effects and associated variance. There are also few tools for GEE in more complicated correlational structures beyond a single clustering variable.
+The first two are commonly used by those trained with an econometrics perspective, while you might see GEE more with those of a biostatistics or other perspective. GEE are in fact a generalization of the cluster-robust approach, and extend the GLS to nonlinear/GLM settings.  The nature of fixed effects models allow you to control for, but not investigate any cluster level effects.  This makes them a non-starter for many investigations, as those are typically of prime theoretical interest.  GEE approaches allow one to take into account the dependency in the data, but ignore what might be very interesting, i.e. the random effects and associated variance. There are also few tools for GEE in more complicated correlational structures beyond a single clustering variable.
 
 
 ### Growth curve models
