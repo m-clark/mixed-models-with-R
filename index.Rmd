@@ -43,7 +43,7 @@ documentclass: book
 bibliography: refs.bib
 biblio-style: apalike
 link-citations: yes
-description: "Introduction to Conducting Mixed Models in R"
+description: "Introduction to Mixed Models in R"
 cover-image: img/nineteeneightyR.png
 url: 'https\://m-clark.github.io/Woorkshops/'  # evidently the \: is required or you'll get text in the title/toc area
 github-repo:  m-clark/
