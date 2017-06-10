@@ -110,9 +110,8 @@ gpa %>%
   mutate(select = factor(student %in% sample(1:200, 10))) %>% 
   group_by(student, select) %>% 
   plot_ly %>% 
-  add_lines(x=~occasion, y=~gpa, opacity=.35, color=~select, colors=c('#03b3ff', '#ff5503'), showlegend=F) %>%
-  # add_paths(x=occasion_sample, y=gpa_sample, color=I('#ff5503'), opacity=.5, showlegend=F) %>% 
-  add_lines(x=~occasion, y=~all, color=I('#b2001d'), opacity=.85) %>% 
+  add_lines(x=~occasion, y=~gpa, opacity=.35, color=~select, colors=c(palettes$orange$complementary, palettes$orange$orange), showlegend=F) %>%
+  add_lines(x=~occasion, y=~all, color=I(palettes$stan_red$stan_red), opacity=.70) %>% 
   theme_plotly()
 ```
 
