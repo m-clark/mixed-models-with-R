@@ -380,11 +380,13 @@ data("sleepstudy")
 pander(head(sleepstudy))
 ```
 
-Run a mixed model with Days as a covariate and a random intercept for Subject.
+First run a regression with Reaction as the target variable and Days as the predictor. Then Run a mixed model with a random intercept for Subject.
+
+Interpret the variance components and fixed effects.
 
 ### Cluster level covariate
 
-Rerun the mixed model with the GPA data adding the cluster level covariate of `sex`, or high school GPA (`highgpa`), or both.  Interpret all aspects of the results.
+Rerun the mixed model with the [GPA data][Mixed model] adding the cluster level covariate of `sex`, or high school GPA (`highgpa`), or both.  Interpret all aspects of the results.
 
 ```{r gpa_cluster, echo=F, eval=FALSE}
 gpa_mixed_cluster_level = lmer(gpa ~ occasion + sex + highgpa + (1|student), gpa)
@@ -393,8 +395,32 @@ summary(gpa_mixed_cluster_level)
 
 What happened to the cluster level variance after adding cluster level covariates to the model?
 
+### Simulation
 
+```{r simMixed, eval=FALSE}
+Ngroups = 50
+NperGroup = 3
+N = Ngroups*NperGroup
+groups = factor(rep(1:Ngroups, each=NperGroup))
+u = rnorm(Ngroups, sd=.5)
+e = rnorm(N, sd=.25)
+x = rnorm(N)
+y = 2 + .5*x + u[groups] + e
 
+d = data.frame(x, y, groups)
+```
+
+Which of the above represent the random effects? 
+
+```{r simMixed2, eval=FALSE}
+model = lmer(y ~ x + (1|groups), data=d)
+summary(model)
+
+library(ggplot2)
+ggplot(aes(x, y), data=d) +
+  geom_point()
+
+```
 
 
 [^notation]: Note that I leave out the observation level subscript to keep things clean. I find that multilevel style notation quickly becomes unwieldy, and don't wish to reproduce it.  It also tends to add confusion to a lot of applied researchers starting out with mixed models.
@@ -517,7 +543,7 @@ gpa %>%
   group_by(student) %>% 
   plot_ly %>% 
   add_lines(x=~occasion, y=~lm, opacity=1, color=I('#ff5500'), name='Standard\nRegression') %>%
-  add_lines(x=~occasion, y=~mixed, opacity=.2, color=I('03b3ff'), name='Mixed\nModel') %>%
+  add_lines(x=~occasion, y=~mixed, opacity=.2, color=I('#03b3ff'), name='Mixed\nModel') %>%
   theme_plotly()
 ```
 
