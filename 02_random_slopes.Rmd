@@ -132,7 +132,7 @@ gpa %>%
 
 #### Sleep revisited
 
-Run the sleep study model with random coefficient for the Days effect, and interpret the results.
+Run the sleep study model with random coefficient for the Days effect, and interpret the results.  What is the correlation between the intercept and Days random effects?
 
 ```{r sleepstudy2}
 library(lme4)
@@ -140,4 +140,44 @@ data("sleepstudy")
 ```
 
 
+#### Simulation revisited
+
+The following shows a simplified way to simulate some random slopes, but otherwise is the same as the simulation before.  Go ahead and run the code.
+
+```{r simSlopes, eval=FALSE}
+set.seed(1234)  # this will allow you to exactly duplicate your result
+Ngroups = 50
+NperGroup = 3
+N = Ngroups*NperGroup
+groups = factor(rep(1:Ngroups, each=NperGroup))
+re_int = rnorm(Ngroups, sd=.75)
+re_slope = rnorm(Ngroups, sd=.25)
+e = rnorm(N, sd=.25)
+x = rnorm(N)
+y = (2 + re_int[groups]) + (.5 + re_slope[groups])*x +  + e
+
+d = data.frame(x, y, groups)
+```
+
+The following is a way to run a mixed model while specifying that there is no correlation between intercepts and slopes.  There is generally no reason to do this unless the study design warrants it[^nocorr], but you could do it as a step in the model-building process.
+
+```{r simSlopes2, eval=FALSE}
+model_base = lmer(y ~ x + (1|groups), data=d)
+model = lmer(y ~ x + (1|groups) + (0 + x|groups), data=d)
+summary(model)
+confint(model)
+
+
+
+library(ggplot2)
+ggplot(aes(x, y), data=d) +
+  geom_point()
+```
+
+Compare model fit using the <span class="func">AIC</span> function, e.g. `AIC(model)`.  The model with the lower AIC is the better model, so which would you choose?
+
+
+
 [^sdslopes]: In case it's not clear, I'm using the fact that we assume a normal distribution for the random effect of occasion.  A quick rule of thumb for a normal distribution is that 95% fall between $\pm$ 2 standard deviations of the mean.
+
+[^nocorr]: I personally have not come across a situation where I'd do this in practice.  Even if the simpler model with no correlation was a slightly better fit, there isn't much to be gained by it.

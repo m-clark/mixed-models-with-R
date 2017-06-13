@@ -293,6 +293,8 @@ model = lmer(y ~ x + (1|groups), data=d)
 summary(model)
 confint(model)
 
+
+
 library(ggplot2)
 ggplot(aes(x, y), data=d) +
   geom_point()
@@ -300,12 +302,18 @@ ggplot(aes(x, y), data=d) +
 
 Do the results seem in keeping with what you expect?
 
-Now change the following things, running the model after each change, then summarizing and getting confidence intervals.  For each note specifically at least one thing that changed in the results.
+In what follows we'll change various aspects of the data, then rerun the model after each change, then summarizing and getting confidence intervals as before.  For each note specifically at least one thing that changed in the results.
 
-- The random effect variance/sd
-- The error variance/sd
-- Change Ngroups to 10
-- Change NperGroup to 10
+0. First calculate or simply eyeball the intraclass correlation coefficient $\frac{\textrm{random effect variance}}{\textrm{residual + random effect variance}}$.  In addition, create a density plot of the random effects as follows.
+
+```{r simMixed3, eval=FALSE}
+re = ranef(model)$groups
+qplot(x=re, geom='density', xlim=c(-3,3))
+```
+
+1. Change the random effect variance/sd and/or the residual variance/sd and note your new estimate of the ICC, and replot the 
+2. Reset the values to the original.  Change Ngroups to 10. What differences do you see in the confidence interval estimates? 
+3. Set the Ngroups back to 50. Now Change NperGroup to 10, and note again the CI for the variance components.
 
 
 [^notation]: Note that I leave out the observation level subscript to keep things clean. I find that multilevel style notation quickly becomes unwieldy, and don't wish to reproduce it.  It also tends to add confusion to a lot of applied researchers starting out with mixed models.
