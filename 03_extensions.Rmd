@@ -204,7 +204,7 @@ partially crossed or are completely crossed.
 
 See this [discussion also](https://stats.stackexchange.com/questions/228800/crossed-vs-nested-random-effects-how-do-they-differ-and-how-are-they-specified), as well as [this from the FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#nested-or-crossed) from one of the <span class="pack">lme4</span> developers. 
 
-So there you have it.  When it comes to <span class="pack">lme4</span>, crossed vs. nested is simply a state of mind (data).
+So there you have it.  When it comes to <span class="pack">lme4</span>, crossed vs. nested is simply a state of mind (data)[^crossnest].
 
 
 ## Residual Structure
@@ -390,6 +390,60 @@ For the variance components, notice that there is no residual variance. This is 
 ## Exercises
 
 
+### Sociometric data
+
+In the following data, kids are put into different groups and rate each other in terms of how much they would like to share some activity with the others. We have identifying variables for the person doing the rating (sender), the person being rated (receiver), what group they are in, as well as age and sex for both sender and receiver, as well as group size.
+
+
+```{r socio_setup, echo=FALSE, eval=FALSE}
+soc = read_spss('data/raw_data/joop_hox_data2/9 CrossClass/SocsLong.sav')
+glimpse(soc)
+
+
+sociometric = soc %>% 
+  mutate(sexsend = factor(sexsend, labels=c('Male', 'Female')),  # from text 0 male, 1 female
+         sexrec = factor(sexrec, labels=c('Male', 'Female')))
+
+save(sociometric, file='data/sociometric.RData')
+```
+
+In the following, load the sociometric data and run the following model. You will have three sources of structure to consider:
+
+- senders (within group)
+- receivers (within group)
+- group
+
+
+We will proceed with the following modeling steps. For each, make sure you are creating a separate model object for each one run.
+
+- Model 1: No covariates, only sender and receiver random effects. Note that even though we don't add group yet, still use the nesting 
+- Model 2: No covariates, add group random effect
+- Model 3: Add all covariates
+- Model 4: In order to examine sex match effects, do an interaction of the sex variables.
+- Compare models with AIC
+
+
+```{r socio, echo=1, eval=FALSE}
+load('data/sociometric.RData')
+model1 = lmer(rating ~ (1|group:sender) + (1|group:receiver), 
+             data=sociometric)
+summary(model1, correlation=F) 
+model2 = lmer(rating ~ (1|group:sender) + (1|group:receiver) + (1|group), 
+             data=sociometric)
+summary(model2, correlation=F) 
+
+model3 = lmer(rating ~ sexsend + sexrec + agesend + agerec + grsize + (1|group:sender) + (1|group:receiver) + (1|group), 
+             data=sociometric)
+summary(model3, correlation=F)
+model4 = lmer(rating ~ sexsend*sexrec + agesend + agerec + grsize + (1|group:sender) + (1|group:receiver) + (1|group), 
+             data=sociometric)
+summary(model4, correlation=F)
+c(AIC(model1), AIC(model2), AIC(model3), AIC(model4))
+```
+
+
+
+
 ### Patents
 
 Do a Poisson mixed effect model using the [patent data][Data].  Predict the number of citations (`ncit`) based on whether there was opposition (`opposition`) and if it was for the biotechnology/pharmaceutical industry (`biopharm`). Use year as a random effect to account for unspecified economic conditions.  
@@ -402,6 +456,9 @@ save(patents, file='data/patents.RData')
 glmer(ncit ~ opposition +  biopharm + (1|year), data=patents, family='poisson')
 ```
 
+
+
+
 Interestingly, one can model overdispersion in a Poisson model by specifying an random intercept for each observation (`subject` in the data).  In other words, no clustering or grouped structure is necessary.
 
 [^residstruct]: One reason to do so would be that you expect variability to decrease over time, e.g. due to experience.  You might also allow that variance to be different due to some other grouping factor entirely (e.g. due to treatment group membership).  I will likely add an example in the future.  But for the time being, in <span class="pack">nlme</span>, the relevant argument is `weights`.  See `?varIdent` as an example of what you would provide to the `weights` argument.
@@ -411,3 +468,5 @@ Interestingly, one can model overdispersion in a Poisson model by specifying an 
 [^crossed_notation]: I don't show the formal model here as we did before, but this is why depicting mixed models solely as 'multilevel' becomes a bit problematic in my opinion. In the standard mixed model notation it's straightforward though, you just add an addition random effect term, just as we do in the actual model syntax.
 
 [^signflip]: Setting aside our discussion to take a turn regarding regression modeling more generally, this is a good example of 'surprising' effects not being so surprising when you consider them more closely.  Take a look at the effect of experience. More experience means less stress, this is probably not surprising.  Now look at the age effect. It's positive! But wouldn't older nurses have more experience? What's going on here? When interpreting experience, it is with age *held constant*, thus more experience helps with lowering stress no matter what your age.  With age, we're holding experience constant.  If experience doesn't matter, being older is affiliated with more stress, which might be expected given the type of very busy and high pressure work often being done (the mean age is `r median(nurses$age)`).  A good way to better understand this specifically is to look at predicted values when age is young, middle, and older vs. experience levels at low, middle, and high experience, possibly explicitly including the interaction of the two in the model.  Also note that if you take experience out of the model, the age effect is negative, which is expected, as it captures experience also.
+
+[^crossnest]: Note that it *does* matter if you label your data inappropriately.  For example, if in the nesting situation you start your id variable at 1 for each nested group, then you have to use the nested notation in <span class="pack">lme4</span>, otherwise, e.g. it won't know that id = 1 in group 1 is different from id 1 in group 2.  Again though, if you're not being silly, this wouldn't be an issue.
