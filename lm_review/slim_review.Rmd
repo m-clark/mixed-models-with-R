@@ -2,13 +2,14 @@
 title: "Standard Linear Model Review"
 output: 
   html_notebook: 
-    code_folding: hide
+    highlight: pygments
+    theme: cosmo
 ---
 
 
 Yesterday you got a look at how to run regression models in R. The nice thing about R relative to most other statistical programs and other languages is that most every modeling package works the same way, and uses the same functions to do things with the model afterward.  As we move into mixed models, the approach will be almost identical. As an example here are 5 model functions from 4 different packages. Each one could be followed by `summary`, `plot`, `fitted`, and other methods.
 
-```{r, eval=FALSE}
+```
 lm(y ~ x)
 glm(y ~ x, family=binomial)
 brm(y ~ x)
@@ -21,29 +22,34 @@ The more you get comfortable with even just basic `lm` and how it works, the mor
 
 # Exercise 1
 
-We'll use the ggplot2movies package and the `movies` data frame inside.  You'll likely need to install the ggplot2movies package.
+We'll use the ggplot2movies package and the `movies` data frame inside.  You'll likely need to install the ggplot2movies package first. Feel free to have a look at it a bit.
 
 ```{r}
 library(dplyr)
 library(ggplot2movies)
+?movies
 glimpse(movies)
 movies %>% 
   group_by(Action, Drama) %>% 
   summarise(rating=mean(rating))
 ```
 
-First we'll trim things to more recent movies to make things a little more comparable.  Next, let's look at the relationship of time (`year`) and budget to rating. Use the lm function to predict rating and interpret the results.
+First we'll trim things to more recent movies to make things a little more comparable. I'll also convert 
 
 ```{r}
-movies_trim = filter(movies, year>1970 & budget>1e6 & votes>1000) %>% 
-  mutate(log_budget = log(budget),
-         votes = votes/1000)
+movies_trim = filter(movies, 
+                     year > 1970  &
+                     budget > 1e6 & 
+                     votes > 1000) %>% 
+  mutate(budget_mil = budget/1e6,
+         votes_thou = votes/1000) %>% 
+  mutate_at(vars(Action:Short), factor, labels=c('No', 'Yes'))
 ```
 
+Next, let's look at the relationship of time (`year`) and budget to rating. Use the lm function with the appropriate formula to predict rating and interpret the results.
 
-
-```{r, eval=FALSE}
-model = lm()
+```{r}
+model = lm(data=movies_trim)
 summary(model)
 ```
 
@@ -57,31 +63,46 @@ movies_trim %>%
   add_predictions(model, var = 'fitted')
 ```
 
-The broom package can add even more with the augment function, and will return
-```{r, eval=FALSE}
+The broom package can add even more with the `augment` function, and will return fitted values, the standard error of the fit, the residuals and more.
+
+```{r}
 library(broom)
 augment(model) %>% 
   head()
 ```
 
+You can also use the `tidy` function to make the model object itself a data frame so you can more easily work with the results.
+
+```{r}
+tidy(model)
+```
+
+
+That combined with pander will make your table publication ready without you having to format anything.
+
+```{r}
+library(pander)
+tidy(model) %>% 
+  pander(justify='lrrrr')
+```
+
+
+
+
 
 # Exercise 2
 
-Add the `Action` indicator and the number of votes to the model.
+Add the `Action` indicator and the number of votes in thousands to the model.  Interpret the results.
 
 ```{r}
-model = lm(rating ~ year + log_budget + votes + Action, data=movies_trim)
-summary(model)
 ```
 
 
 # Exercise 3
 
-See if Action interacts with budget. Interpret the results.
+See if Action interacts with budget, or any other aspect of the model or data you want to explore.
 
 ```{r}
-model = lm(rating ~ year + votes + log_budget*Action, data=movies_trim)
-summary(model)
 ```
   
   
