@@ -37,13 +37,16 @@ Pretty easy huh? Let's look at the results.
 
 ```{r random_slope_summary, echo=FALSE}
 gpa_mixed =  lmer(gpa ~ occasion + (1 + occasion|student), data=gpa)
-pander(tidy(gpa_mixed, 'fixed', conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=2))
+
+pander(tidy(gpa_mixed, 'fixed', conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=3))
+
 tidy(VarCorr(gpa_mixed)) %>% 
   slice(-3) %>%  
   select(-var2) %>% 
-  rename(variance=vcov, sd=sdcor) %>%  
+  rename(variance=vcov, sd=sdcor, re=var1) %>%  
   mutate_if(is.numeric, arm::fround, digits=3) %>% 
   mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
+  data.frame %>% 
   pander()
 ```
 
