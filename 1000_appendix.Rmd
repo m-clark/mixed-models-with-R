@@ -70,3 +70,5 @@ For intermediate to advanced treatment I find Fahrmeier et al. [Regression - Mod
 There is literally [a book on mixed models with lme4](http://lme4.r-forge.r-project.org/lMMwR/lrgprt.pdf) by Douglas Bates, one of the developers. While dated with regard to <span class="pack">lme4</span>, it's definitely not in general, and worth having around.
 
 [Mixed model FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html)
+
+I have [several other docs](http://m-clark.github.io/documents/#mixed-models) on various aspects of mixed models.

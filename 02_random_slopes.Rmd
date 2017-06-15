@@ -139,7 +139,7 @@ library(lme4)
 data("sleepstudy")
 ```
 
-In the following replace <span class="objClass">model</span> with the name of your model object. Run each line, inspecting the result of each as you go along. 
+In the following replace <span class="objclass">model</span> with the name of your model object. Run each line, inspecting the result of each as you go along. 
 
 ```{r, eval=FALSE}
 re = ranef(model)$Subject

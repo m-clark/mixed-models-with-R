@@ -317,9 +317,9 @@ re = ranef(model)$groups
 qplot(x=re, geom='density', xlim=c(-3,3))
 ```
 
-1. Change the random effect variance/sd and/or the residual variance/sd and note your new estimate of the ICC, and replot the random effect as before.
-2. Reset the values to the original.  Change Ngroups to 10. What differences do you see in the confidence interval estimates? 
-3. Set the Ngroups back to 50. Now Change NperGroup to 10, and note again the how the CI is different from the base condition.
+1. Change the random effect variance/sd and/or the residual variance/sd and note your new estimate of the ICC, and plot the random effect as before.
+2. Reset the values to the original.  Change <span class="objclass">Ngroups</span> to 10. What differences do you see in the confidence interval estimates? 
+3. Set the Ngroups back to 50. Now change <span class="objclass">NperGroup</span> to 10, and note again the how the CI is different from the base condition.
 
 
 [^notation]: Note that I leave out the observation level subscript to keep things clean. I find that multilevel style notation quickly becomes unwieldy, and don't wish to reproduce it.  It also tends to add confusion to a lot of applied researchers starting out with mixed models.

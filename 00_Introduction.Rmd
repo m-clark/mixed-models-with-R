@@ -24,9 +24,9 @@ Note the following color coding used in this document:
 
 ## Initial Steps
 
-0. Download the zip file at http://m-clark.github.io/workshops/mixed_models_r/mixed_model_workshop.zip. Be mindful of where you put it.
+0. Download the zip file at http://m-clark.github.io/workshops/mixed_models_r/mem_workshop.zip. Be mindful of where you put it.
 1. Unzip it. Be mindful of where you put the resulting folder.
-2. Open Rstudio.
+2. Open RStudio.
 3. File/Open Project and click on the blue icon in the folder you just created.
 4. File/Open Click on the ReadMe file and do what it says.
 
