@@ -1,4 +1,30 @@
-# Correlated Data
+# Mixed Models
+
+While they might be new to you, mixed models have been around a *long* time. For example, standard ANOVA methods can be seen as special cases of a mixed model.  More recently, mixed models have a variety of applications and extensions, allowing them to encompass a diverse range of data situations.  They can be seen as a first step in expanding one's toolset beyond the generalized linear model.
+
+## Terminology
+
+For the uninitiated, the terminology surrounding mixed models, especially across disciplines, can be a bit confusing. Some terms you might come across regarding these types of models include:
+
+- Variance components
+- Random intercepts and slopes
+- Random effects
+- Random coefficients
+- Varying coefficients
+- Intercepts- and/or slopes-as-outcomes
+- Hierarchical linear models
+- Multilevel models (implies multiple levels of hierarchically clustered data)
+- Growth curve models (possibly Latent GCM)
+- Mixed effects models
+
+All describe types of mixed models.  Some might be more historical, others are more often seen in a specific discipline, others might refer to a certain data structure, and still others are special cases. <span class='emph'>Mixed effects</span>, or simply mixed, models generally refer to a mixture of fixed and random effects.  For the models in general, I prefer the terms 'mixed models' or 'random effects models' because they are simple, no specific structure is implied, and the latter can also apply to extensions that many would not think of when other terms are used[^richlypar].  Regarding the mixed effects, <span class='emph'>fixed effects</span> is perhaps a poor but nonetheless stubborn term for the typical main effects one would see in a linear regression model, i.e. the non-random part of a mixed model, and in some contexts they are referred to as the *population average* effect.  Though you will hear many definitions, random effects are simply those specific to an observational unit, however defined.  The approach outlined in this document largely pertains to the case where the observational unit is the level of some grouping factor, but this is only .
+
+
+## Kinds of clustering
+
+Data might have one or multiple sources of clustering, and that clustering may be hierarchical, such that clusters are nested within other clusters. An example would be scholastic aptitude tests given multiple times to students (repeated observations nested within students, students nested within schools, schools nested within districts). In other cases, there is no nesting structure. An example would be a reaction time experiment where participants perform the same set of tasks.  While observations are nested within individual, observations are also clustered according to task type.  Some use the terms <span class="emph">nested</span> and <span class="emph">crossed</span> to distinguish between these scenarios.  In addition clustering may be balanced or not. We might expect more balance in studies of an experimental nature, but definitely not in other cases, e.g. where the cluster is something like geographical unit and the observations are people.
+
+In what follows we'll see mixed effect models in all these data situations. In general, our approach will be the same, as such clustering is really more a property of the data than the model.  However, it's important to get a sense of the flexibility of mixed models to handle a variety of data situations.
 
 
 
@@ -322,6 +348,8 @@ qplot(x=re, geom='density', xlim=c(-3,3))
 3. Set the Ngroups back to 50. Now change <span class="objclass">NperGroup</span> to 10, and note again the how the CI is different from the base condition.
 
 
+[^richlypar]: I actually like [Richly Parameterized Linear Models](https://www.crcpress.com/Richly-Parameterized-Linear-Models-Additive-Time-Series-and-Spatial/Hodges/p/book/9781439866832), or [Structured Additive Regression Models](https://www.springer.com/us/book/9783642343322).  Both are a mouthful, but at least the latter reduces to [STARs](http://m-clark.github.io/workshops/stars/).
+
 [^notation]: Note that I leave out the observation level subscript to keep things clean. I find that multilevel style notation quickly becomes unwieldy, and don't wish to reproduce it.  It also tends to add confusion to a lot of applied researchers starting out with mixed models.
 
 [^vcmodel]: Actually, the simplest model would have no covariates at all, just <span class="emph">variance components</span>, with no correlations among the random effects.  Such a model can be interesting to look at while exploring your data, but would probably never suffice on its own to tell the story you desire to.
@@ -333,3 +361,4 @@ qplot(x=re, geom='density', xlim=c(-3,3))
 [^fuzzyp]: Note that many common modeling situations involve a fuzzy p setting, but especially penalized regression approaches such as mixed, additive, ridge regression models etc.  Rather than be a bad thing, this usually is a sign you're doing something interesting, or handling complexity in an appropriate way.
 
 [^confint]: See `?confint.merMod` for details and options.
+

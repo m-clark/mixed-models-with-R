@@ -449,7 +449,7 @@ c(AIC(model1), AIC(model2), AIC(model3), AIC(model4))
 Do a Poisson mixed effect model using the [patent data][Data].  Predict the number of citations (`ncit`) based on whether there was opposition (`opposition`) and if it was for the biotechnology/pharmaceutical industry (`biopharm`). Use year as a random effect to account for unspecified economic conditions.  
 
 ```{r patent_setup, echo=FALSE, eval=FALSE}
-patents0 = read_tsv('data/raw_data/patent.raw')
+patents0 = readr::read_tsv('data/raw_data/patent.raw')
 patents = patents0 %>% 
   rename(opposition = opp) 
 save(patents, file='data/patents.RData')

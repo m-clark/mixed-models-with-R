@@ -2,7 +2,7 @@
 
 ## Overview
 
-Mixed models are an extremely useful modeling tool for correlated data, where the correlation typically arises from the observations being clustered in some way. It is quite common to have data in which we have repeated measurements for the units of observation, or in which the units of observation are otherwise clustered (e.g. students within school, cities within geographic region).   While there are different ways to approach such a situation, mixed models are a very common and powerful tool to do so.
+Mixed models are an extremely useful modeling tool for situations in which there is some dependency among observations in the data, where the correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements for the units of observation, or in which the units of observation are otherwise clustered (e.g. students within school, cities within geographic region).   While there are different ways to approach such a situation, mixed models are a very common and powerful tool to do so.  In addition, they have ties to other statistical approaches that further expand their applicability.
 
 ### Goals
 
@@ -11,7 +11,7 @@ The goal of this workshop is primarily to provide a sense of when one would use 
 
 ### Prerequisites
 
-The document is for the most part very applied in nature, and only assumes a basic understanding of standard regression models. Use of R for basic regression modeling is also assumed.  Demonstrations will be done almost entirely with the <span class="pack">lme4</span> package.
+The document is for the most part very applied in nature, and only assumes a basic understanding of standard regression models. Use of R for regression modeling is also assumed.  Demonstrations will be done almost entirely with the <span class="pack">lme4</span> package.
 
 Note the following color coding used in this document:
 
@@ -30,29 +30,4 @@ Note the following color coding used in this document:
 3. File/Open Project and click on the blue icon in the folder you just created.
 4. File/Open Click on the ReadMe file and do what it says.
 
-## Terminology
-
-For the uninitiated, the terminology surrounding mixed models, especially across disciplines, can be a bit daunting.
-
-Some terms you might come across regarding these types of models:
-
-- Variance components
-- Random intercepts and slopes
-- Random effects
-- Random coefficients
-- Varying coefficients
-- Intercepts and slopes-as-outcomes
-- Hierarchical linear models
-- Multilevel models (implies multiple levels of hierarchically clustered data)
-- Growth curve models (possibly Latent GCM)
-- Mixed effects models
-
-All describe types of mixed models.  Some might be more historical, others are more often seen in a specific discipline, others might refer to a certain data structure (e.g. multilevel clustering), and still others are special cases. <span class='emph'>Mixed effects</span>, or simply mixed, models generally refer to a mixture of fixed and random effects.  I prefer the term mixed models because it is simple and no specific structure is implied.  <span class='emph'>Fixed effects</span>, is perhaps a poor but nonetheless stubborn term for the typical main effects one would see in a linear regression model, i.e. the non-random part of a mixed model, and in some contexts they are referred to as the *population average* effect.
-
-
-### Kinds of clustering
-
-Data might have one or multiple sources of clustering, and that clustering may be hierarchical, such that clusters are nested within other clusters. An example would be scholastic aptitude tests given multiple times to students (repeated observations nested within students, students nested within schools, schools nested within districts). In other cases, there is no nesting structure. An example would be a reaction time experiment where participants perform the same set of tasks.  While observations are nested within individual, observations are also clustered according to task type.  Some use the terms <span class="emph">nested</span> and <span class="emph">crossed</span> to distinguish between these scenarios.  In addition clustering may be balanced or not. We might expect more balance in studies of an experimental nature, but definitely not in other cases, e.g. where the cluster is something like geographical unit and the observations are people.
-
-In what follows we'll see mixed effect models in all these data situations. In general, our approach will be the same, as such clustering is really more a property of the data than the model.  However, it's important to get a sense of the flexibility of mixed models to handle a variety of data situations.
 

@@ -45,7 +45,7 @@ biblio-style: apalike
 link-citations: yes
 description: "Introduction to Mixed Models in R"
 cover-image: img/nineteeneightyR.png
-url: 'https\://m-clark.github.io/Woorkshops/'  # evidently the \: is required or you'll get text in the title/toc area
+url: 'https\://m-clark.github.io/Workshops/'  # evidently the \: is required or you'll get text in the title/toc area
 github-repo:  m-clark/
 
 ---
@@ -76,7 +76,7 @@ knitr::include_graphics('img/nineteeneightyR.png', dpi = NA)
 
 ## Overview
 
-Mixed models are an extremely useful modeling tool for correlated data, where the correlation typically arises from the observations being clustered in some way. It is quite common to have data in which we have repeated measurements for the units of observation, or in which the units of observation are otherwise clustered (e.g. students within school, cities within geographic region).   While there are different ways to approach such a situation, mixed models are a very common and powerful tool to do so.
+Mixed models are an extremely useful modeling tool for situations in which there is some dependency among observations in the data, where the correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements for the units of observation, or in which the units of observation are otherwise clustered (e.g. students within school, cities within geographic region).   While there are different ways to approach such a situation, mixed models are a very common and powerful tool to do so.  In addition, they have ties to other statistical approaches that further expand their applicability.
 
 ### Goals
 
@@ -85,7 +85,7 @@ The goal of this workshop is primarily to provide a sense of when one would use 
 
 ### Prerequisites
 
-The document is for the most part very applied in nature, and only assumes a basic understanding of standard regression models. Use of R for basic regression modeling is also assumed.  Demonstrations will be done almost entirely with the <span class="pack">lme4</span> package.
+The document is for the most part very applied in nature, and only assumes a basic understanding of standard regression models. Use of R for regression modeling is also assumed.  Demonstrations will be done almost entirely with the <span class="pack">lme4</span> package.
 
 Note the following color coding used in this document:
 
@@ -96,36 +96,45 @@ Note the following color coding used in this document:
 - [link]()
 
 
+## Initial Steps
 
+0. Download the zip file at http://m-clark.github.io/workshops/mixed_models_r/mem_workshop.zip. Be mindful of where you put it.
+1. Unzip it. Be mindful of where you put the resulting folder.
+2. Open RStudio.
+3. File/Open Project and click on the blue icon in the folder you just created.
+4. File/Open Click on the ReadMe file and do what it says.
+
+
+
+<!--chapter:end:00_Introduction.Rmd-->
+
+# Mixed Models
+
+While they might be new to you, mixed models have been around a *long* time. For example, standard ANOVA methods can be seen as special cases of a mixed model.  More recently, mixed models have a variety of applications and extensions, allowing them to encompass a diverse range of data situations.  They can be seen as a first step in expanding one's toolset beyond the generalized linear model.
 
 ## Terminology
 
-For the uninitiated, the terminology surrounding mixed models, especially across disciplines, can be a bit daunting.
-
-Some terms you might come across regarding these types of models:
+For the uninitiated, the terminology surrounding mixed models, especially across disciplines, can be a bit confusing. Some terms you might come across regarding these types of models include:
 
 - Variance components
 - Random intercepts and slopes
 - Random effects
 - Random coefficients
 - Varying coefficients
-- Intercepts and slopes-as-outcomes
+- Intercepts- and/or slopes-as-outcomes
 - Hierarchical linear models
 - Multilevel models (implies multiple levels of hierarchically clustered data)
 - Growth curve models (possibly Latent GCM)
 - Mixed effects models
 
-All describe types of mixed models.  Some might be more historical, others are more often seen in a specific discipline, others might refer to a certain data structure (e.g. multilevel clustering), and still others are special cases. <span class='emph'>Mixed effects</span>, or simply mixed, models generally refer to a mixture of fixed and random effects.  I prefer the term mixed models because it is simple and no specific structure is implied.  <span class='emph'>Fixed effects</span>, is perhaps a poor but nonetheless stubborn term for the typical main effects one would see in a linear regression model, i.e. the non-random part of a mixed model, and in some contexts they are referred to as the *population average* effect.
+All describe types of mixed models.  Some might be more historical, others are more often seen in a specific discipline, others might refer to a certain data structure, and still others are special cases. <span class='emph'>Mixed effects</span>, or simply mixed, models generally refer to a mixture of fixed and random effects.  For the models in general, I prefer the terms 'mixed models' or 'random effects models' because they are simple, no specific structure is implied, and the latter can also apply to extensions that many would not think of when other terms are used[^richlypar].  Regarding the mixed effects, <span class='emph'>fixed effects</span> is perhaps a poor but nonetheless stubborn term for the typical main effects one would see in a linear regression model, i.e. the non-random part of a mixed model, and in some contexts they are referred to as the *population average* effect.  Though you will hear many definitions, random effects are simply those specific to an observational unit, however defined.  The approach outlined in this document largely pertains to the case where the observational unit is the level of some grouping factor, but this is only .
 
 
-### Kinds of clustering
+## Kinds of clustering
 
-Data might have one or multiple sources of clustering, and that clustering may be hierarchical, such that clusters are nested within other clusters. An example would be scholastic aptitude tests given multiple times to students (repeated observations nested within students, students nested within schools, schools nested within districts). In other cases, there is no nesting structure. An example would be a reaction time experiment where participants perform the same set of tasks.  While observations are nested within individual, observations are also clustered according to task type.  Some use the terms <span class="emph">nested</span> and <span class="emph">crossed</span> to distinguish between these scenarios.
+Data might have one or multiple sources of clustering, and that clustering may be hierarchical, such that clusters are nested within other clusters. An example would be scholastic aptitude tests given multiple times to students (repeated observations nested within students, students nested within schools, schools nested within districts). In other cases, there is no nesting structure. An example would be a reaction time experiment where participants perform the same set of tasks.  While observations are nested within individual, observations are also clustered according to task type.  Some use the terms <span class="emph">nested</span> and <span class="emph">crossed</span> to distinguish between these scenarios.  In addition clustering may be balanced or not. We might expect more balance in studies of an experimental nature, but definitely not in other cases, e.g. where the cluster is something like geographical unit and the observations are people.
 
-
-<!--chapter:end:00_Introduction.Rmd-->
-
-# Correlated Data
+In what follows we'll see mixed effect models in all these data situations. In general, our approach will be the same, as such clustering is really more a property of the data than the model.  However, it's important to get a sense of the flexibility of mixed models to handle a variety of data situations.
 
 
 
@@ -281,8 +290,10 @@ summary(gpa_mixed)
 ```
 
 ```{r gpa_mixed_pretty, echo=FALSE}
-vcovs = tidy(VarCorr(gpa_mixed)) %>% select(vcov)  # for icc later
-pander(tidy(gpa_mixed, 'fixed') %>% mutate_if(is.numeric, arm::fround, digits=2))
+vcovs = tidy(VarCorr(gpa_mixed)) %>% 
+  select(vcov)  # for icc later
+pander(tidy(gpa_mixed, 'fixed') %>% 
+         mutate_if(is.numeric, arm::fround, digits=3))
 tidy(VarCorr(gpa_mixed)) %>% 
   select(-var1, -var2) %>% 
   rename(variance=vcov, sd=sdcor) %>%  
@@ -384,6 +395,8 @@ First run a regression with Reaction as the target variable and Days as the pred
 
 Interpret the variance components and fixed effects.
 
+
+
 ### Cluster level covariate
 
 Rerun the mixed model with the [GPA data][Mixed model] adding the cluster level covariate of `sex`, or high school GPA (`highgpa`), or both.  Interpret all aspects of the results.
@@ -393,11 +406,16 @@ gpa_mixed_cluster_level = lmer(gpa ~ occasion + sex + highgpa + (1|student), gpa
 summary(gpa_mixed_cluster_level)
 ```
 
-What happened to the cluster level variance after adding cluster level covariates to the model?
+What happened to the student variance after adding cluster level covariates to the model?
+
+
 
 ### Simulation
 
+The following represents a simple way to simulate a random intercepts model.  Note each object what each object is, and make sure the code make sense to you.  Then run it.
+
 ```{r simMixed, eval=FALSE}
+set.seed(1234)  # this will allow you to exactly duplicate your result
 Ngroups = 50
 NperGroup = 3
 N = Ngroups*NperGroup
@@ -410,18 +428,37 @@ y = 2 + .5*x + u[groups] + e
 d = data.frame(x, y, groups)
 ```
 
-Which of the above represent the random effects? 
+Which of the above represent the fixed and random effects? Now run the following.
 
 ```{r simMixed2, eval=FALSE}
 model = lmer(y ~ x + (1|groups), data=d)
 summary(model)
+confint(model)
+
+
 
 library(ggplot2)
 ggplot(aes(x, y), data=d) +
   geom_point()
-
 ```
 
+Do the results seem in keeping with what you expect?
+
+In what follows we'll change various aspects of the data, then rerun the model after each change, then summarizing and getting confidence intervals as before.  For each note specifically at least one thing that changed in the results.
+
+0. First calculate or simply eyeball the intraclass correlation coefficient $\frac{\textrm{random effect variance}}{\textrm{residual + random effect variance}}$.  In addition, create a density plot of the random effects as follows.
+
+```{r simMixed3, eval=FALSE}
+re = ranef(model)$groups
+qplot(x=re, geom='density', xlim=c(-3,3))
+```
+
+1. Change the random effect variance/sd and/or the residual variance/sd and note your new estimate of the ICC, and plot the random effect as before.
+2. Reset the values to the original.  Change <span class="objclass">Ngroups</span> to 10. What differences do you see in the confidence interval estimates? 
+3. Set the Ngroups back to 50. Now change <span class="objclass">NperGroup</span> to 10, and note again the how the CI is different from the base condition.
+
+
+[^richlypar]: I actually like [Richly Parameterized Linear Models](https://www.crcpress.com/Richly-Parameterized-Linear-Models-Additive-Time-Series-and-Spatial/Hodges/p/book/9781439866832), or [Structured Additive Regression Models](https://www.springer.com/us/book/9783642343322).  Both are a mouthful, but at least the latter reduces to [STARs](http://m-clark.github.io/workshops/stars/).
 
 [^notation]: Note that I leave out the observation level subscript to keep things clean. I find that multilevel style notation quickly becomes unwieldy, and don't wish to reproduce it.  It also tends to add confusion to a lot of applied researchers starting out with mixed models.
 
@@ -435,7 +472,8 @@ ggplot(aes(x, y), data=d) +
 
 [^confint]: See `?confint.merMod` for details and options.
 
-<!--chapter:end:01_correlated_data.Rmd-->
+
+<!--chapter:end:01_random_intercepts.Rmd-->
 
 # More Random Effects
 
@@ -476,13 +514,16 @@ Pretty easy huh? Let's look at the results.
 
 ```{r random_slope_summary, echo=FALSE}
 gpa_mixed =  lmer(gpa ~ occasion + (1 + occasion|student), data=gpa)
-pander(tidy(gpa_mixed, 'fixed', conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=2))
+
+pander(tidy(gpa_mixed, 'fixed', conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=3))
+
 tidy(VarCorr(gpa_mixed)) %>% 
   slice(-3) %>%  
   select(-var2) %>% 
-  rename(variance=vcov, sd=sdcor) %>%  
+  rename(variance=vcov, sd=sdcor, re=var1) %>%  
   mutate_if(is.numeric, arm::fround, digits=3) %>% 
   mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
+  data.frame %>% 
   pander()
 ```
 
@@ -571,15 +612,66 @@ gpa %>%
 
 #### Sleep revisited
 
-Run the sleep study model with random coefficient for the Days effect, and interpret the results.
+Run the sleep study model with random coefficient for the Days effect, and interpret the results.  What is the correlation between the intercept and Days random effects?  Use the <span class="func">ranef</span> and <span class="func">coef</span> functions on the model you've created. What do you see?
 
 ```{r sleepstudy2}
 library(lme4)
 data("sleepstudy")
 ```
 
+In the following replace <span class="objclass">model</span> with the name of your model object. Run each line, inspecting the result of each as you go along. 
+
+```{r, eval=FALSE}
+re = ranef(model)$Subject
+fe = fixef(model)
+apply(re, 1, function(x) x + fe) %>% t
+```
+
+The above code adds the fixed effects to each row of the random effects (the <span class="func">t</span> just transposes the result). What is the result compared to what you saw before?
+
+
+
+#### Simulation revisited
+
+The following shows a simplified way to simulate some random slopes, but otherwise is the same as the simulation before.  Go ahead and run the code.
+
+```{r simSlopes, eval=FALSE}
+set.seed(1234)  # this will allow you to exactly duplicate your result
+Ngroups = 50
+NperGroup = 3
+N = Ngroups*NperGroup
+groups = factor(rep(1:Ngroups, each=NperGroup))
+re_int = rnorm(Ngroups, sd=.75)
+re_slope = rnorm(Ngroups, sd=.25)
+e = rnorm(N, sd=.25)
+x = rnorm(N)
+y = (2 + re_int[groups]) + (.5 + re_slope[groups])*x +  + e
+
+d = data.frame(x, y, groups)
+```
+
+This next bit of code shows a way to run a mixed model while specifying that there is no correlation between intercepts and slopes.  There is generally no reason to do this unless the study design warrants it[^nocorr], but you could do it as a step in the model-building process, such that you fit a model with no correlation, then one with it.
+
+```{r simSlopes2, eval=FALSE}
+model_base = lmer(y ~ x + (1|groups), data=d)
+model = lmer(y ~ x + (1|groups) + (0 + x|groups), data=d)
+summary(model)
+confint(model)
+
+
+
+library(ggplot2)
+ggplot(aes(x, y), data=d) +
+  geom_point()
+```
+
+Compare model fit using the <span class="func">AIC</span> function, e.g. `AIC(model)`.  The model with the lower AIC is the better model, so which would you choose?
+
+
 
 [^sdslopes]: In case it's not clear, I'm using the fact that we assume a normal distribution for the random effect of occasion.  A quick rule of thumb for a normal distribution is that 95% fall between $\pm$ 2 standard deviations of the mean.
+
+[^nocorr]: I personally have not come across a situation where I'd do this in practice.  Even if the simpler model with no correlation was a slightly better fit, there isn't much to be gained by it.
 
 <!--chapter:end:02_random_slopes.Rmd-->
 
@@ -789,7 +881,7 @@ partially crossed or are completely crossed.
 
 See this [discussion also](https://stats.stackexchange.com/questions/228800/crossed-vs-nested-random-effects-how-do-they-differ-and-how-are-they-specified), as well as [this from the FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#nested-or-crossed) from one of the <span class="pack">lme4</span> developers. 
 
-So there you have it.  When it comes to <span class="pack">lme4</span>, crossed vs. nested is simply a state of mind (data).
+So there you have it.  When it comes to <span class="pack">lme4</span>, crossed vs. nested is simply a state of mind (data)[^crossnest].
 
 
 ## Residual Structure
@@ -975,17 +1067,74 @@ For the variance components, notice that there is no residual variance. This is 
 ## Exercises
 
 
+### Sociometric data
+
+In the following data, kids are put into different groups and rate each other in terms of how much they would like to share some activity with the others. We have identifying variables for the person doing the rating (sender), the person being rated (receiver), what group they are in, as well as age and sex for both sender and receiver, as well as group size.
+
+
+```{r socio_setup, echo=FALSE, eval=FALSE}
+soc = read_spss('data/raw_data/joop_hox_data2/9 CrossClass/SocsLong.sav')
+glimpse(soc)
+
+
+sociometric = soc %>% 
+  mutate(sexsend = factor(sexsend, labels=c('Male', 'Female')),  # from text 0 male, 1 female
+         sexrec = factor(sexrec, labels=c('Male', 'Female')))
+
+save(sociometric, file='data/sociometric.RData')
+```
+
+In the following, load the sociometric data and run the following model. You will have three sources of structure to consider:
+
+- senders (within group)
+- receivers (within group)
+- group
+
+
+We will proceed with the following modeling steps. For each, make sure you are creating a separate model object for each one run.
+
+- Model 1: No covariates, only sender and receiver random effects. Note that even though we don't add group yet, still use the nesting 
+- Model 2: No covariates, add group random effect
+- Model 3: Add all covariates
+- Model 4: In order to examine sex match effects, do an interaction of the sex variables.
+- Compare models with AIC
+
+
+```{r socio, echo=1, eval=FALSE}
+load('data/sociometric.RData')
+model1 = lmer(rating ~ (1|group:sender) + (1|group:receiver), 
+             data=sociometric)
+summary(model1, correlation=F) 
+model2 = lmer(rating ~ (1|group:sender) + (1|group:receiver) + (1|group), 
+             data=sociometric)
+summary(model2, correlation=F) 
+
+model3 = lmer(rating ~ sexsend + sexrec + agesend + agerec + grsize + (1|group:sender) + (1|group:receiver) + (1|group), 
+             data=sociometric)
+summary(model3, correlation=F)
+model4 = lmer(rating ~ sexsend*sexrec + agesend + agerec + grsize + (1|group:sender) + (1|group:receiver) + (1|group), 
+             data=sociometric)
+summary(model4, correlation=F)
+c(AIC(model1), AIC(model2), AIC(model3), AIC(model4))
+```
+
+
+
+
 ### Patents
 
 Do a Poisson mixed effect model using the [patent data][Data].  Predict the number of citations (`ncit`) based on whether there was opposition (`opposition`) and if it was for the biotechnology/pharmaceutical industry (`biopharm`). Use year as a random effect to account for unspecified economic conditions.  
 
 ```{r patent_setup, echo=FALSE, eval=FALSE}
-patents0 = read_tsv('data/raw_data/patent.raw')
+patents0 = readr::read_tsv('data/raw_data/patent.raw')
 patents = patents0 %>% 
   rename(opposition = opp) 
 save(patents, file='data/patents.RData')
 glmer(ncit ~ opposition +  biopharm + (1|year), data=patents, family='poisson')
 ```
+
+
+
 
 Interestingly, one can model overdispersion in a Poisson model by specifying an random intercept for each observation (`subject` in the data).  In other words, no clustering or grouped structure is necessary.
 
@@ -996,6 +1145,8 @@ Interestingly, one can model overdispersion in a Poisson model by specifying an 
 [^crossed_notation]: I don't show the formal model here as we did before, but this is why depicting mixed models solely as 'multilevel' becomes a bit problematic in my opinion. In the standard mixed model notation it's straightforward though, you just add an addition random effect term, just as we do in the actual model syntax.
 
 [^signflip]: Setting aside our discussion to take a turn regarding regression modeling more generally, this is a good example of 'surprising' effects not being so surprising when you consider them more closely.  Take a look at the effect of experience. More experience means less stress, this is probably not surprising.  Now look at the age effect. It's positive! But wouldn't older nurses have more experience? What's going on here? When interpreting experience, it is with age *held constant*, thus more experience helps with lowering stress no matter what your age.  With age, we're holding experience constant.  If experience doesn't matter, being older is affiliated with more stress, which might be expected given the type of very busy and high pressure work often being done (the mean age is `r median(nurses$age)`).  A good way to better understand this specifically is to look at predicted values when age is young, middle, and older vs. experience levels at low, middle, and high experience, possibly explicitly including the interaction of the two in the model.  Also note that if you take experience out of the model, the age effect is negative, which is expected, as it captures experience also.
+
+[^crossnest]: Note that it *does* matter if you label your data inappropriately.  For example, if in the nesting situation you start your id variable at 1 for each nested group, then you have to use the nested notation in <span class="pack">lme4</span>, otherwise, e.g. it won't know that id = 1 in group 1 is different from id 1 in group 2.  Again though, if you're not being silly, this wouldn't be an issue.
 
 <!--chapter:end:03_extensions.Rmd-->
 
@@ -1156,6 +1307,10 @@ Note that I have converted these from their original SPSS format to R data.frame
 
 - <span class="emph">nurses</span>: The data in this example are from a hypothetical study on stress in hospitals. The data are from nurses working in wards nested within hospitals. In each of 25 hospitals, four wards are selected and randomly assigned to an experimental and control condition. In the experimental condition, a training program is offered to all nurses to cope with job- related stress. After the program is completed, a sample of about 10 nurses from each ward is given a test that measures job-related stress. Additional variables are: nurse age (years), nurse experience (years), nurse gender (0 = male, 1 = female), type of ward (0 = general care, 1 = special care), and hospital size (0 = small, 1 = medium, 2 = large). This is an example of an experiment where the experimental intervention is carried out at the group level. In biomedical research this design is known as a cluster randomized trial. They are quite common also in educational and organizational research, where entire classes or schools are assigned to experimental and control conditions. Since the design variable Experimental versus Control group (ExpCon) is manipulated at the second (ward) level, we can study whether the experimental effect is different in different hospitals, by defining the regression coefficient for the ExpCon variable as random at the hospital level. In this example, the variable ExpCon is of main interest, and the other variables are covariates. Their function is to control for differences between the groups, which should be small given that randomization is used, and to explain variance in the outcome variable stress. To the extent that they are successful in explaining variance, the power of the test for the effect of ExpCon will be increased. Therefore, although logically we can test if explanatory variables at the first level have random coefficients at the second or third level, and if explanatory variables at the second level have random coefficients at the third level, these possibilities are not pursued. We do test a model with a random coefficient for ExpCon at the third level, where there turns out to be significant slope variation. This varying slope can be predicted by adding a cross-level interaction between the variables ExpCon and HospSize. In view of this interaction, the variables ExpCon and HospSize have been centered on their overall mean. 
 
+
+- <span class="emph">sociometric</span>: The sociometric data are intended to demonstrate a data structure where the cross-classification is at the lowest level, with an added group structure because there are several groups. The story is that in small groups all members are asked to rate each other on a scale of 1-9, where higher numbers indicate a more positive view of the individual (i.e. how much they would like to share some activity with the rated person). Each record is defined by the sender–receiver pairs, with explanatory variables age and sex defined separately for the sender and the receiver. The group variable 'group size' is added to this file. There are 20 groups, with sizes ranging from 4 to 11.
+
+
 - <span class="emph">speed dating</span>: Data involve a speed dating experiment on a sample of a few hundred students in graduate and professional schools at Columbia University. In the speed dating events, the experiment randomly assigned each participant to ten short dates (four minutes) with participants of the opposite sex. For each date, each person rated six attributes (attractive, sincere, intelligent, fun, ambitious, shared interests) of the other person on a 10-point scale and wrote down whether he or she would like to see the other person again. The data have been filtered to remove constant responders, i.e. those who always or never wanted to see  their partner again, those six attributes have scaled versions with mean 0 and standard deviation 1 (`_sc`), column names have been made useful, and only some of the variables have been kept for the demo. If you run the same model, you can get very similar estimates to that in the Fahrmeier et al. text, table 7.4 (though there is a typo for the Male effect).
 
 - The data come from Gelman's website but are based on [this article](http://faculty.chicagobooth.edu/emir.kamenica/documents/genderDifferences.pdf).
@@ -1210,6 +1365,8 @@ For intermediate to advanced treatment I find Fahrmeier et al. [Regression - Mod
 There is literally [a book on mixed models with lme4](http://lme4.r-forge.r-project.org/lMMwR/lrgprt.pdf) by Douglas Bates, one of the developers. While dated with regard to <span class="pack">lme4</span>, it's definitely not in general, and worth having around.
 
 [Mixed model FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html)
+
+I have [several other docs](http://m-clark.github.io/documents/#mixed-models) on various aspects of mixed models.
 
 <!--chapter:end:1000_appendix.Rmd-->
 
