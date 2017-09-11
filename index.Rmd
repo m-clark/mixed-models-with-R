@@ -9,25 +9,15 @@ date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 output:
   bookdown::gitbook:
-    css: [css/standard_html.css, css/mytufte.css]
+    css: [css/standard_html.css, css/book.css]
     hightlight: pygments
     number_sections: false
+    toc_depth: 2
     # split_by: section
     config:
-      toc:
-        collapse: subsection
-        scroll_highlight: yes
-        before: null
-        after: null
-      toolbar:
-        position: fixed
       edit : null
       download: null
       search: yes
-      # fontsettings:
-      #   theme: white
-      #   family: sans
-      #   size: 2
       sharing:
         facebook: yes
         twitter: yes
@@ -69,3 +59,8 @@ library(broom); library(pander); library(tidyverse); library(plotly); library(ha
 knitr::include_graphics('img/nineteeneightyR.png', dpi = NA)
 ```
 
+
+```{r ccimg, fig.align='center',  out.width=0, fig.show='hide', echo=FALSE, include=identical(knitr:::pandoc_to(), 'html')}
+knitr::include_graphics('img/ccbysa_test.png', dpi = NA)
+knitr::include_graphics('img/mc.png', dpi = NA)
+```

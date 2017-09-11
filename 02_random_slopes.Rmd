@@ -18,8 +18,8 @@ gpa %>%
   modelr::add_predictions(gpa_lm, var='all') %>% 
   group_by(student) %>% 
   plot_ly %>% 
-  add_lines(x=~occasion, y=~gpa, opacity=.2, color=I(palettes$orange$complementary), showlegend=F) %>%
-  add_paths(x=occasion_sample, y=gpa_sample, color=I(palettes$orange$orange), opacity=.5, showlegend=F) %>% 
+  add_lines(x=~occasion, y=~gpa, opacity=.2, color=I(palettes$orange$complementary[2]), showlegend=F) %>%
+  add_paths(x=~occasion_sample, y=~gpa_sample, color=I(palettes$orange$orange), opacity=.5, showlegend=F) %>% 
   add_lines(x=~occasion, y=~all, color=I('#b2001d')) %>% 
   theme_plotly()
 ```
@@ -67,7 +67,7 @@ gint = data_frame(Mixed=coef(gpa_mixed)$student[,1], Separate=gpa_lm_by_group[,1
   gather(key=Model, value=Intercept) %>% 
   ggplot(aes(x=Intercept)) +
   geom_density(aes(color=Model, fill=Model), alpha=.25) +
-  scale_fill_manual(values=c(palettes$orange$orange, palettes$orange$complementary)) +
+  scale_fill_manual(values=c(palettes$orange$orange, palettes$orange$complementary[2])) +
   ggtitle('Intercepts') +
   labs(x='', y='') +
   xlim(c(1.5,4)) +
@@ -82,7 +82,7 @@ gslopes = data_frame(Mixed=coef(gpa_mixed)$student[,2], Separate=gpa_lm_by_group
   gather(key=Model, value=Occasion) %>% 
   ggplot(aes(x=Occasion)) +
   geom_density(aes(color=Model, fill=Model), alpha=.25, show.legend=F) +
-  scale_fill_manual(values=c(palettes$orange$orange, palettes$orange$complementary)) +
+  scale_fill_manual(values=c(palettes$orange$orange, palettes$orange$complementary[2])) +
   ggtitle('Slopes for occasion') +
   labs(x='', y='') +
   xlim(c(-.2,.4)) +
@@ -126,7 +126,7 @@ gpa %>%
   group_by(student) %>% 
   plot_ly %>% 
   add_lines(x=~occasion, y=~lm, opacity=1, color=I(palettes$orange$orange), name='Standard\nRegression') %>%
-  add_lines(x=~occasion, y=~stufit, color=~going_down_now, opacity=.2, color=I(palettes$orange$complementary), name='By Group') %>%
+  add_lines(x=~occasion, y=~stufit, color=~going_down_now, opacity=.2, color=I(palettes$orange$complementary[2]), name='By Group') %>%
   theme_plotly()
 ```
 
