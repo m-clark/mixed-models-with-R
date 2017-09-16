@@ -32,7 +32,7 @@ gpa_mixed =  lmer(gpa ~ occasion + (1 + occasion|student), data=gpa)
 summary(gpa_mixed)
 ```
 
-Pretty easy huh? Let's look at the results.
+Pretty easy huh? To the left of that bar we are simply just positing a formula as we do with most modeling functions[^nointneeded]. Let's look at the results.
 
 
 ```{r random_slope_summary, echo=FALSE}
@@ -50,14 +50,14 @@ tidy(VarCorr(gpa_mixed)) %>%
   pander()
 ```
 
-Note that since we have 0 as our starting semester, the intercept tells us what the average GPA is in the first semester.  The associated intercept variance tells us how much that starting GPA bounces around from student to student.
+As before, since we have 0 as our starting semester, the intercept tells us what the average GPA is in the first semester.  The coefficient for occasion still reflects a one semester change in GPA.  As we have not changed the fixed effect portion of the model, the values are the same as before.
 
-The slope variance for occasion might not look like much in comparison, but slopes are on a notably different scale than the intercept.  Note that the mean slope for the semester to semester effect, our fixed effect, is `r round(fixef(gpa_mixed)[2], 2)`, but from student to student it bounces around half that.  Thus we could expect most students to fall somewhere between a flat effect of zero to more than double the population average[^sdslopes]. 
+The associated intercept variance tells us how much that starting GPA bounces around from student to student. The variance for the occasion effect might not look like much in comparison, but slopes are on a notably different scale than the intercept.  Note that the mean slope for the semester to semester effect, our fixed effect, is `r round(fixef(gpa_mixed)[2], 2)`, but from student to student it bounces around half that.  Thus we could expect most students to fall somewhere between a flat effect of zero to more than double the population average[^sdslopes]. 
 
 Yet another point of interest is the correlation of the intercepts and slopes. In this case it's `r tidy(VarCorr(gpa_mixed)) %>% slice(3) %>% select(sdcor) %>%  round(2)`. That's pretty small, but the interpretation is the same as with any correlation.  In this case specifically, it tells us that those with lower intercepts would be associated with increased time trajectories.   This makes intuitive sense in that people are improving in general, and those at the bottom would have more room to improve.  However, this is very slight, and practically speaking we might not put too much weight on it.
 
 
-### Comparison to many regressions
+## Comparison to many regressions
 
 
 Let's compare these results to the ones we would have gotten had we run a separate regression for each student.  In what follows we see the distribution of of the estimated intercept and slope coefficients for all the students.
@@ -92,10 +92,10 @@ gslopes = data_frame(Mixed=coef(gpa_mixed)$student[,2], Separate=gpa_lm_by_group
 gridExtra::grid.arrange(gint, gslopes, ncol=2)
 ```
 
-Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what otherwise would have been the by-group estimate, which would overfit.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models.
+Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what otherwise would have been the by-group estimate, which would overfit.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models.  It comes into play largely when we have few observations per group and less estimated variance for the random effects.  In other words, when there is little information in a group, or less variance relative to the observation variance, then the mixed model will produce a group-specific effect that is closer to the overall population effect.  In that sense, the mixed model group coefficients better reflect our ignorance[^posthoc].
 
 
-### Visual prediction
+## Visual prediction
 
 Let's compare our results visually. First there is the linear regression fit. We assume the same trend for everyone.  If we add the conditional predictions that include the subject specific effects from the mixed model, we now can also make subject specific predictions, greatly enhancing the practical use of the model.  As the code to create this plot (using <span class="pack">plotly</span>) was very easy, I go ahead and show it.
 
@@ -130,6 +130,10 @@ gpa %>%
   theme_plotly()
 ```
 
+
+## Summary
+
+At this point it might be clearer why some would call these *richly parameterized linear models*. Relative to a standard regression we get extra variance parameters that add to our understanding of the sources of uncertainty in the model, we can get the subjects specific effects, their correlation, and use that information to obtain far better predictions.  What's not to like?
 
 ## Exercises
 
@@ -176,10 +180,10 @@ d = data.frame(x, y, groups)
 This next bit of code shows a way to run a mixed model while specifying that there is no correlation between intercepts and slopes.  There is generally no reason to do this unless the study design warrants it[^nocorr], but you could do it as a step in the model-building process, such that you fit a model with no correlation, then one with it.
 
 ```{r simSlopes2, eval=FALSE}
-model_base = lmer(y ~ x + (1|groups), data=d)
-model = lmer(y ~ x + (1|groups) + (0 + x|groups), data=d)
-summary(model)
-confint(model)
+model_ints_only = lmer(y ~ x + (1|groups), data=d)
+model_with_slopes = lmer(y ~ x + (1|groups) + (0 + x|groups), data=d)
+summary(model_with_slopes)
+confint(model_with_slopes)
 
 
 
@@ -191,7 +195,10 @@ ggplot(aes(x, y), data=d) +
 Compare model fit using the <span class="func">AIC</span> function, e.g. `AIC(model)`.  The model with the lower AIC is the better model, so which would you choose?
 
 
+[^nointneeded]: Technically the intercept is assumed but you should keep it for clarity.
 
-[^sdslopes]: In case it's not clear, I'm using the fact that we assume a normal distribution for the random effect of occasion.  A quick rule of thumb for a normal distribution is that 95% fall between $\pm$ 2 standard deviations of the mean.
+[^sdslopes]: In case it's not clear, I'm using the fact that we assume a normal distribution for the random effect of occasion.  A quick rule of thumb for a normal distribution is that 95% falls between $\pm$ 2 standard deviations of the mean.
 
 [^nocorr]: I personally have not come across a situation where I'd do this in practice.  Even if the simpler model with no correlation was a slightly better fit, there isn't much to be gained by it.
+
+[^posthoc]: Note that this relates to a common question about multiple comparisons.  When using techniques that incorporate shrinkage, this is not a problem.  Adjusting p-values after laying waste to the land with pairwise t-tests is not a viable means of dealing with the situation.
