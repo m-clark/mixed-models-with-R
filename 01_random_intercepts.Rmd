@@ -17,7 +17,7 @@ For the uninitiated, the terminology surrounding mixed models, especially across
 - Growth curve models (possibly Latent GCM)
 - Mixed effects models
 
-All describe types of mixed models.  Some might be more historical, others are more often seen in a specific discipline, others might refer to a certain data structure, and still others are special cases. <span class='emph'>Mixed effects</span>, or simply mixed, models generally refer to a mixture of fixed and random effects.  For the models in general, I prefer the terms 'mixed models' or 'random effects models' because they are simple, no specific structure is implied, and the latter can also apply to extensions that many would not think of when other terms are used[^richlypar].  Regarding the mixed effects, <span class='emph'>fixed effects</span> is perhaps a poor but nonetheless stubborn term for the typical main effects one would see in a linear regression model, i.e. the non-random part of a mixed model, and in some contexts they are referred to as the *population average* effect.  Though you will hear many definitions, random effects are simply those specific to an observational unit, however defined.  The approach outlined in this document largely pertains to the case where the observational unit is the level of some grouping factor, but this is only .
+All describe types of mixed models.  Some might be more historical, others are more often seen in a specific discipline, others might refer to a certain data structure, and still others are special cases. <span class='emph'>Mixed effects</span>, or simply mixed, models generally refer to a mixture of fixed and random effects.  For the models in general, I prefer the terms 'mixed models' or 'random effects models' because they are simpler terms, no specific structure is implied, and the latter can also apply to extensions that many would not think of when other terms are used[^richlypar].  Regarding the mixed effects, <span class='emph'>fixed effects</span> is perhaps a poor but nonetheless stubborn term for the typical main effects one would see in a linear regression model, i.e. the non-random part of a mixed model, and in some contexts they are referred to as the *population average* effect.  Though you will hear many definitions, random effects are simply those specific to an observational unit, however defined.  The approach outlined in this document largely pertains to the case where the observational unit is the level of some grouping factor, but this is only .
 
 
 ## Kinds of clustering
@@ -30,12 +30,12 @@ In what follows we'll see mixed effect models in all these data situations. In g
 
 ## Random Intercepts model
 
-For the following we'll demonstrate the simplest[^vcmodel] and most common case of a mixed model, that in which we have a single random effect added to the standard regression situation.  For reasons that will hopefully become clear later, this is commonly called a random intercepts model. We will see an extension of it later.
+For the following we'll demonstrate the simplest[^vcmodel] and most common case of a mixed model, that in which we have a single grouping structure for the random effect added to the standard regression situation.  For reasons that will hopefully become clear soon, this is commonly called a random intercepts model. We will also see an extension of it later.
 
 
 ## Example: student GPA
 
-For the following we'll assess factors predicting college grade point average (GPA).  Each of the 200 students is assessed for six occasions (each semester for the first three years), so we have observations nested within students. We have other variables such as job status, sex, and high school GPA.  Some will be in both labeled and numeric form. See the [appendix][Appendix] for details.
+For the following we'll assess factors predicting college grade point average (GPA).  Each of the 200 students is assessed for six occasions (each semester for the first three years), so we have observations nested within students. We have other variables such as job status, sex, and high school GPA.  Some will be in both labeled and numeric form. See the [appendix][Appendix] for more detail.
 
 ```{r gpa_setup, echo=FALSE, eval=FALSE}
 # MC Note: either the job label is incorrect or this variable makes no sense. 
@@ -78,10 +78,12 @@ We have coefficients for the intercept and the effect of time.  The error $\epsi
 
 $$\epsilon \sim \mathscr{N}(0, \sigma)$$
 
-An alternate way to write the model which puts emphasis on the underlying data generating process for $y$ is
+An alternate way to write the model which puts emphasis on the underlying data generating process for $y$ can be shown as follows.
 
 $$\mathscr{gpa} \sim \mathscr{N}(\mu, \sigma)$$
 $$\mu = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathscr{occasion}$$
+
+More technically, the gpa and $\mu$ variables have an implicit subscript to denote each observation, but you can also think of it as a model for a single individual at a single time point.
 
 ## The mixed model
 
@@ -91,25 +93,33 @@ Now we show one way of showing it as a mixed model that includes a unique effect
 
 
 $$\mathscr{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathscr{occasion} + (\mathrm{effect}_{\mathscr{student}} + \epsilon)$$
-If we rearrange it, we can instead focus on model coefficients.
 
-$$\mathscr{gpa} = (b_{\mathrm{intercept}} + \mathrm{effect}_{\mathscr{student}}) + b_{\mathrm{occ}}\cdot \mathscr{occasion} +  \epsilon$$
-
-In this way, we'll have student-specific intercepts, as each person will have their own unique effect added to the overall intercept, resulting in a different intercept for each person. As such this is often called a random intercepts model.
-
-In either case, we (usually) assume the following for the student effects.  
+We (usually) assume the following for the student effects.  
 
 
 $$\mathrm{effect}_{\mathrm{student}} \sim \mathscr{N}(0, \tau)$$
 
+Thus the student effects are random, and specifically are normally distributed with mean of zero and some estimated standard deviation. In other words, conceptually the only difference between this mixed model and a standard regression is the student effect, which is *on average* no effect, but specifically varies from student to student with some standard deviation ($\tau$).
 
-Thus the student effects are random, and specifically are normally distributed with mean of zero and some estimated standard deviation. In other words, conceptually the only difference between the mixed model and a standard regression is the student effect, which is *on average* no effect, but specifically varies from student to student with some standard deviation ($\tau$).
+If we rearrange it, we can instead focus on model coefficients.
+
+$$\mathscr{gpa} = (b_{\mathrm{intercept}} + \mathrm{effect}_{\mathscr{student}}) + b_{\mathrm{occ}}\cdot \mathscr{occasion} +  \epsilon$$
+Or more succinctly:
+
+$$\mathscr{gpa} = b_{\mathrm{int\_student}} + b_{\mathrm{occ}}\cdot \mathscr{occasion} +  \epsilon$$
+
+
+In this way, we'll have student-specific intercepts, as each person will have their own unique effect added to the overall intercept, resulting in a different intercept for each person. 
+
+$$b_{\mathrm{int\_student}} \sim \mathscr{N}(b_{\mathrm{intercept}}, \tau)$$
+
+Now we see the *intercepts* as normally distributed with a mean of the overall intercept and some standard deviation.  As such this is often called a <span class="emph">random intercepts</span> model.
 
 
 
 ##### As a multi-level model
 
-This next depiction is commonly seen in the multilevel modeling literature.  It is shown as a two part model, one at the observation level and one at the student level.  
+A form of that second depiction is commonly seen in the <span class="emph">multilevel modeling</span> literature.  It is shown more explicitly as a two part regression model, one at the observation level and one at the student level.  
 
 $$\mathrm{gpa} = b_{\mathrm{int\_student}} + b_{\mathrm{occ}}\cdot \mathrm{occasion} + \epsilon$$
 
@@ -117,7 +127,7 @@ $$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + \mathrm{effect}_{\mathrm{
 
 However, after 'plugging in' the second level part to the first, it is identical to the previous.
 
-Note how we don't have a student-specific effect for occasion.  In this context, occasion is said to be a fixed effect only, and there is no random component. This definitely does not have to be the case though, as we'll see later.
+Note how we don't have a student-specific effect for occasion.  In this context, occasion is said to be a *fixed effect* only, and there is no random component. This definitely does not have to be the case though, as we'll see later.
 
 ## Application
 
@@ -162,15 +172,15 @@ gpa_lm_by_group = gpa %>%
 coef_lm = coef(gpa_lm)
 ```
 
-The above tells us that as we move from semester to semester, we can expect GPA to increase by about `r round(coef_lm[2], 2)` points.  This would be fine except that we are ignoring the clustering.  A side effect of doing so is that our standard errors are incorrect, and thus claims about statistical significance based on them would be off.  More importantly however is that we simply don't get to explore the student effect, which would be of interest by itself.
+The above tells us that that starting out, i.e. when occasion is zero, the average gpa, denoted by the intercept, is `r round(coef_lm[1], 2)`.  In addition, as we move from semester to semester, we can expect GPA to increase by about `r round(coef_lm[2], 2)` points.  This would be fine except that we are ignoring the clustering.  A side effect of doing so is that our standard errors are incorrect, and thus claims about statistical significance based on them would be off.  More importantly however is that we simply don't get to explore the student effect, which would be of interest by itself.
 
 #### Regression by cluster
 
-An alternative approach would be to run separate regressions for every student.  However, there are many drawbacks to this- it's not easily summarized when there are many groups, typically there would be very little data within each cluster to do so, and the models are over-contextualized, meaning they ignore what students have in common.  We'll compare this result to the mixed model later.
+An alternative approach would be to run separate regressions for every student.  However, there are many drawbacks to this- it's not easily summarized when there are many groups, typically there would be very little data within each cluster to do so (as in this case), and the models are over-contextualized, meaning they ignore what students have in common.  We'll compare such an approach to the mixed model later.
 
 #### Mixed model
 
-Next we run a mixed model that will allow for a student specific effect.  Such a model is easily conducted in R, specifically with the package <span class="pack">lme4</span>.  In the following, the code will look just like what you used for regression with <span class="func">lm</span>, but with an additional component specifying the group effect.  The `(1|student)` means that we are allowing the intercept, represented by `1`, to vary by student. With the mixed model, we get the same results as the regression, but with more to talk about.
+Next we run a mixed model that will allow for a student specific effect.  Such a model is easily conducted in R, specifically with the package <span class="pack">lme4</span>.  In the following, the code will look just like what you used for regression with <span class="func">lm</span>, but with an additional component specifying the group, i.e. student, effect.  The `(1|student)` means that we are allowing the intercept, represented by `1`, to vary by student. With the mixed model, we get the same results as the regression, but with more to talk about.
 
 
 ```{r gpa_mixed, eval=-3}
@@ -192,7 +202,7 @@ tidy(VarCorr(gpa_mixed)) %>%
 ```
 
 
-First we see that the coefficients for the intercept and time are the same[^lmlmercoef], as would be their interpretation.  The standard errors, on the other hand are different here, though in the end our conclusion as far as statistical significance goes would be the same. However, the <span class="pack">lme4</span> does not provide p-values.  There are [several reasons](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#why-doesnt-lme4-display-denominator-degrees-of-freedomp-values-what-other-options-do-i-have) for this, namely that with mixed models we are essentially dealing with different sample sizes, the $N_c$ within cluster, which may vary from cluster to cluster (and even be a single observation!), and N total observations, which puts us in kind of a fuzzy situation with regard to reference distributions, denominator degrees of freedom and how to approximate a 'best' solution. Other programs provide p-values automatically as if there is no issue, and without telling you *which* approach they use to calculate them (there are several).  Furthermore, those approximations may be very poor in some scenarios, or make assumptions that may not be appropriate for the situation[^fuzzyp].
+First we see that the coefficients, i.e. or in this context they can be called the *fixed* effects, for the intercept and time are the same[^lmlmercoef] as we saw with the standard regression, as would be their interpretation.  The standard errors, on the other hand are different here, though in the end our conclusion as far as statistical significance goes would be the same. However, the <span class="pack">lme4</span> does not provide p-values!  There are [several reasons](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#why-doesnt-lme4-display-denominator-degrees-of-freedomp-values-what-other-options-do-i-have) for this, namely that with mixed models we are essentially dealing with different sample sizes, the $N_c$ within cluster, which may vary from cluster to cluster (and even be a single observation!), and N total observations, which puts us in kind of a fuzzy situation with regard to reference distributions, denominator degrees of freedom and how to approximate a 'best' solution. Other programs provide p-values automatically as if there is no issue, and without telling you *which* approach they use to calculate them (there are several).  Furthermore, those approximations may be very poor in some scenarios, or make assumptions that may not be appropriate for the situation[^fuzzyp].
 
 However, it's more straightforward to get confidence intervals, and we can do so with <span class="pack">lme4</span> as follows[^confint].
 
@@ -216,10 +226,15 @@ confint(gpa_mixed) %>%
   pander(justify='lrr', round=3)
 ```
 
+##### Variance components
 
-One thing that's new compared to the standard regression output is the estimated variance/standard deviation of the student effect ($\tau$ in our formula depiction from before).  This tells us how much, on average, GPA bounces around as we move from student to student. In other words, even after making a prediction based on time point, each student has their own unique deviation, and that value is the estimated average deviation.  Note that scores move due to the student more than double what they move based on a semester change.
+One thing that's new compared to the standard regression output is the estimated variance/standard deviation of the student effect ($\tau$ in our formula depiction from before).  This tells us how much, on average, GPA bounces around as we move from student to student. In other words, even after making a prediction based on time point, each student has their own unique deviation, and that value (in terms of the standard deviation) is the estimated average deviation.  Note that scores move due to the student more than double what they move based on a semester change.
 
-What's more, we can actually get estimates of the student effects.  I show two ways for the first five students, as random effect and as random intercept (i.e. effect + intercept).
+Another way to interpret the variance output is via the <span class="emph">intraclass correlation</span>, which tells us how much of the variance is due to the clustering.  In this case it's just the student variance out of the total, or `r round(vcovs[1,1], 3)` / `r round(sum(vcovs), 3)` =  `r round(vcovs[1,1]/sum(vcovs), 2)*100`%.
+
+##### Estimates of the random effects
+
+What's more, we can actually get estimates of the student effects[^blup].  I show two ways for the first five students, as random effect and as random intercept (i.e. intercept + random effect).
 
 ```{r randeffs, eval=FALSE}
 ranef(gpa_mixed)$student %>% head(5)
@@ -237,10 +252,77 @@ coef(gpa_mixed)$student %>% head(5) %>% arm::fround(digits=3) %>% pander(justify
 ```
 
 
-Note that we did not allow occasion to vary, so it is a constant, i.e. fixed, effect for all students. 
+Note that we did not allow occasion to vary, so it is a constant, i.e. *fixed*, effect for all students. 
+
+Often, we are keenly interested in these effects, and want some sense of uncertainty regarding them.  With <span class="pack">lme4</span> this typically would be done via bootstrapping, specifically with the <span class="func">bootMer</span> function. However, for some users this may be a bit of a more complex undertaking.  The <span class="pack">merTools</span> package provides for an easy way to get this with the <span class="func">predictInterval</span> function[^predinterval]. Or you can go straight to the plot of them. 
+
+```{r ranef_interval, eval=FALSE}
+library(merTools)
+predictInterval(gpa_mixed)
+plotREsim(REsim(gpa_mixed))
+```
+
+```{r ranef_interval_show, echo=FALSE}
+# library(merTools)  # use implicit or it will load bbmle which will load MASS 
+DT::datatable(merTools::predictInterval(gpa_mixed) %>% round(2))
+merTools::plotREsim(merTools::REsim(gpa_mixed)) +
+  theme_trueMinimal()
+```
+
+##### Prediction
+
+Let's now examine standard predictions vs. cluster-specific predictions.  As with most R models, we can use the predict function on the model object.
+
+```{r predict_uncond}
+predict(gpa_mixed, re.form=NA) %>% head
+```
+
+We specified not to use the random effects, and as such, our predictions for the observations are pretty much what we'd get from the standard linear model.
+
+```{r predict_uncond_lm, echo=1:2}
+predict_no_re = predict(gpa_mixed, re.form=NA)
+predict_lm = predict(gpa_lm)
+data_frame(student = gpa$student,
+           lm = predict_lm, 
+           `lmer no re`=predict_no_re) %>% 
+  round(2) %>% 
+  DT::datatable(rownames=F, width=500, options=list(dom='pt'))
+```
+
+But each person has their unique intercept, so let's see how the predictions differ when we incorporate that information.
+
+```{r predict_cond_lm, echo=1}
+predict_with_re = predict(gpa_mixed)
+data_frame(student = gpa$student,
+           lm = predict_lm, 
+           `lmer no re`=predict_no_re,
+           `lmer with re`=predict_with_re) %>% 
+  round(2) %>% 
+  DT::datatable(rownames=F, width=500, options=list(dom='pt'))
+```
 
 
-Another way to interpret the variance output is via the <span class="emph">intraclass correlation</span>, which tells us how much of the variance is due to the clustering.  In this case it's just the student variance out of the total, or `r round(vcovs[1,1], 3)` / `r round(sum(vcovs), 3)` =  `r round(vcovs[1,1]/sum(vcovs), 3)*100`%.
+The following shows the unconditional prediction vs. the conditional prediction that incorporates the random intercept for the first two students.
+
+```{r predict_cond_lm_plot, echo=FALSE}
+data_frame(student = as.character(gpa$student),
+           occasion = gpa$occasion,
+           gpa = gpa$gpa,
+           lm = predict_lm, 
+           `lmer no re`=predict_no_re,
+           `lmer with re`=predict_with_re) %>% 
+  filter(student %in% 1:2) %>% 
+  group_by(student) %>%
+  plot_ly() %>% 
+  add_markers(x=~occasion, y=~gpa, color=~student, showlegend=F) %>%
+  add_lines(x=~occasion, y=~lm, color=I('#ff5500'), showlegend=T, name='lm') %>%
+  add_lines(x=~occasion, y=~`lmer with re`, color=~student, showlegend=T, name='mixed') %>%
+  theme_plotly()
+```
+
+<br>
+
+We can see that the predictions from the mixed model are shifted because of having a different intercept.  For these students, the shift reflects their relatively poor start.
 
 ## Cluster level covariate
 
@@ -257,11 +339,11 @@ Which, after plugging in, we still have the same model as before, just with an a
 
 $$\mathrm{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathrm{occasion}+ b_{sex}\cdot \mathrm{sex} + (\mathrm{effect}_{\mathscr{student}} + \epsilon)$$
 
-Thus, adding cluster level covariates doesn't have any unusual effect on how we think about the model[^mlevel]. We simply add them to our set of predictor variables. Note also, that we can create cluster level covariates as means or some other summary of the observation level variables.  This is especially common when the clusters represent geographical units and observations are people.
+Thus, adding cluster level covariates doesn't have any unusual effect on how we think about the model[^mlevel]. We simply add them to our set of predictor variables. Note also, that we can create cluster level covariates as means or some other summary of the observation level variables.  This is especially common when the clusters represent geographical units and observations are people.  For example, we might have income as a person level covariate, and use the median to represent the overall wealth of the geographical region.
 
 ## Summary
 
-Mixed models allow for us to take into account clustering in the data.  If this were all it was used for, we would have more accurate inference relative to what would be had if we ignored the structure in the data.  However, we get much more.  We better understand the sources of variability in the target variable.  We also get group specific estimates of the parameters in the model, allowing us to understand exactly how the groups differ from one another.  Furthermore, this in turn allows for group specific prediction, and much more accurate prediction.  In short, there is much to be gained by mixed models, even in the simplest of settings.
+Mixed models allow for us to take into account clustering in the data.  If this were all it was used for, we would have more accurate inference relative to what would be had if we ignored the structure in the data.  However, we get much more.  We better understand the sources of variability in the target variable.  We also get group specific estimates of the parameters in the model, allowing us to understand exactly how the groups differ from one another.  Furthermore, this in turn allows for group specific prediction, and thus much more accurate prediction, assuming there is appreciable variance due to the clustering.  In short, there is much to be gained by mixed models, even in the simplest of settings.
 
 
 ## Exercises
@@ -281,9 +363,11 @@ data("sleepstudy")
 pander(head(sleepstudy))
 ```
 
-First run a regression with Reaction as the target variable and Days as the predictor. Then Run a mixed model with a random intercept for Subject.
+1. Run a regression with Reaction as the target variable and Days as the predictor. 
 
-Interpret the variance components and fixed effects.
+2. Run a mixed model with a random intercept for Subject.
+
+3. Interpret the variance components and fixed effects.
 
 
 
@@ -306,7 +390,7 @@ The following represents a simple way to simulate a random intercepts model.  No
 
 ```{r simMixed, eval=FALSE}
 set.seed(1234)  # this will allow you to exactly duplicate your result
-Ngroups = 50
+Ngroups = 100
 NperGroup = 3
 N = Ngroups*NperGroup
 groups = factor(rep(1:Ngroups, each=NperGroup))
@@ -334,7 +418,7 @@ ggplot(aes(x, y), data=d) +
 
 Do the results seem in keeping with what you expect?
 
-In what follows we'll change various aspects of the data, then rerun the model after each change, then summarizing and getting confidence intervals as before.  For each note specifically at least one thing that changed in the results.
+In what follows we'll change various aspects of the data, then rerun the model after each change, then summarize and get confidence intervals as before.  For each note specifically at least one thing that changed in the results.
 
 0. First calculate or simply eyeball the intraclass correlation coefficient $\frac{\textrm{random effect variance}}{\textrm{residual + random effect variance}}$.  In addition, create a density plot of the random effects as follows.
 
@@ -344,8 +428,8 @@ qplot(x=re, geom='density', xlim=c(-3,3))
 ```
 
 1. Change the random effect variance/sd and/or the residual variance/sd and note your new estimate of the ICC, and plot the random effect as before.
-2. Reset the values to the original.  Change <span class="objclass">Ngroups</span> to 10. What differences do you see in the confidence interval estimates? 
-3. Set the Ngroups back to 50. Now change <span class="objclass">NperGroup</span> to 10, and note again the how the CI is different from the base condition.
+2. Reset the values to the original.  Change <span class="objclass">Ngroups</span> to 50. What differences do you see in the confidence interval estimates? 
+3. Set the Ngroups back to 100. Now change <span class="objclass">NperGroup</span> to 10, and note again the how the CI is different from the base condition.
 
 
 [^richlypar]: I actually like [Richly Parameterized Linear Models](https://www.crcpress.com/Richly-Parameterized-Linear-Models-Additive-Time-Series-and-Spatial/Hodges/p/book/9781439866832), or [Structured Additive Regression Models](https://www.springer.com/us/book/9783642343322).  Both are a mouthful, but at least the latter reduces to [STARs](http://m-clark.github.io/workshops/stars/).
@@ -356,9 +440,14 @@ qplot(x=re, geom='density', xlim=c(-3,3))
 
 [^lmlmercoef]: This will not always be the case, e.g. with unbalanced data, but they should be fairly close.
 
-[^mlevel]: This is why the multilevel depiction is subpar, and leads many to confusion at times.  You have a target variable and predictor variables based on theory.  Whether they are cluster level variables or if there are interactions doesn't have anything to do with the data structure as much as it does the theoretical implications.  However, if you depict the model in multilevel fashion, the final model must adhere to the 'plugged in' result.  So if, e.g. you posit a cluster level variable for a random slope, you *must* include the implied interaction of the cluster level and observation level covariates.
 
 [^fuzzyp]: Note that many common modeling situations involve a fuzzy p setting, but especially penalized regression approaches such as mixed, additive, ridge regression models etc.  Rather than be a bad thing, this usually is a sign you're doing something interesting, or handling complexity in an appropriate way.
 
 [^confint]: See `?confint.merMod` for details and options.
 
+[^blup]: These are sometimes referred to as BLUPs or EBLUPs, which stands for (empirical) best linear unbiased prediction.  However, they are only BLUP for *linear* mixed effects models.  As such you will also see them referred to as <span class="emph">conditional mode</span>.  Furthermore, in the Bayesian context, the effects are actually estimated as additional model parameters, rather than estimated/predicted after the fact.
+
+[^predinterval]: Note that while <span class="func">predictionInterval</span> does not quite incorporate all sources of uncertainty as does <span class="func">bootMer</span>, it's actually feasible for larger data sets, and on par with the Bayesian results (e.g. with <span class="pack">rstanarm</span>).
+
+
+[^mlevel]: This is why the multilevel depiction is subpar, and leads many to confusion at times.  You have a target variable and predictor variables based on theory.  Whether they are cluster level variables or if there are interactions doesn't have anything to do with the data structure as much as it does the theoretical motivations.  However, if you choose to depict the model in multilevel fashion, the final model must adhere to the 'plugged in' result.  So if, for example, you posit a cluster level variable for a random slope, you *must* include the implied interaction of the cluster level and observation level covariates. The HLM software goes so far as to even require a separate data set pertaining to cluster level covariates, which is completely unnecessary in R, Stata, SAS etc.

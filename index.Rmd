@@ -13,6 +13,7 @@ output:
     hightlight: pygments
     number_sections: false
     toc_depth: 2
+    toc_collapse: 1
     # split_by: section
     config:
       edit : null

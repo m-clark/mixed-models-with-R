@@ -6,12 +6,12 @@ Mixed models are an extremely useful modeling tool for situations in which there
 
 ### Goals
 
-The goal of this workshop is primarily to provide a sense of when one would use mixed models and a variety of standard techniques.  Additionally, we'll have exercises to practice.  
+This document serves as the basis for a workshop. The goal of the workshop is primarily to provide a sense of when one would use mixed models and a variety of standard techniques to implement them.  Additionally, we'll have exercises to practice.  
 
 
 ### Prerequisites
 
-The document is for the most part very applied in nature, and only assumes a basic understanding of standard regression models. Use of R for regression modeling is also assumed.  Demonstrations will be done almost entirely with the <span class="pack">lme4</span> package.
+The document is for the most part very applied in nature, and only assumes a basic understanding of standard regression models. Use of R for regression modeling is also assumed, though there will be some review.  Demonstrations will be done almost entirely with the <span class="pack">lme4</span> package.
 
 Note the following color coding used in this document:
 
