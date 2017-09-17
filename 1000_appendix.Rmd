@@ -35,25 +35,33 @@ market segments.
 
 ## Programming languages
 
-R has more mixed modeling capabilities than anything else out there.  Here are other options within R.
+### R
+
+R has more mixed modeling capabilities [than anything else out there](https://www.r-pkg.org/search.html?q=mixed+model).  Here are just a few options within R.
 
 - <span class="pack">lme4</span>: generalized linear mixed models; extremely efficient
 - <span class="pack">nlme</span>: (non-)linear mixed models but only for the gaussian case.
 - <span class="pack">mgcv</span>: provides means to use both lme4 or nlme, extends distributional families, correlated residuals, and all that additive model stuff too
+- <span class="pack">ordinal</span>: for various types of ordinal models
 - <span class="pack">rstanarm</span>:  Bayesian with lme4 level options
 - <span class="pack">brms</span>: Bayesian with possibly the most extensive mixed model capabilities out there
-- <span class="pack">ordinal</span>: for various types of ordinal models
 
 
 
-- Python: the [statsmodels](http://www.statsmodels.org/stable/mixed_linear.html) module has basic capabilities for mixed models but not too many frills (e.g. no crossed random effects).  CSCAR directory Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series [here](https://github.com/kshedden/Statsmodels-MixedLM).
-- Julia: one of the <span class="pack">lme4</span> authors develops a [MixedModels](https://github.com/dmbates/MixedModels.jl) package for Julia
+### Python
+
+In Python, the [statsmodels](http://www.statsmodels.org/stable/mixed_linear.html) module has basic capabilities for mixed models but not too many frills (e.g. no crossed random effects).  CSCAR directory Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series [here](https://github.com/kshedden/Statsmodels-MixedLM).
+
+
+### Julia
+
+One of the <span class="pack">lme4</span> authors develops a [MixedModels](https://github.com/dmbates/MixedModels.jl) package for Julia. Doug Bates is currently creating some [notebooks](https://github.com/dmbates/MixedModelsinJulia) (and possibly a full book) on implementation of mixed models in Julia.
 
 ### Proprietary
 
-Among the standard stats packages, I can only recommend Stata for both ease of implementation and flexibility in modeling. SAS and SPSS both have non-intuitive and needlessly verbose syntax, and, while SAS is a fairly good tool for mixed models (from my understanding), I've seen SPSS consistently struggle with even simple models, and its GUI interface, the only reason to use it, is not even remotely intuitive.
+Among the standard stats packages, I can only recommend **Stata** for both ease of implementation and flexibility in modeling. **SAS** and **SPSS** both have non-intuitive and needlessly verbose syntax, and, while SAS is a fairly good tool for mixed models (from my understanding), I've acutally seen SPSS consistently struggle with even simple models, and its GUI interface, the only reason to use SPSS in the first place, is not even remotely intuitive.
 
-Mplus has a lot of functionality both for standard mixed models and growth curve models, though between <span class="pack">lavaan</span>, <span class="pack">mediation</span>, and the rest of R, there is little need to use Mplus except for very complicated multilevel SEM, which requires very large samples and a lot of theoretical justification.
+**Mplus** has a lot of functionality both for standard mixed models and growth curve models, though between <span class="pack">lavaan</span>, <span class="pack">mediation</span>, and the rest of R, there is little need to use Mplus except for very complicated multilevel SEM, which requires very large samples and a lot of theoretical justification, which most of the people doing SEM I come across rarely have.
 
 I will also say that there is zero reason to use mixed model specific software like HLM.  The days for such hijinks have long since passed.
 
@@ -62,13 +70,15 @@ I will also say that there is zero reason to use mixed model specific software l
 
 An excellent modeling book can be found in [Data Analysis Using Regression and Multilevel/Hierarchical Models](http://www.stat.columbia.edu/~gelman/arm/).  You will learn a great deal about statistical modeling in general, as the mixed model stuff only comprises the second part.
 
-
 On the applied side, CSCAR's own Brady West has a book- [Linear Mixed Models: A Practical Guide Using Statistical Software ](http://www-personal.umich.edu/~bwest/almmussp.html). It shows examples in a variety of programming formats while not glossing over the details you need to know.
 
 Two texts come at mixed models from a very broad perspective, which I like. I find Fahrmeier et al. [Regression - Models, Methods and Applications](http://www.springer.com/us/book/9783642343322) to be very good.  It will also tie mixed models to spatial and nonparametric approaches.  [Richly Parameterized Linear Models - Additive, Time Series, and Spatial Models Using Random Effects](https://www.crcpress.com/Richly-Parameterized-Linear-Models-Additive-Time-Series-and-Spatial/Hodges/p/book/9781439866832), does as well, and provides some nice historical context and hits on practical issues you *will* encounter if you play with these models long enough.
 
-There is literally [a book on mixed models with lme4](http://lme4.r-forge.r-project.org/lMMwR/lrgprt.pdf) by Douglas Bates, one of the developers. While dated with regard to <span class="pack">lme4</span>, it's definitely not in general, and worth having around.
+There is literally [a book on mixed models with lme4](http://lme4.r-forge.r-project.org/lMMwR/lrgprt.pdf) by Doug Bates, one of the developers. While dated with regard to <span class="pack">lme4</span>, it's definitely not with regard to mixed models in general, and worth having around.
 
 [Mixed model FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html)
 
 I have [several other docs](http://m-clark.github.io/documents/#mixed-models) on various aspects of mixed models.
+
+
+There is a lot of good information on stackoverflow and cross validated Q &  A sites, where <span class="pack">lme4</span> developer Ben Bolker has been quite active in answering people's questions.

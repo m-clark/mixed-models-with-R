@@ -46,7 +46,7 @@ github-repo:  m-clark/
 
 ```{r chunk_setup, include=FALSE, eval=TRUE}
 knitr::opts_chunk$set(echo = T, message=F, warning=F, comment=NA, autodep=F, 
-                      eval=T, cache.rebuild=F, cache=T, R.options=list(width=120), 
+                      eval=T, cache.rebuild=T, cache=T, R.options=list(width=120), 
                       fig.width=8, fig.align = 'center')
 ```
 
@@ -100,6 +100,15 @@ Note the following color coding used in this document:
 3. File/Open Project and click on the blue icon in the folder you just created.
 4. File/Open Click on the ReadMe file and do what it says.
 
+## Key packages
+
+To run the code in this document you'll really only need the following:
+
+- lme4 
+- tidyverse (for data processing)
+- merTools (optional)
+- modelr (optional)
+- nlme (part of base R, no need for install)
 
 
 <!--chapter:end:00_Introduction.Rmd-->
@@ -148,12 +157,18 @@ For the following we'll assess factors predicting college grade point average (G
 # The label is 0,1:3, 4 or more hours (pt jobs for less than 4 hours? per day?).
 # However only values of 1 (rare to non-existent some years) 2 or 3.  How the
 # hell do you 'simulate' a factor that only has 3 of 5 levels and one category
-# that makes up 97% of the data? Avoid or change.
+# that makes up 80% of the data? Avoid or change.
 
 gpa = read_spss('data/raw_data/joop_hox_data2/5 Longitudinal/gpa2long.sav') %>% 
   mutate(highgpa=as.numeric(highgpa),
-         occasion = as.numeric(occas) %>%  # to get rid of stupid labels
-  as_factor
+         student = factor(student),
+         occas = as_factor(occas),
+         job = as_factor(job),
+         sex = as_factor(sex),
+         admitted = as_factor(admitted),
+         year = as.numeric(str_sub(occas, 6,6)),
+         semester = as_factor(str_sub(occas, -1,-1)),
+         occasion = as.numeric(occas)) # to get rid of stupid labels
 
 glimpse(gpa)
 save(gpa, file='data/gpa.RData')
@@ -383,24 +398,52 @@ Let's now examine standard predictions vs. cluster-specific predictions.  As wit
 predict(gpa_mixed, re.form=NA) %>% head
 ```
 
-We specified not to use the random effects, and as such, our predictions for the observations are pretty much what we'd get from the standard linear model.
+In the above code we specified not to use the random effects `re.form=NA`, and as such, our predictions for the observations are pretty much what we'd get from the standard linear model.
 
 ```{r predict_uncond_lm, echo=1:2}
 predict_no_re = predict(gpa_mixed, re.form=NA)
 predict_lm = predict(gpa_lm)
-DT::datatable(data_frame(lm = predict_lm, `lmer no re`=predict_no_re))
+data_frame(student = gpa$student,
+           lm = predict_lm, 
+           `lmer no re`=predict_no_re) %>% 
+  round(2) %>% 
+  DT::datatable(rownames=F, width=500, options=list(dom='pt'))
 ```
 
 But each person has their unique intercept, so let's see how the predictions differ when we incorporate that information.
 
-```{r predict_uncond_lm, echo=1}
-predict_with_re = predict(gpa_mixed, re.form=NA)
-DT::datatable(data_frame(lm = predict_lm, 
-                         `lmer no re`=predict_no_re,
-                         `lmer with re`=predict_with_re))
+```{r predict_cond_lm, echo=1}
+predict_with_re = predict(gpa_mixed)
+data_frame(student = gpa$student,
+           lm = predict_lm, 
+           `lmer no re`=predict_no_re,
+           `lmer with re`=predict_with_re) %>% 
+  round(2) %>% 
+  DT::datatable(rownames=F, width=500, options=list(dom='pt'))
 ```
 
 
+The following shows the unconditional prediction vs. the conditional prediction that incorporates the random intercept for the first two students.
+
+```{r predict_cond_lm_plot, echo=FALSE}
+data_frame(student = as.character(gpa$student),
+           occasion = gpa$occasion,
+           gpa = gpa$gpa,
+           lm = predict_lm, 
+           `lmer no re`=predict_no_re,
+           `lmer with re`=predict_with_re) %>% 
+  filter(student %in% 1:2) %>% 
+  group_by(student) %>%
+  plot_ly() %>% 
+  add_markers(x=~occasion, y=~gpa, color=~student, showlegend=F) %>%
+  add_lines(x=~occasion, y=~lm, color=I('#ff5500'), showlegend=T, name='lm') %>%
+  add_lines(x=~occasion, y=~`lmer with re`, color=~student, showlegend=T, name='mixed') %>%
+  theme_plotly()
+```
+
+<br>
+
+We can see that the predictions from the mixed model are shifted because of having a different intercept.  For these students, the shift reflects their relatively poor start.
 
 ## Cluster level covariate
 
@@ -417,7 +460,7 @@ Which, after plugging in, we still have the same model as before, just with an a
 
 $$\mathrm{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathrm{occasion}+ b_{sex}\cdot \mathrm{sex} + (\mathrm{effect}_{\mathscr{student}} + \epsilon)$$
 
-Thus, adding cluster level covariates doesn't have any unusual effect on how we think about the model[^mlevel]. We simply add them to our set of predictor variables. Note also, that we can create cluster level covariates as means or some other summary of the observation level variables.  This is especially common when the clusters represent geographical units and observations are people.  For example, we might have income as a person level covariate, and use the mean to represent the overall wealth of the geographical region.
+Thus, adding cluster level covariates doesn't have any unusual effect on how we think about the model[^mlevel]. We simply add them to our set of predictor variables. Note also, that we can create cluster level covariates as means or some other summary of the observation level variables.  This is especially common when the clusters represent geographical units and observations are people.  For example, we might have income as a person level covariate, and use the median to represent the overall wealth of the geographical region.
 
 ## Summary
 
@@ -518,15 +561,17 @@ qplot(x=re, geom='density', xlim=c(-3,3))
 
 [^lmlmercoef]: This will not always be the case, e.g. with unbalanced data, but they should be fairly close.
 
-[^blup]: These are sometimes referred to as BLUPs or EBLUPs, which stands for (empirical) best linear unbiased prediction.  However, they are only BLUP for *linear* mixed effects models.  As such you will also see them referred to as <span class="emph">conditional mode</span>.  Furthermore, in the Bayesian context, the effects are actually estimated as additional model parameters, rather than estimated/predicted after the fact.
-
-[^mlevel]: This is why the multilevel depiction is subpar, and leads many to confusion at times.  You have a target variable and predictor variables based on theory.  Whether they are cluster level variables or if there are interactions doesn't have anything to do with the data structure as much as it does the theoretical implications.  However, if you depict the model in multilevel fashion, the final model must adhere to the 'plugged in' result.  So if, e.g. you posit a cluster level variable for a random slope, you *must* include the implied interaction of the cluster level and observation level covariates. The HLM software goes so far as to even require a separate data set pertaining to cluster level covariates, which is completely unnecessary in R, Stata, SAS etc.
 
 [^fuzzyp]: Note that many common modeling situations involve a fuzzy p setting, but especially penalized regression approaches such as mixed, additive, ridge regression models etc.  Rather than be a bad thing, this usually is a sign you're doing something interesting, or handling complexity in an appropriate way.
 
 [^confint]: See `?confint.merMod` for details and options.
 
+[^blup]: These are sometimes referred to as BLUPs or EBLUPs, which stands for (empirical) best linear unbiased prediction.  However, they are only BLUP for *linear* mixed effects models.  As such you will also see them referred to as <span class="emph">conditional mode</span>.  Furthermore, in the Bayesian context, the effects are actually estimated as additional model parameters, rather than estimated/predicted after the fact.
+
 [^predinterval]: Note that while <span class="func">predictionInterval</span> does not quite incorporate all sources of uncertainty as does <span class="func">bootMer</span>, it's actually feasible for larger data sets, and on par with the Bayesian results (e.g. with <span class="pack">rstanarm</span>).
+
+
+[^mlevel]: This is why the multilevel depiction is subpar, and leads many to confusion at times.  You have a target variable and predictor variables based on theory.  Whether they are cluster level variables or if there are interactions doesn't have anything to do with the data structure as much as it does the theoretical motivations.  However, if you choose to depict the model in multilevel fashion, the final model must adhere to the 'plugged in' result.  So if, for example, you posit a cluster level variable for a random slope, you *must* include the implied interaction of the cluster level and observation level covariates. The HLM software goes so far as to even require a separate data set pertaining to cluster level covariates, which is completely unnecessary in R, Stata, SAS etc.
 
 <!--chapter:end:01_random_intercepts.Rmd-->
 
@@ -564,7 +609,7 @@ gpa_mixed =  lmer(gpa ~ occasion + (1 + occasion|student), data=gpa)
 summary(gpa_mixed)
 ```
 
-Pretty easy huh? Let's look at the results.
+Pretty easy huh? To the left of that bar we are simply just positing a formula as we do with most modeling functions[^nointneeded]. Let's look at the results.
 
 
 ```{r random_slope_summary, echo=FALSE}
@@ -582,14 +627,14 @@ tidy(VarCorr(gpa_mixed)) %>%
   pander()
 ```
 
-Note that since we have 0 as our starting semester, the intercept tells us what the average GPA is in the first semester.  The associated intercept variance tells us how much that starting GPA bounces around from student to student.
+As before, since we have 0 as our starting semester, the intercept tells us what the average GPA is in the first semester.  The coefficient for occasion still reflects a one semester change in GPA.  As we have not changed the fixed effect portion of the model, the values are the same as before.
 
-The slope variance for occasion might not look like much in comparison, but slopes are on a notably different scale than the intercept.  Note that the mean slope for the semester to semester effect, our fixed effect, is `r round(fixef(gpa_mixed)[2], 2)`, but from student to student it bounces around half that.  Thus we could expect most students to fall somewhere between a flat effect of zero to more than double the population average[^sdslopes]. 
+The associated intercept variance tells us how much that starting GPA bounces around from student to student. The variance for the occasion effect might not look like much in comparison, but slopes are on a notably different scale than the intercept.  Note that the mean slope for the semester to semester effect, our fixed effect, is `r round(fixef(gpa_mixed)[2], 2)`, but from student to student it bounces around half that.  Thus we could expect most students to fall somewhere between a flat effect of zero to more than double the population average[^sdslopes]. 
 
 Yet another point of interest is the correlation of the intercepts and slopes. In this case it's `r tidy(VarCorr(gpa_mixed)) %>% slice(3) %>% select(sdcor) %>%  round(2)`. That's pretty small, but the interpretation is the same as with any correlation.  In this case specifically, it tells us that those with lower intercepts would be associated with increased time trajectories.   This makes intuitive sense in that people are improving in general, and those at the bottom would have more room to improve.  However, this is very slight, and practically speaking we might not put too much weight on it.
 
 
-### Comparison to many regressions
+## Comparison to many regressions
 
 
 Let's compare these results to the ones we would have gotten had we run a separate regression for each student.  In what follows we see the distribution of of the estimated intercept and slope coefficients for all the students.
@@ -624,10 +669,10 @@ gslopes = data_frame(Mixed=coef(gpa_mixed)$student[,2], Separate=gpa_lm_by_group
 gridExtra::grid.arrange(gint, gslopes, ncol=2)
 ```
 
-Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what otherwise would have been the by-group estimate, which would overfit.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models.
+Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what otherwise would have been the by-group estimate, which would otherwise overfit in this scenario.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models[^pool].  It comes into play largely when we have few observations per group and less estimated variance for the random effects.  In other words, when there is little information in a group, or less group-level variance relative to the observation variance, then the mixed model will produce a group-specific effect that is closer to the overall population effect.  In that sense, the mixed model group coefficients better reflect our ignorance.
 
 
-### Visual prediction
+## Visual prediction
 
 Let's compare our results visually. First there is the linear regression fit. We assume the same trend for everyone.  If we add the conditional predictions that include the subject specific effects from the mixed model, we now can also make subject specific predictions, greatly enhancing the practical use of the model.  As the code to create this plot (using <span class="pack">plotly</span>) was very easy, I go ahead and show it.
 
@@ -663,11 +708,15 @@ gpa %>%
 ```
 
 
+## Summary
+
+At this point it might be clearer why some would call these *richly parameterized linear models*. Relative to a standard regression we get extra variance parameters that add to our understanding of the sources of uncertainty in the model, we can get the subjects specific effects, their correlation, and use that information to obtain far better predictions.  What's not to like?
+
 ## Exercises
 
 #### Sleep revisited
 
-Run the sleep study model with random coefficient for the Days effect, and interpret the results.  What is the correlation between the intercept and Days random effects?  Use the <span class="func">ranef</span> and <span class="func">coef</span> functions on the model you've created. What do you see?
+Run the sleep study model with random coefficient for the Days effect, and interpret the results.  What is the correlation between the intercept and Days random effects?  Use the <span class="func">ranef</span> and <span class="func">coef</span> functions on the model you've created to inspect the individual specific effects. What do you see?
 
 ```{r sleepstudy2}
 library(lme4)
@@ -708,10 +757,10 @@ d = data.frame(x, y, groups)
 This next bit of code shows a way to run a mixed model while specifying that there is no correlation between intercepts and slopes.  There is generally no reason to do this unless the study design warrants it[^nocorr], but you could do it as a step in the model-building process, such that you fit a model with no correlation, then one with it.
 
 ```{r simSlopes2, eval=FALSE}
-model_base = lmer(y ~ x + (1|groups), data=d)
-model = lmer(y ~ x + (1|groups) + (0 + x|groups), data=d)
-summary(model)
-confint(model)
+model_ints_only = lmer(y ~ x + (1|groups), data=d)
+model_with_slopes = lmer(y ~ x + (1|groups) + (0 + x|groups), data=d)
+summary(model_with_slopes)
+confint(model_with_slopes)
 
 
 
@@ -723,10 +772,14 @@ ggplot(aes(x, y), data=d) +
 Compare model fit using the <span class="func">AIC</span> function, e.g. `AIC(model)`.  The model with the lower AIC is the better model, so which would you choose?
 
 
+[^nointneeded]: Technically the intercept is assumed but you should keep it for clarity.
 
-[^sdslopes]: In case it's not clear, I'm using the fact that we assume a normal distribution for the random effect of occasion.  A quick rule of thumb for a normal distribution is that 95% fall between $\pm$ 2 standard deviations of the mean.
+[^sdslopes]: In case it's not clear, I'm using the fact that we assume a normal distribution for the random effect of occasion.  A quick rule of thumb for a normal distribution is that 95% falls between $\pm$ 2 standard deviations of the mean.
 
 [^nocorr]: I personally have not come across a situation where I'd do this in practice.  Even if the simpler model with no correlation was a slightly better fit, there isn't much to be gained by it.
+
+
+[^pool]: This phenomenon is also sometimes referred to as <span class="emph">partial pooling</span>.  This idea of pooling is as in pooling resources or borrowing strength.  You have complete pooling, which would be the standard regression model case of ignoring the clusters. No pooling, which assumes the clusters have nothing in common, i.e. the separate regressions approach.  Partial pooling is seen the mixed model scenario, where the similarity among the clusters is estimated in some fashion, and data for all observations informs the estimates for each cluster.  I've never really liked the 'pooling' terminology, as regularization is a more broad concept that applies beyond mixed models, and I'd prefer to stick to that.  In any case, see the pool-no-pool document [here](https://github.com/stan-dev/example-models/tree/master/knitr/pool-binary-trials).
 
 <!--chapter:end:02_random_slopes.Rmd-->
 
@@ -753,7 +806,7 @@ crossing(Person=1:20, Image=letters[1:10]) %>%
 <br>
 <br>
 
-In such a case we have observations clustered within both person and image, but person and image are not nested within one another. For example all participants see all 10 items.  Such a situation is typically referred to as one in which there are <span class="emph">crossed</span> random effects.  In such settings we have multiple sources variances to consider.
+In such a case we have observations clustered within both person and image, but person and image are not nested within one another- all participants see all 10 items.  Such a situation is typically referred to as one in which there are <span class="emph">crossed</span> random effects.  In such settings we have multiple sources variances to consider.
 
 
 #### Example: Student achievement
@@ -831,9 +884,22 @@ crossed_var_cor %>%
 
 When we look at the variance components we see that primary and secondary school contributes about `r round(sum(crossed_var_cor$variance[1:2])/sum(crossed_var_cor$variance)*100)`% of the total variance.  Most of the variance attributable to school comes from the primary school.
 
+If we inspect the random effects, we can see that we now have two sets of effects- `r n_distinct(pupils$primary_school_id)` for the primary schools, and `r n_distinct(pupils$secondary_school_id)` for the secondary.  Both would be incorporated into any pupil-specific prediction.
+
+```{r crossed_re}
+glimpse(ranef(pupils_crossed))
+```
+
+Let's look at them visually using <span class="pack">merTools</span>.
+
+```{r crossed_re_plot, echo=FALSE}
+p = merTools::plotREsim(merTools::REsim(pupils_crossed)) +
+  theme_trueMinimal()
+p
+```
+
+
 Note that we have the usual extensions here if desired.  As an example, we could also do random slopes for student level characteristics.
-
-
 
 ### Hierarchical Structure
 
@@ -857,7 +923,7 @@ DT::datatable(nurses,
 <br>
 <br>
 
-For the model we examine effects of the treatment as well as several other covariates, at least one at each of the nurse, ward, and hospital levels. Again, when it comes to the fixed effects portion, you can simply think about that part as you would any standard regression, we just add covariates as theory/exploration would suggest.  To incorporate this type of random effects structure is not too different from the cross-classified approach, but does add a slight change.
+For the model we examine effects of the treatment as well as several other covariates, at least one at each of the nurse, ward, and hospital levels. Again, when it comes to the fixed effects portion, you can simply think about that part as you would any standard regression, we just add covariates as theory/exploration would suggest.  To incorporate this type of random effects structure is not too different from the cross-classified approach, but does have a slight change to the syntax.
 
 ```{r hierarchical, eval=1}
 nurses_hierarchical = lmer(stress ~ age  + sex + experience 
@@ -889,7 +955,14 @@ hierarch_var_cor %>%
   pander(justify='lcrr')
 ```
 
-Concerning the random effects, there appears to be quite a bit of variability from ward to ward especially, but also hospital.  Recall that stress is a 7 point scale, so from ward to ward we can expect scores to bounce around about half a  point on average, which is quite dramatic in my opinion. 
+Concerning the random effects, there appears to be quite a bit of variability from ward to ward especially, but also hospital.  Recall that stress is a 7 point scale, so from ward to ward we can expect scores to bounce around about half a  point on average, which is quite dramatic in my opinion. Again we inspect it visually.
+
+```{r hierarchical_re_plot, echo=FALSE}
+p = merTools::plotREsim(merTools::REsim(nurses_hierarchical)) +
+  theme_trueMinimal()
+p
+```
+
 
 ### Crossed vs. Nested
 
@@ -951,7 +1024,7 @@ $$\mu = b_0 + b_1\cdot \mathrm{time} + b_2\cdot x_1 ...$$
 
 However, instead of just plopping an $\epsilon$ at the end, we want to go further in defining the entire residual variance/covariance structure for all three time points.
 
-In the simplest setting we have constant variance and no covariance.
+In the simplest setting of standard regression, we have constant variance and no covariance.
 
 $$\Sigma = 
 \left[
@@ -1005,7 +1078,7 @@ Again, the main point is that points further apart in time are assumed to have l
 
 Know that there are many patterns and possibilities to potentially consider, and that they are not limited to the repeated measures scenario.  For example, the correlation could represent spatial structure.  We could also have variances that are different at each time point[^residstruct].
 
-For reasons that defy my ability to parse, <span class="pack">lme4</span> does not provide the ability to model the residual correlation structure, though practically every other mixed model package does[^lmerho].  In fact, two packages that come with the basic R installation do so, <span class="pack">mgcv</span> and <span class="pack">nlme</span>.  We'll demonstrate with the latter. 
+Unfortunately, <span class="pack">lme4</span> does not provide the ability to model the residual correlation structure, though many other mixed model packages do[^lmerho].  In fact, two packages that come with the basic R installation do so, <span class="pack">mgcv</span> and <span class="pack">nlme</span>.  We'll demonstrate with the latter. 
 
 The following example shows the same model we did before, but with the autocorrelation structure we just described. In <span class="pack">nlme</span> we use the built in <span class="func">corAR1</span> function and `correlation` argument.  Note also the different random effect specification (though not *too* different).
 
@@ -1034,9 +1107,9 @@ Notice first that the fixed effect for occasion is the same as [before][Mixed mo
 
 Just as generalized linear models extend the standard linear model, we can generalize (linear) mixed models to <span class="emph">generalized linear mixed models</span>.  Furthermore, there is nothing keeping us to only exponential family, as other packages would potentially allow for many other response distributions.
 
-For this example we'll do a logistic regression in the mixed model setting. In this case, we'll use the speed dating data set. In the speed dating events, the experiment randomly assigned each participant to ten short dates (four minutes) with participants of the opposite sex. For each date, each person rated six attributes (attractive, sincere, intelligent, fun, ambitious, shared interests) of the other person on a 10-point scale and wrote down whether he or she would like to see the other person again.
+For this example we'll do a logistic regression in the mixed model setting. In this case, we'll use the speed dating data set. In the speed dating events, the experiment randomly assigned each participant to ten short dates (four minutes) with other participants. For each date, each person rated six attributes (attractive, sincere, intelligent, fun, ambitious, shared interests) of the other person on a 10-point scale and wrote down whether he or she would like to see the other person again.
 
-Our target variable is whether the participant would be willing to date the person again (`decision`).  To keep things simple the predictors will be limited to the sex of the participant (`sex`), whether the partner was of the same race (`samerace`), and three of the attribute ratings the participant gave of their partner- attractiveness (`attractive`), sincerity (`sincere`), and intelligence (`intelligent`). The latter have been scaled to have zero mean and standard deviation of one (`_sc`).
+Our target variable is whether the participant would be willing to date the person again (`decision`).  To keep things simple the predictors will be limited to the sex of the participant (`sex`), whether the partner was of the same race (`samerace`), and three of the attribute ratings the participant gave of their partner- attractiveness (`attractive`), sincerity (`sincere`), and intelligence (`intelligent`). The latter have been scaled to have zero mean and standard deviation of .5, which puts them on a more even footing with the binary covariates (`_sc`)[^scalecontbin].
 
 ```{r speed_dating, echo=FALSE, eval=FALSE}
 speed_dating0 = readr::read_csv('data/raw_data/ARM_Data/Speed Dating Data.csv')
@@ -1058,12 +1131,12 @@ speed_dating = speed_dating0 %>%
   mutate(decision = factor(decision, labels=c('No', 'Yes')),
          sex = factor(sex, labels=c('Female', 'Male')),
          samerace = factor(samerace, labels=c('No', 'Yes')),
-         attractive_sc=scale(attractive)[,1],
-         sincere_sc=scale(sincere)[,1],
-         intelligent_sc=scale(intelligent)[,1],
-         fun_sc=scale(fun)[,1],
-         ambitious_sc=scale(ambitious)[,1],
-         shared_interests_sc=scale(shared_interests)[,1]) %>% 
+         attractive_sc=scale(attractive, scale=.5)[,1],
+         sincere_sc=scale(sincere, scale=.5)[,1],
+         intelligent_sc=scale(intelligent, scale=.5)[,1],
+         fun_sc=scale(fun, scale=.5)[,1],
+         ambitious_sc=scale(ambitious, scale=.5)[,1],
+         shared_interests_sc=scale(shared_interests, scale=.5)[,1]) %>% 
   group_by(iid) %>% 
   mutate(never_always = if_else(all(decision=='Yes') | all(decision=='No'), 1, 0)) %>% 
   ungroup() %>% 
@@ -1148,11 +1221,11 @@ In the following, load the sociometric data and run the following model. You wil
 
 We will proceed with the following modeling steps. For each, make sure you are creating a separate model object for each one run.
 
-- Model 1: No covariates, only sender and receiver random effects. Note that even though we don't add group yet, still use the nesting 
+- Model 1: No covariates, only sender and receiver random effects. Note that even though we don't add group yet, still use the nesting approach to specify the effects (e.g. `1|group:receiver`)
 - Model 2: No covariates, add group random effect
-- Model 3: Add all covariates
-- Model 4: In order to examine sex match effects, do an interaction of the sex variables.
-- Compare models with AIC
+- Model 3: Add all covariates: `agesend/rec`, `sexsend/rec`, and `grsize` (group size)
+- Model 4: In order to examine sex matching effects, add an interaction of the sex variables to the model `sexsend:sexrec`.
+- Compare models with AIC (see the note about [model comparison][model comparison]), e.g. `AIC(model1)`. A lower value would indicate the model is preferred.
 
 
 ```{r socio, echo=1, eval=FALSE}
@@ -1189,13 +1262,16 @@ glmer(ncit ~ opposition +  biopharm + (1|year), data=patents, family='poisson')
 ```
 
 
+```{r patent_starter, eval=FALSE}
+load('data/patents.RData')
+```
 
 
 Interestingly, one can model overdispersion in a Poisson model by specifying an random intercept for each observation (`subject` in the data).  In other words, no clustering or grouped structure is necessary.
 
 [^residstruct]: One reason to do so would be that you expect variability to decrease over time, e.g. due to experience.  You might also allow that variance to be different due to some other grouping factor entirely (e.g. due to treatment group membership).  I will likely add an example in the future.  But for the time being, in <span class="pack">nlme</span>, the relevant argument is `weights`.  See `?varIdent` as an example of what you would provide to the `weights` argument.
 
-[^lmerho]: Don't get me wrong, while I'm extremely grateful to the work put forth by those involved with <span class="pack">lme4</span>, making it probably the best mixed model package out there, this feature request has been made by its users for over a decade at this point.
+[^lmerho]: This feature request has been made by its users for over a decade at this point- it's not gonna happen.  The issue is that the way <span class="pack">lmer</span> works by default uses a method that won't allow it (this is why it is faster and better performing than other packages). Unfortunately the only response to this issue is 'use <span class="pack">nlme</span>'.  However many other packages work with <span class="pack">lme4</span> rather than <span class="pack">nlme</span>, and if you aren't going to use <span class="pack">lme4</span> for mixed models you might as well go Bayesian with <span class="pack">rstanarm</span> or <span class="pack">brms</span> instead of <span class="pack">nlme.</span>  I would even prefer <span class="pack">mgcv</span> to <span class="pack">nlme</span> (though it would use <span class="pack">nlme</span> under the hood) because of the other capabilities it provides, and the objects created are easier to work with in my opinion.
 
 [^crossed_notation]: I don't show the formal model here as we did before, but this is why depicting mixed models solely as 'multilevel' becomes a bit problematic in my opinion. In the standard mixed model notation it's straightforward though, you just add an addition random effect term, just as we do in the actual model syntax.
 
@@ -1203,12 +1279,20 @@ Interestingly, one can model overdispersion in a Poisson model by specifying an 
 
 [^crossnest]: Note that it *does* matter if you label your data inappropriately.  For example, if in the nesting situation you start your id variable at 1 for each nested group, then you have to use the nested notation in <span class="pack">lme4</span>, otherwise, e.g. it won't know that id = 1 in group 1 is different from id 1 in group 2.  Again though, if you're not being silly, this wouldn't be an issue.
 
+[^scalecontbin]:  Note that for a balanced binary variable, the mean `p=.5` and sd is `sqrt(p*(1-p)) = .5`
+
 <!--chapter:end:03_extensions.Rmd-->
 
 # Issues
 
 
-## Alternative approaches
+## Variance accounted for
+
+For reasons unknown to me, people really love the R-squared value that comes from standard regression.  Never mind that it is inherently biased, nor does it matter that there is no way to state what would be a 'good' result for a given data situation, nor that many of these same people actually don't know how to interpret it, nor does it even matter that the same kinds of folks have no qualms about dropping it from a report at the first sign of trouble.
+
+Suffice it to say that when there are multiple sources of 'variance', talking about *variance accounted for* is not straightforward.  Still, many have tried. You might look at [this package](https://cran.r-project.org/web/packages/r2glmm/) and the references noted in the description.  See also the [GLMM FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#how-do-i-compute-a-coefficient-of-determination-r2-or-an-analogue-for-glmms).  I would suggest not even bothering beyond the standard linear mixed model.
+
+## Alternative approaches to mixed models
 
 I have a [document](https://m-clark.github.io/docs/clustered/) that goes into more detail about many approaches to dealing with clustered data, but we can briefly talk about some here. Common alternatives used in clustered data situations include:
 
@@ -1242,20 +1326,24 @@ Mixed models work even with no more than two in each cluster and some singletons
 
 We've primarily been looking at <span class="emph">balanced</span> data, where each clusters have the same number of observations within them.  There is no requirement for this, and in many cases we wouldn't even expect it, e.g. people within geographical units.
 
-However, if data is only missing on the outcome, or a mix of variables, we essentially have the same issue as with typical data situations, and will have the same considerations for dealing with missingness.  If you don't lose much data, the practical gain by ignoring missingness generally outweighs the complexities that can come with, for example, multiple imputation[^mi], even in the best of settings. By default, mixed models assume missing at random.  On the other hand, longitudinal data has special considerations, as there is increasing dropout over time.
+However, if data is only missing on the outcome, or a mix of variables, we essentially have the same issue as with typical data situations, and will have the same considerations for dealing with missingness.  If you don't lose much data, the practical gain by ignoring missingness generally outweighs the complexities that can come with, for example, multiple imputation[^mi], even in the best of settings. By default, mixed models assume missing at random.  On the other hand, longitudinal data has special considerations, as there is typically increasing dropout over time.
+
+Having dealt with missingness in a variety of contexts with different approaches (FIML, MI, Bayesian), the end result is usually that you spend vast amounts more time dealing with the missing data than you do understanding your models, and yet don't feel any better about the results.  Unless the missingness would make you lose a good chunk of the data, it's probably best just to leave that to the limitations section of your report[^missingreviewer].  If you do deal with it, I'd suggest an approach that is essentially a one-off (e.g. with <span class="pack">missForest</span>) to be compared to the data that ignores the missingness, but still allows you to do everything you want.  While you may not incorporate all sources of uncertainty in doing so, it seems to me a viable compromise.
 
 
 ## Model Comparison
 
 Model comparison takes place in the usual way in the sense of potentially having statistical tests and information criteria.  Unfortunately, the typical likelihood ratio tests one might use in standard settings are not so straightforward here. For example, at a minimum you'd have to change the default estimation from REML to ML, and the models must have the same random effects structure, in order to compare models with different fixed effects for the resulting test p-value to be correct.  It works the other way to compare models with different random effects structure.
 
-In my opinion, model selection involves considerations of theory, parsimony, and prediction, and those tests do not. I'm not partial to such tests even in the standard setting, and would use AIC here to potentially aid (not make) a model choice if I thought it was necessary, as I would there[^lrtest]. In general though, trying to determine a 'best' model with one set of data is a problematic endeavor at best, and at worst, completely misguided.  I think it's very useful to build models of increasing complexity, and select one to focus based on the available evidence.  Just don't get hung up on choosing one based solely on the outcome of a single statistic.  If you have a lot of data, you should consider some sort of explicit validation approach if you really want to compare competing models, but that is not without complication given the dependency in the data.
+In my opinion, model selection involves considerations of theory, parsimony, and prediction, and those tests do not. I'm not partial to such tests even in the standard setting, and would use AIC here to potentially aid (not make) a model choice if I thought it was necessary, as I would there[^lrtest]. In general though, trying to determine a 'best' model with one set of data is a problematic endeavor at best, and at worst, completely misguided.  I think it's very useful to build models of increasing complexity, and select one to focus on based on the available evidence.  Just don't get hung up on choosing one based solely on the outcome of a single statistic.  If you have a lot of data, you should consider some sort of explicit validation approach if you really want to compare competing models, but that is not without complication given the dependency in the data.
 
 
 
-[^mi]: Multiple imputation is straightforward only in theory.  In practice it becomes a major pain to go very far beyond getting the parameter estimates for simple models.  Full information maximum likelihood is little implemented outside of SEM software/packages.
+[^mi]: Multiple imputation is straightforward only in theory.  In practice it becomes a major pain to go very far beyond getting the parameter estimates for simple models.  Full information maximum likelihood (FIML) is little implemented outside of SEM software/packages, and more problematic in its assumptions.
 
-[^lrtest]: If you really want them see the <span class="pack">lmertest</span> package.  Note also that AIC does not come with a free lunch.  See the <span class="pack">cAIC4</span> package and references therein.
+[^lrtest]: If you really want them see the <span class="pack">lmertest</span> package.  Note also that AIC [does not come with a free lunch](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#can-i-use-aic-for-mixed-models-how-do-i-count-the-number-of-degrees-of-freedom-for-a-random-effect).  See the <span class="pack">cAIC4</span> package and references therein.
+
+[^missingreviewer]:  Just note that in some disciplines, the reviewers, who will never actually do this themselves for the same reasons, nevertheless will make a big deal about the missing data because it's an easy point for them to make.  This is similar to economics reviewers who shout 'endogeneity!' at every turn, but won't bother to tell you where to get the instrument in the first place, admit that IV analysis is problematic in its own right, or what the approach should be in complex model settings such as mixed models with nonlinear, spatial effects, multiple levels of clustering etc.
 
 <!--chapter:end:04_issues.Rmd-->
 
@@ -1265,10 +1353,10 @@ This section covers topics that are generally beyond the scope of what would be 
 
 ## Other distributions
 
-As noted in the GLMM section, we are not held to use only GLM family distributions regarding the target variable.  However the tools you have available to do so will quickly diminish.  However, a couple packages could help in this regard with simpler random effects structures.  For example, the <span class="pack">mgcv</span> package allows one access to a variety of response distributions, such as $t$, negative binomial, beta, zero-inflated Poisson and more.  If you only have random intercepts you might try it.  If you're willing to go Bayesian, you'll have even more options with <span class="pack">rstanarm</span> and <span class="pack">brms</span>.  I've personally had success with ordinal, beta, truncated normal and more with <span class="pack">brms</span> in particular.
+As noted in the GLMM section, we are not held to use only GLM family distributions regarding the target variable.  Unfortunately, the tools you have available to do so will quickly diminish.  However, a couple packages could help in this regard with simpler random effects structures.  For example, the <span class="pack">mgcv</span> package allows one access to a variety of response distributions, such as $t$, negative binomial, beta, zero-inflated Poisson and more.  If you only have random intercepts you might try it.  If you're willing to go Bayesian, you'll have even more options with <span class="pack">rstanarm</span> and <span class="pack">brms</span>.  I've personally had success with ordinal, beta, truncated normal and more with <span class="pack">brms</span> in particular.
 
 
-Note also that nothing says that the random effects must come from a normal distribution either.  You probably are going to need some notably strong theoretical reasons for trying something else though.  However, it does come up for some folks.  You'll almost certainly need to use a specialized approach, as most mixed model tools do not offer such functionality out of the box.
+Note also that nothing says that the random effects must come from a normal distribution either.  You probably are going to need some notably strong theoretical reasons for trying something else, but it does come up for some folks.  You'll almost certainly need to use a specialized approach, as most mixed model tools do not offer such functionality out of the box.
 
 
 ## Other contexts
@@ -1317,7 +1405,7 @@ This is not an issue I'm personally all that concerned with, but a lot of folks 
 
 ##### Growth mixture models
 
-Often people will assume *latent* clusters of individuals within the data, with model effects differing by these latent groups also. Sometimes called <span class="emph">latent trajectory models</span>, these are conceptually adding a cluster analysis to the mixed model setting.  While common in structural equation modeling, packages like <span class="pack">flexmix</span> can keep you in the standard setting.
+Often people will assume *latent* clusters of individuals within the data, with model effects differing by these latent groups also. Sometimes called <span class="emph">latent trajectory models</span>, these are conceptually adding a cluster analysis to the mixed model setting.  While common in structural equation modeling, packages like <span class="pack">flexmix</span> can keep you in the standard model setting, which would be preferable.
 
 
 ## Nonlinear Mixed Effects
@@ -1385,25 +1473,33 @@ market segments.
 
 ## Programming languages
 
-R has more mixed modeling capabilities than anything else out there.  Here are other options within R.
+### R
+
+R has more mixed modeling capabilities [than anything else out there](https://www.r-pkg.org/search.html?q=mixed+model).  Here are just a few options within R.
 
 - <span class="pack">lme4</span>: generalized linear mixed models; extremely efficient
 - <span class="pack">nlme</span>: (non-)linear mixed models but only for the gaussian case.
 - <span class="pack">mgcv</span>: provides means to use both lme4 or nlme, extends distributional families, correlated residuals, and all that additive model stuff too
+- <span class="pack">ordinal</span>: for various types of ordinal models
 - <span class="pack">rstanarm</span>:  Bayesian with lme4 level options
 - <span class="pack">brms</span>: Bayesian with possibly the most extensive mixed model capabilities out there
-- <span class="pack">ordinal</span>: for various types of ordinal models
 
 
 
-- Python: the [statsmodels](http://www.statsmodels.org/stable/mixed_linear.html) module has basic capabilities for mixed models but not too many frills (e.g. no crossed random effects).  CSCAR directory Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series [here](https://github.com/kshedden/Statsmodels-MixedLM).
-- Julia: one of the <span class="pack">lme4</span> authors develops a [MixedModels](https://github.com/dmbates/MixedModels.jl) package for Julia
+### Python
+
+In Python, the [statsmodels](http://www.statsmodels.org/stable/mixed_linear.html) module has basic capabilities for mixed models but not too many frills (e.g. no crossed random effects).  CSCAR directory Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series [here](https://github.com/kshedden/Statsmodels-MixedLM).
+
+
+### Julia
+
+One of the <span class="pack">lme4</span> authors develops a [MixedModels](https://github.com/dmbates/MixedModels.jl) package for Julia. Doug Bates is currently creating some [notebooks](https://github.com/dmbates/MixedModelsinJulia) (and possibly a full book) on implementation of mixed models in Julia.
 
 ### Proprietary
 
-Among the standard stats packages, I can only recommend Stata for both ease of implementation and flexibility in modeling. SAS and SPSS both have non-intuitive and needlessly verbose syntax, and, while SAS is a fairly good tool for mixed models (from my understanding), I've seen SPSS consistently struggle with even simple models, and its GUI interface, the only reason to use it, is not even remotely intuitive.
+Among the standard stats packages, I can only recommend **Stata** for both ease of implementation and flexibility in modeling. **SAS** and **SPSS** both have non-intuitive and needlessly verbose syntax, and, while SAS is a fairly good tool for mixed models (from my understanding), I've acutally seen SPSS consistently struggle with even simple models, and its GUI interface, the only reason to use SPSS in the first place, is not even remotely intuitive.
 
-Mplus has a lot of functionality both for standard mixed models and growth curve models, though between <span class="pack">lavaan</span>, <span class="pack">mediation</span>, and the rest of R, there is little need to use Mplus except for very complicated multilevel SEM, which requires very large samples and a lot of theoretical justification.
+**Mplus** has a lot of functionality both for standard mixed models and growth curve models, though between <span class="pack">lavaan</span>, <span class="pack">mediation</span>, and the rest of R, there is little need to use Mplus except for very complicated multilevel SEM, which requires very large samples and a lot of theoretical justification, which most of the people doing SEM I come across rarely have.
 
 I will also say that there is zero reason to use mixed model specific software like HLM.  The days for such hijinks have long since passed.
 
@@ -1412,16 +1508,18 @@ I will also say that there is zero reason to use mixed model specific software l
 
 An excellent modeling book can be found in [Data Analysis Using Regression and Multilevel/Hierarchical Models](http://www.stat.columbia.edu/~gelman/arm/).  You will learn a great deal about statistical modeling in general, as the mixed model stuff only comprises the second part.
 
-
 On the applied side, CSCAR's own Brady West has a book- [Linear Mixed Models: A Practical Guide Using Statistical Software ](http://www-personal.umich.edu/~bwest/almmussp.html). It shows examples in a variety of programming formats while not glossing over the details you need to know.
 
 Two texts come at mixed models from a very broad perspective, which I like. I find Fahrmeier et al. [Regression - Models, Methods and Applications](http://www.springer.com/us/book/9783642343322) to be very good.  It will also tie mixed models to spatial and nonparametric approaches.  [Richly Parameterized Linear Models - Additive, Time Series, and Spatial Models Using Random Effects](https://www.crcpress.com/Richly-Parameterized-Linear-Models-Additive-Time-Series-and-Spatial/Hodges/p/book/9781439866832), does as well, and provides some nice historical context and hits on practical issues you *will* encounter if you play with these models long enough.
 
-There is literally [a book on mixed models with lme4](http://lme4.r-forge.r-project.org/lMMwR/lrgprt.pdf) by Douglas Bates, one of the developers. While dated with regard to <span class="pack">lme4</span>, it's definitely not in general, and worth having around.
+There is literally [a book on mixed models with lme4](http://lme4.r-forge.r-project.org/lMMwR/lrgprt.pdf) by Doug Bates, one of the developers. While dated with regard to <span class="pack">lme4</span>, it's definitely not with regard to mixed models in general, and worth having around.
 
 [Mixed model FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html)
 
 I have [several other docs](http://m-clark.github.io/documents/#mixed-models) on various aspects of mixed models.
+
+
+There is a lot of good information on stackoverflow and cross validated Q &  A sites, where <span class="pack">lme4</span> developer Ben Bolker has been quite active in answering people's questions.
 
 <!--chapter:end:1000_appendix.Rmd-->
 

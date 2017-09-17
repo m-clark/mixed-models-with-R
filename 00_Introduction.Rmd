@@ -30,4 +30,13 @@ Note the following color coding used in this document:
 3. File/Open Project and click on the blue icon in the folder you just created.
 4. File/Open Click on the ReadMe file and do what it says.
 
+## Key packages
+
+To run the code in this document you'll really only need the following:
+
+- lme4 
+- tidyverse (for data processing)
+- merTools (optional)
+- modelr (optional)
+- nlme (part of base R, no need for install)
 

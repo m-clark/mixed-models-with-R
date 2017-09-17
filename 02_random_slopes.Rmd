@@ -92,7 +92,7 @@ gslopes = data_frame(Mixed=coef(gpa_mixed)$student[,2], Separate=gpa_lm_by_group
 gridExtra::grid.arrange(gint, gslopes, ncol=2)
 ```
 
-Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what otherwise would have been the by-group estimate, which would overfit.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models.  It comes into play largely when we have few observations per group and less estimated variance for the random effects.  In other words, when there is little information in a group, or less variance relative to the observation variance, then the mixed model will produce a group-specific effect that is closer to the overall population effect.  In that sense, the mixed model group coefficients better reflect our ignorance[^posthoc].
+Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what otherwise would have been the by-group estimate, which would otherwise overfit in this scenario.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models[^pool].  It comes into play largely when we have few observations per group and less estimated variance for the random effects.  In other words, when there is little information in a group, or less group-level variance relative to the observation variance, then the mixed model will produce a group-specific effect that is closer to the overall population effect.  In that sense, the mixed model group coefficients better reflect our ignorance.
 
 
 ## Visual prediction
@@ -139,7 +139,7 @@ At this point it might be clearer why some would call these *richly parameterize
 
 #### Sleep revisited
 
-Run the sleep study model with random coefficient for the Days effect, and interpret the results.  What is the correlation between the intercept and Days random effects?  Use the <span class="func">ranef</span> and <span class="func">coef</span> functions on the model you've created. What do you see?
+Run the sleep study model with random coefficient for the Days effect, and interpret the results.  What is the correlation between the intercept and Days random effects?  Use the <span class="func">ranef</span> and <span class="func">coef</span> functions on the model you've created to inspect the individual specific effects. What do you see?
 
 ```{r sleepstudy2}
 library(lme4)
@@ -201,4 +201,5 @@ Compare model fit using the <span class="func">AIC</span> function, e.g. `AIC(mo
 
 [^nocorr]: I personally have not come across a situation where I'd do this in practice.  Even if the simpler model with no correlation was a slightly better fit, there isn't much to be gained by it.
 
-[^posthoc]: Note that this relates to a common question about multiple comparisons.  When using techniques that incorporate shrinkage, this is not a problem.  Adjusting p-values after laying waste to the land with pairwise t-tests is not a viable means of dealing with the situation.
+
+[^pool]: This phenomenon is also sometimes referred to as <span class="emph">partial pooling</span>.  This idea of pooling is as in pooling resources or borrowing strength.  You have complete pooling, which would be the standard regression model case of ignoring the clusters. No pooling, which assumes the clusters have nothing in common, i.e. the separate regressions approach.  Partial pooling is seen the mixed model scenario, where the similarity among the clusters is estimated in some fashion, and data for all observations informs the estimates for each cluster.  I've never really liked the 'pooling' terminology, as regularization is a more broad concept that applies beyond mixed models, and I'd prefer to stick to that.  In any case, see the pool-no-pool document [here](https://github.com/stan-dev/example-models/tree/master/knitr/pool-binary-trials).

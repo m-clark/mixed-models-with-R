@@ -4,10 +4,10 @@ This section covers topics that are generally beyond the scope of what would be 
 
 ## Other distributions
 
-As noted in the GLMM section, we are not held to use only GLM family distributions regarding the target variable.  However the tools you have available to do so will quickly diminish.  However, a couple packages could help in this regard with simpler random effects structures.  For example, the <span class="pack">mgcv</span> package allows one access to a variety of response distributions, such as $t$, negative binomial, beta, zero-inflated Poisson and more.  If you only have random intercepts you might try it.  If you're willing to go Bayesian, you'll have even more options with <span class="pack">rstanarm</span> and <span class="pack">brms</span>.  I've personally had success with ordinal, beta, truncated normal and more with <span class="pack">brms</span> in particular.
+As noted in the GLMM section, we are not held to use only GLM family distributions regarding the target variable.  Unfortunately, the tools you have available to do so will quickly diminish.  However, a couple packages could help in this regard with simpler random effects structures.  For example, the <span class="pack">mgcv</span> package allows one access to a variety of response distributions, such as $t$, negative binomial, beta, zero-inflated Poisson and more.  If you only have random intercepts you might try it.  If you're willing to go Bayesian, you'll have even more options with <span class="pack">rstanarm</span> and <span class="pack">brms</span>.  I've personally had success with ordinal, beta, truncated normal and more with <span class="pack">brms</span> in particular.
 
 
-Note also that nothing says that the random effects must come from a normal distribution either.  You probably are going to need some notably strong theoretical reasons for trying something else though.  However, it does come up for some folks.  You'll almost certainly need to use a specialized approach, as most mixed model tools do not offer such functionality out of the box.
+Note also that nothing says that the random effects must come from a normal distribution either.  You probably are going to need some notably strong theoretical reasons for trying something else, but it does come up for some folks.  You'll almost certainly need to use a specialized approach, as most mixed model tools do not offer such functionality out of the box.
 
 
 ## Other contexts
@@ -56,7 +56,7 @@ This is not an issue I'm personally all that concerned with, but a lot of folks 
 
 ##### Growth mixture models
 
-Often people will assume *latent* clusters of individuals within the data, with model effects differing by these latent groups also. Sometimes called <span class="emph">latent trajectory models</span>, these are conceptually adding a cluster analysis to the mixed model setting.  While common in structural equation modeling, packages like <span class="pack">flexmix</span> can keep you in the standard setting.
+Often people will assume *latent* clusters of individuals within the data, with model effects differing by these latent groups also. Sometimes called <span class="emph">latent trajectory models</span>, these are conceptually adding a cluster analysis to the mixed model setting.  While common in structural equation modeling, packages like <span class="pack">flexmix</span> can keep you in the standard model setting, which would be preferable.
 
 
 ## Nonlinear Mixed Effects
