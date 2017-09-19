@@ -1,11 +1,10 @@
 # Going Further
 
-This section covers topics that are generally beyond the scope of what would be covered in the workshop, but will be added to over time.
+This section covers topics that are generally beyond the scope of what would be covered in the workshop, but may be given their section over time.
 
 ## Other distributions
 
 As noted in the GLMM section, we are not held to use only GLM family distributions regarding the target variable.  Unfortunately, the tools you have available to do so will quickly diminish.  However, a couple packages could help in this regard with simpler random effects structures.  For example, the <span class="pack">mgcv</span> package allows one access to a variety of response distributions, such as $t$, negative binomial, beta, zero-inflated Poisson and more.  If you only have random intercepts you might try it.  If you're willing to go Bayesian, you'll have even more options with <span class="pack">rstanarm</span> and <span class="pack">brms</span>.  I've personally had success with ordinal, beta, truncated normal and more with <span class="pack">brms</span> in particular.
-
 
 Note also that nothing says that the random effects must come from a normal distribution either.  You probably are going to need some notably strong theoretical reasons for trying something else, but it does come up for some folks.  You'll almost certainly need to use a specialized approach, as most mixed model tools do not offer such functionality out of the box.
 
@@ -44,7 +43,18 @@ Gaussian processes are another way to handle dependency in the data, especially 
 
 ##### Bayesian
 
-I will eventually add a brief section on Bayesian mixed models to this document.  There are two good packages that allow one to use the <span class="pack">lme4</span> style even.  Suffice it to say, thinking about 'random effects' and distributions of parameters as one does in mixed models means you're halfway down the road to a Bayesian approach anyway.
+With mixed models we've been thinking of coefficients as coming from a distribution (normal).  While we have what we are calling 'fixed' effects, the distinguishing feature of the mixed model is the addition of this random component.  Now consider a standard regression model, i.e. no clustering.  You can do the same thing, i.e. assume the coefficients are not fixed, but random.  In this sense, the goal is to understand that distribution, and focus on it, rather than just the summary of it, e.g. the mean.  However, the mean (or other central tendency) of that distribution can be treated like you've been doing the fixed effects in your standard models.
+
+Thus you can use how you've been thinking about the random effects in mixed models as a segue to the Bayesian approach, where all parameters are random.  Using Bayesian versions of your favorite models takes no more syntactical effort than your standard models.  The following is a standard linear regression and a mixed model in the <span class="pack">brms</span> package.
+
+```{r eval=FALSE}
+brm(gpa ~ occasion, data=gpa)
+brm(Reaction ~ Days + (1 + Days|Subject), data=sleepstudy)
+```
+
+So running the Bayesian models is not only as easy, the syntax is identical!  Furthermore, just like mixed models allowed you to understand your data more deeply, the Bayesian models have the potential to do the same. Even the probabilities and intervals make more sense.  With <span class="pack">rstanarm</span> and especially <span class="pack">brms</span>, you can do fairly complex models, taking you further than the standard mixed model packages, all without learning how to code the models explicitly in Stan.  However, when you get to that point, the modeling possibilities are only limited by your imagination.
+
+You will have to learn a new inferential framework, as well as some of the nuances of the Markov Chain Monte Carlo (MCMC) approach.  But you may be surprised to find that the basics come more easily than you would anticipate.  Using tools like brms and related make it easier than ever to dive into Bayesian data analysis, and you've already been in a similar mindset with mixed models, so try it out some time.  I have an [introduction to Baysian analysis with Stan](https://m-clark.github.io/docs/bayesian_book/), and a bit more on the Bayesian approach and mixed models in this [document](https://m-clark.github.io/docs/mixedModels/mixedModels.html#mixed_model_7:_bayesian_mixed_model).
 
 ##### Surveys & Mr. P
 
