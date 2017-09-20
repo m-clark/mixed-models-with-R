@@ -1,7 +1,7 @@
 ---
-title: "Mixed Models in R"
+title: <span style="font-size:200%; font-variant:small-caps; ">Mixed Models in R</span>
 author:  |
-  <div class="title"><span style="font-size:125%; font-variant:small-caps; ">Michael Clark</span><br><br>
+  <div class="title"><span style="font-size:200%; font-variant:small-caps; ">Michael Clark</span><br><br>
   <span class="" style="font-size:75%">http://m-clark.github.io/workshops/mixed_models_r/</span><br><br>
   <img src="img/signature-acronym.png" style="width:30%; padding:10px 0;"> <br>
   <img src="img/ARC-acronym-signature.png" style="width:21%; padding:10px 0;"> </div>
@@ -20,13 +20,13 @@ output:
       download: null
       search: yes
       sharing:
-        facebook: yes
-        twitter: yes
+        facebook: no
+        twitter: no
         google: no
         weibo: no
         instapper: no
         vk: no
-        all: ['facebook', 'google', 'twitter', 'weibo', 'instapaper']
+        all: [ 'twitter', 'facebook', 'google', 'weibo', 'instapaper']
 always_allow_html: yes
 font-import: http://fonts.googleapis.com/css?family=Roboto|Open+Sans
 font-family: 'Roboto'
@@ -38,7 +38,6 @@ description: "Introduction to Mixed Models in R"
 cover-image: img/nineteeneightyR.png
 url: 'https\://m-clark.github.io/Workshops/'  # evidently the \: is required or you'll get text in the title/toc area
 github-repo:  m-clark/
-
 ---
 
 

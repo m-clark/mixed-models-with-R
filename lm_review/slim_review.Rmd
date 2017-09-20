@@ -1,13 +1,15 @@
 ---
 title: "Standard Linear Model Review"
-output: 
-  html_notebook: 
+output:
+  html_notebook:
     highlight: pygments
-    theme: cosmo
+    theme: sandstone
+  html_document:
+    df_print: paged
 ---
 
 
-Yesterday you got a look at how to run regression models in R. The nice thing about R relative to most other statistical programs and other languages is that most every modeling package works the same way, and uses the same functions to do things with the model afterward.  As we move into mixed models, the approach will be almost identical. As an example here are 5 model functions from 4 different packages. Each one could be followed by `summary`, `plot`, `fitted`, and other methods.
+The nice thing about R relative to most other statistical programs and other languages is that most every modeling package works the same way, and uses the same functions to do things with the model afterward.  As we move into mixed models, the approach will be almost identical to that of `lm`. As an example here are 5 model functions from 4 different packages. Each one could be followed by `summary`, `plot`, `fitted`, and other methods.
 
 ```
 lm(y ~ x)
@@ -22,11 +24,16 @@ The more you get comfortable with even just basic `lm` and how it works, the mor
 
 # Exercise 1
 
-We'll use the ggplot2movies package and the `movies` data frame inside.  You'll likely need to install the ggplot2movies package first. Feel free to have a look at it a bit.
+We'll use the ggplot2movies package and the `movies` data frame inside.  You'll likely need to install the `ggplot2movies` package first. Feel free to have a look at it a bit.
 
 ```{r}
+# if you need them
+# install.packages('ggplot2movies')
+# install.packages('tidyverse')
+# install.packages('modelr')
+
 library(dplyr)
-library(ggplot2movies)
+library(ggplot2movies)  
 ?movies
 glimpse(movies)
 movies %>% 
@@ -34,13 +41,14 @@ movies %>%
   summarise(rating=mean(rating))
 ```
 
-First we'll trim things to more recent movies to make things a little more comparable. I'll also convert 
+
+First we'll trim things to more recent movies to make things a little more comparable. I'll also convert some of the variables to a more manageable scale, and create explicit factor variables.
 
 ```{r}
-movies_trim = filter(movies, 
-                     year > 1970  &
-                     budget > 1e6 & 
-                     votes > 1000) %>% 
+movies_trim = movies %>% 
+  filter(year > 1970  
+         & budget > 1e6 
+         & votes > 1000) %>% 
   mutate(budget_mil = budget/1e6,
          votes_thou = votes/1000) %>% 
   mutate_at(vars(Action:Short), factor, labels=c('No', 'Yes'))
@@ -49,11 +57,11 @@ movies_trim = filter(movies,
 Next, let's look at the relationship of time (`year`) and budget in millions (`budget_mil`) to rating. Use the `lm` function, adding the appropriate formula to predict rating and interpret the results.
 
 ```{r}
-model = lm(data=movies_trim)
+model = lm(?, data=movies_trim)
 summary(model)
 ```
 
-We can get the fitted values using the fitted function, or automatically add them to the data via modelr.
+We can get the fitted values using the `fitted` function, or automatically add them to the data via modelr.
 
 ```{r, eval=FALSE}
 library(modelr)
@@ -66,6 +74,7 @@ movies_trim %>%
 The broom package can add even more with the `augment` function, and will return fitted values, the standard error of the fit, the residuals and more.
 
 ```{r}
+# install.packages(broom)
 library(broom)
 augment(model) %>% 
   head()
@@ -78,12 +87,14 @@ tidy(model)
 ```
 
 
-That combined with pander will make your table publication ready without you having to format anything.
+That combined with pander will make your table publication ready without you having to explicitly format anything.  You can even use pander directly on the model object. Either of these approaches is what you will see throughout the mixed model notes.
 
 ```{r}
+# install.packages(pander)
 library(pander)
 tidy(model) %>% 
   pander(justify='lrrrr')
+pander(model)
 ```
 
 
@@ -92,7 +103,7 @@ tidy(model) %>%
 
 # Exercise 2
 
-Add the `Action` indicator and the number of votes in thousands to the model.  Interpret the results.
+Add the `Action` indicator and the number of votes in thousands to the model.  Interpret the results.  See the help file for `update` also.
 
 ```{r}
 ```
