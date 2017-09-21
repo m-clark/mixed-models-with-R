@@ -12,10 +12,12 @@ output:
     css: [css/standard_html.css, css/book.css]
     hightlight: pygments
     number_sections: false
-    toc_depth: 2
-    toc_collapse: 1
     # split_by: section
     config:
+      toc:
+        depth: 2
+        collapse: section
+        scroll_highlight: yes
       edit : null
       download: null
       search: yes

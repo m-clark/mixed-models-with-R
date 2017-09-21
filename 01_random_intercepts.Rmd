@@ -178,7 +178,7 @@ gpa_lm_by_group = gpa %>%
 coef_lm = coef(gpa_lm)
 ```
 
-The above tells us that that starting out, i.e. when occasion is zero, the average gpa, denoted by the intercept, is `r round(coef_lm[1], 2)`.  In addition, as we move from semester to semester, we can expect GPA to increase by about `r round(coef_lm[2], 2)` points.  This would be fine except that we are ignoring the clustering.  A side effect of doing so is that our standard errors are incorrect, and thus claims about statistical significance based on them would be off.  More importantly however is that we simply don't get to explore the student effect, which would be of interest by itself.
+The above tells us that starting out, i.e. when occasion is zero, the average gpa, denoted by the intercept, is `r round(coef_lm[1], 2)`.  In addition, as we move from semester to semester, we can expect GPA to increase by about `r round(coef_lm[2], 2)` points.  This would be fine except that we are ignoring the clustering.  A side effect of doing so is that our standard errors are incorrect, and thus claims about statistical significance based on them would be off.  More importantly however is that we simply don't get to explore the student effect, which would be of interest by itself.
 
 #### Regression by cluster
 

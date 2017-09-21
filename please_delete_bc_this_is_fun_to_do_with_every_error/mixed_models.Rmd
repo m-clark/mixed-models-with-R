@@ -1,7 +1,7 @@
 ---
-title: "Mixed Models in R"
+title: <span style="font-size:200%; font-variant:small-caps; ">Mixed Models in R</span>
 author:  |
-  <div class="title"><span style="font-size:125%; font-variant:small-caps; ">Michael Clark</span><br><br>
+  <div class="title"><span style="font-size:200%; font-variant:small-caps; ">Michael Clark</span><br><br>
   <span class="" style="font-size:75%">http://m-clark.github.io/workshops/mixed_models_r/</span><br><br>
   <img src="img/signature-acronym.png" style="width:30%; padding:10px 0;"> <br>
   <img src="img/ARC-acronym-signature.png" style="width:21%; padding:10px 0;"> </div>
@@ -12,21 +12,23 @@ output:
     css: [css/standard_html.css, css/book.css]
     hightlight: pygments
     number_sections: false
-    toc_depth: 2
-    toc_collapse: 1
+    toc:
+      depth: 2
+      collapse: section
+      scroll_highlight: yes
     # split_by: section
     config:
       edit : null
       download: null
       search: yes
       sharing:
-        facebook: yes
-        twitter: yes
+        facebook: no
+        twitter: no
         google: no
         weibo: no
         instapper: no
         vk: no
-        all: ['facebook', 'google', 'twitter', 'weibo', 'instapaper']
+        all: [ 'twitter', 'facebook', 'google', 'weibo', 'instapaper']
 always_allow_html: yes
 font-import: http://fonts.googleapis.com/css?family=Roboto|Open+Sans
 font-family: 'Roboto'
@@ -38,7 +40,6 @@ description: "Introduction to Mixed Models in R"
 cover-image: img/nineteeneightyR.png
 url: 'https\://m-clark.github.io/Workshops/'  # evidently the \: is required or you'll get text in the title/toc area
 github-repo:  m-clark/
-
 ---
 
 
@@ -46,7 +47,7 @@ github-repo:  m-clark/
 
 ```{r chunk_setup, include=FALSE, eval=TRUE}
 knitr::opts_chunk$set(echo = T, message=F, warning=F, comment=NA, autodep=F, 
-                      eval=T, cache.rebuild=T, cache=T, R.options=list(width=120), 
+                      eval=T, cache.rebuild=F, cache=T, R.options=list(width=120), 
                       fig.width=8, fig.align = 'center')
 ```
 
@@ -403,7 +404,7 @@ In the above code we specified not to use the random effects `re.form=NA`, and a
 ```{r predict_uncond_lm, echo=1:2}
 predict_no_re = predict(gpa_mixed, re.form=NA)
 predict_lm = predict(gpa_lm)
-data_frame(student = gpa$student,
+data_frame(student = as.numeric(gpa$student),
            lm = predict_lm, 
            `lmer no re`=predict_no_re) %>% 
   round(2) %>% 
@@ -414,7 +415,7 @@ But each person has their unique intercept, so let's see how the predictions dif
 
 ```{r predict_cond_lm, echo=1}
 predict_with_re = predict(gpa_mixed)
-data_frame(student = gpa$student,
+data_frame(student = as.numeric(gpa$student),
            lm = predict_lm, 
            `lmer no re`=predict_no_re,
            `lmer with re`=predict_with_re) %>% 
@@ -1288,7 +1289,7 @@ Interestingly, one can model overdispersion in a Poisson model by specifying an 
 
 ## Variance accounted for
 
-For reasons unknown to me, people really love the R-squared value that comes from standard regression.  Never mind that it is inherently biased, nor does it matter that there is no way to state what would be a 'good' result for a given data situation, nor that many of these same people actually don't know how to interpret it, nor does it even matter that the same kinds of folks have no qualms about dropping it from a report at the first sign of trouble.
+People really love the R-squared value that comes from standard regression.  Never mind that it is inherently biased, nor does it matter that there is no way to state what would be a 'good' result for a given data situation, nor that many of these same people actually don't know how to interpret it, nor does it even matter that the same kinds of folks have no qualms about dropping it from a report at the first sign of trouble.
 
 Suffice it to say that when there are multiple sources of 'variance', talking about *variance accounted for* is not straightforward.  Still, many have tried. You might look at [this package](https://cran.r-project.org/web/packages/r2glmm/) and the references noted in the description.  See also the [GLMM FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#how-do-i-compute-a-coefficient-of-determination-r2-or-an-analogue-for-glmms).  I would suggest not even bothering beyond the standard linear mixed model.
 
@@ -1300,7 +1301,7 @@ I have a [document](https://m-clark.github.io/docs/clustered/) that goes into mo
 - Using cluster-robust standard errors
 - Generalized estimating equations (GEE)
 
-The first two are commonly used by those trained with an econometrics perspective, while you might see GEE more with those of a biostatistics or other perspective. GEE are in fact a generalization of the cluster-robust approach, and extend the GLS to nonlinear/GLM settings.  The nature of fixed effects models allow you to control for, but not investigate any cluster level effects.  This makes them a non-starter for many investigations, as those are typically of prime theoretical interest.  GEE approaches allow one to take into account the dependency in the data, but ignore what might be very interesting, i.e. the random effects and associated variance. There are also few tools for GEE in more complicated correlational structures beyond a single clustering variable.
+The first two are commonly used by those trained with an econometrics perspective, while you might see GEE more with those of a biostatistics or other perspective. GEE are in fact a generalization of the cluster-robust approach, and extend generalized least squares (GLS) to nonlinear/GLM settings.  The nature of fixed effects models allow you to control for, but not investigate any cluster level effects.  This makes them a non-starter for many investigations, as those are typically of prime theoretical interest.  GEE approaches allow one to take into account the dependency in the data, but ignore what might be very interesting, i.e. the random effects and associated variance. There are also few tools for GEE in more complicated correlational structures beyond a single clustering variable.
 
 
 ### Growth curve models
@@ -1349,12 +1350,11 @@ In my opinion, model selection involves considerations of theory, parsimony, and
 
 # Going Further
 
-This section covers topics that are generally beyond the scope of what would be covered in the workshop, but will be added to over time.
+This section covers topics that are generally beyond the scope of what would be covered in the workshop, but may be given their section over time.
 
 ## Other distributions
 
 As noted in the GLMM section, we are not held to use only GLM family distributions regarding the target variable.  Unfortunately, the tools you have available to do so will quickly diminish.  However, a couple packages could help in this regard with simpler random effects structures.  For example, the <span class="pack">mgcv</span> package allows one access to a variety of response distributions, such as $t$, negative binomial, beta, zero-inflated Poisson and more.  If you only have random intercepts you might try it.  If you're willing to go Bayesian, you'll have even more options with <span class="pack">rstanarm</span> and <span class="pack">brms</span>.  I've personally had success with ordinal, beta, truncated normal and more with <span class="pack">brms</span> in particular.
-
 
 Note also that nothing says that the random effects must come from a normal distribution either.  You probably are going to need some notably strong theoretical reasons for trying something else, but it does come up for some folks.  You'll almost certainly need to use a specialized approach, as most mixed model tools do not offer such functionality out of the box.
 
@@ -1393,7 +1393,18 @@ Gaussian processes are another way to handle dependency in the data, especially 
 
 ##### Bayesian
 
-I will eventually add a brief section on Bayesian mixed models to this document.  There are two good packages that allow one to use the <span class="pack">lme4</span> style even.  Suffice it to say, thinking about 'random effects' and distributions of parameters as one does in mixed models means you're halfway down the road to a Bayesian approach anyway.
+With mixed models we've been thinking of coefficients as coming from a distribution (normal).  While we have what we are calling 'fixed' effects, the distinguishing feature of the mixed model is the addition of this random component.  Now consider a standard regression model, i.e. no clustering.  You can do the same thing, i.e. assume the coefficients are not fixed, but random.  In this sense, the goal is to understand that distribution, and focus on it, rather than just the summary of it, e.g. the mean.  However, the mean (or other central tendency) of that distribution can be treated like you've been doing the fixed effects in your standard models.
+
+Thus you can use how you've been thinking about the random effects in mixed models as a segue to the Bayesian approach, where all parameters are random.  Using Bayesian versions of your favorite models takes no more syntactical effort than your standard models.  The following is a standard linear regression and a mixed model in the <span class="pack">brms</span> package.
+
+```{r eval=FALSE}
+brm(gpa ~ occasion, data=gpa)
+brm(Reaction ~ Days + (1 + Days|Subject), data=sleepstudy)
+```
+
+So running the Bayesian models is not only as easy, the syntax is identical!  Furthermore, just like mixed models allowed you to understand your data more deeply, the Bayesian models have the potential to do the same. Even the probabilities and intervals make more sense.  With <span class="pack">rstanarm</span> and especially <span class="pack">brms</span>, you can do fairly complex models, taking you further than the standard mixed model packages, all without learning how to code the models explicitly in Stan.  However, when you get to that point, the modeling possibilities are only limited by your imagination.
+
+You will have to learn a new inferential framework, as well as some of the nuances of the Markov Chain Monte Carlo (MCMC) approach.  But you may be surprised to find that the basics come more easily than you would anticipate.  Using tools like brms and related make it easier than ever to dive into Bayesian data analysis, and you've already been in a similar mindset with mixed models, so try it out some time.  I have an [introduction to Baysian analysis with Stan](https://m-clark.github.io/docs/bayesian_book/), and a bit more on the Bayesian approach and mixed models in this [document](https://m-clark.github.io/docs/mixedModels/mixedModels.html#mixed_model_7:_bayesian_mixed_model).
 
 ##### Surveys & Mr. P
 
@@ -1497,7 +1508,7 @@ One of the <span class="pack">lme4</span> authors develops a [MixedModels](https
 
 ### Proprietary
 
-Among the standard stats packages, I can only recommend **Stata** for both ease of implementation and flexibility in modeling. **SAS** and **SPSS** both have non-intuitive and needlessly verbose syntax, and, while SAS is a fairly good tool for mixed models (from my understanding), I've acutally seen SPSS consistently struggle with even simple models, and its GUI interface, the only reason to use SPSS in the first place, is not even remotely intuitive.
+Among the standard stats packages, I can only recommend **Stata** for both ease of implementation and flexibility in modeling. **SAS** and **SPSS** both have non-intuitive and needlessly verbose syntax, and, while SAS is a fairly good tool for mixed models (from my understanding), I've actually seen SPSS consistently struggle with even simple models, and its GUI interface, the only reason to use SPSS in the first place, is not even remotely intuitive.
 
 **Mplus** has a lot of functionality both for standard mixed models and growth curve models, though between <span class="pack">lavaan</span>, <span class="pack">mediation</span>, and the rest of R, there is little need to use Mplus except for very complicated multilevel SEM, which requires very large samples and a lot of theoretical justification, which most of the people doing SEM I come across rarely have.
 
