@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Mixed Models in R</title>
+  <meta name="description" content="Introduction to Mixed Models in R">
+  <meta name="generator" content="bookdown 0.5 and GitBook 2.6.7">
+
+  <meta property="og:title" content="Mixed Models in R" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://m-clark.github.io/Workshops/" />
+  <meta property="og:image" content="https://m-clark.github.io/Workshops/img/nineteeneightyR.png" />
+  <meta property="og:description" content="Introduction to Mixed Models in R" />
+  <meta name="github-repo" content="m-clark/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Mixed Models in R" />
+  
+  <meta name="twitter:description" content="Introduction to Mixed Models in R" />
+  <meta name="twitter:image" content="https://m-clark.github.io/Workshops/img/nineteeneightyR.png" />
+
+
+
+<meta name="date" content="2017-09-30">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="common-extensions.html">
+<link rel="next" href="going-further.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+<script src="libs/htmlwidgets-0.9/htmlwidgets.js"></script>
+<script src="libs/datatables-binding-0.2/datatables.js"></script>
+<link href="libs/dt-core-1.10.12/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.12/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="libs/plotly-binding-4.7.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
+<link href="libs/plotlyjs-1.29.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotlyjs-1.29.2/plotly-latest.min.js"></script>
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+<link rel="stylesheet" href="css\standard_html.css" type="text/css" />
+<link rel="stylesheet" href="css\book.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="https://m-clark.github.io/workshops/mixed_models_r/"><span style="font-size:125%; font-variant:small-caps; font-style:italic; color:#990024; font-family:Roboto">Mixed Models in R</span></a></li>
+
+<li class="divider"></li>
+<li><a href="index.html#section"></a></li>
+<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i>Introduction</a><ul>
+<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#overview"><i class="fa fa-check"></i>Overview</a><ul>
+<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#goals"><i class="fa fa-check"></i>Goals</a></li>
+<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#prerequisites"><i class="fa fa-check"></i>Prerequisites</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#initial-steps"><i class="fa fa-check"></i>Initial Steps</a></li>
+<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#key-packages"><i class="fa fa-check"></i>Key packages</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html"><i class="fa fa-check"></i>Mixed Models</a><ul>
+<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#terminology"><i class="fa fa-check"></i>Terminology</a></li>
+<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#kinds-of-clustering"><i class="fa fa-check"></i>Kinds of clustering</a></li>
+<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#random-intercepts-model"><i class="fa fa-check"></i>Random Intercepts model</a></li>
+<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#example-student-gpa"><i class="fa fa-check"></i>Example: student GPA</a></li>
+<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#the-standard-regression-model"><i class="fa fa-check"></i>The standard regression model</a></li>
+<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#the-mixed-model"><i class="fa fa-check"></i>The mixed model</a></li>
+<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#application"><i class="fa fa-check"></i>Application</a></li>
+<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#cluster-level-covariate"><i class="fa fa-check"></i>Cluster level covariate</a></li>
+<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#summary"><i class="fa fa-check"></i>Summary</a></li>
+<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#exercises"><i class="fa fa-check"></i>Exercises</a><ul>
+<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#sleep"><i class="fa fa-check"></i>Sleep</a></li>
+<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#cluster-level-covariate-1"><i class="fa fa-check"></i>Cluster level covariate</a></li>
+<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#simulation"><i class="fa fa-check"></i>Simulation</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="more-random-effects.html"><a href="more-random-effects.html"><i class="fa fa-check"></i>More Random Effects</a><ul>
+<li class="chapter" data-level="" data-path="more-random-effects.html"><a href="more-random-effects.html#application-1"><i class="fa fa-check"></i>Application</a></li>
+<li class="chapter" data-level="" data-path="more-random-effects.html"><a href="more-random-effects.html#comparison-to-many-regressions"><i class="fa fa-check"></i>Comparison to many regressions</a></li>
+<li class="chapter" data-level="" data-path="more-random-effects.html"><a href="more-random-effects.html#visual-prediction"><i class="fa fa-check"></i>Visual prediction</a></li>
+<li class="chapter" data-level="" data-path="more-random-effects.html"><a href="more-random-effects.html#summary-1"><i class="fa fa-check"></i>Summary</a></li>
+<li class="chapter" data-level="" data-path="more-random-effects.html"><a href="more-random-effects.html#exercises-1"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html"><i class="fa fa-check"></i>Common Extensions</a><ul>
+<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#additional-grouping-structure"><i class="fa fa-check"></i>Additional Grouping Structure</a><ul>
+<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#cross-classified-models"><i class="fa fa-check"></i>Cross-classified models</a></li>
+<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#hierarchical-structure"><i class="fa fa-check"></i>Hierarchical Structure</a></li>
+<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#crossed-vs.nested"><i class="fa fa-check"></i>Crossed vs. Nested</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#residual-structure"><i class="fa fa-check"></i>Residual Structure</a></li>
+<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#generalized-linear-mixed-models"><i class="fa fa-check"></i>Generalized Linear Mixed Models</a></li>
+<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#exercises-2"><i class="fa fa-check"></i>Exercises</a><ul>
+<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#sociometric-data"><i class="fa fa-check"></i>Sociometric data</a></li>
+<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#patents"><i class="fa fa-check"></i>Patents</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html"><i class="fa fa-check"></i>Issues</a><ul>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#variance-accounted-for"><i class="fa fa-check"></i>Variance accounted for</a></li>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#alternative-approaches-to-mixed-models"><i class="fa fa-check"></i>Alternative approaches to mixed models</a><ul>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#growth-curve-models"><i class="fa fa-check"></i>Growth curve models</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#sample-sizes"><i class="fa fa-check"></i>Sample sizes</a><ul>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#small-number-of-clusters"><i class="fa fa-check"></i>Small number of clusters</a></li>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#small-n-within-cluster"><i class="fa fa-check"></i>Small N within cluster</a></li>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#balancedmissing-values"><i class="fa fa-check"></i>Balanced/Missing values</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#model-comparison"><i class="fa fa-check"></i>Model Comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="going-further.html"><a href="going-further.html"><i class="fa fa-check"></i>Going Further</a><ul>
+<li class="chapter" data-level="" data-path="going-further.html"><a href="going-further.html#other-distributions"><i class="fa fa-check"></i>Other distributions</a></li>
+<li class="chapter" data-level="" data-path="going-further.html"><a href="going-further.html#other-contexts"><i class="fa fa-check"></i>Other contexts</a></li>
+<li class="chapter" data-level="" data-path="going-further.html"><a href="going-further.html#nonlinear-mixed-effects"><i class="fa fa-check"></i>Nonlinear Mixed Effects</a></li>
+<li class="chapter" data-level="" data-path="going-further.html"><a href="going-further.html#connections"><i class="fa fa-check"></i>Connections</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="summary-2.html"><a href="summary-2.html"><i class="fa fa-check"></i>Summary</a></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i>Appendix</a><ul>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#data"><i class="fa fa-check"></i>Data</a></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#programming-languages"><i class="fa fa-check"></i>Programming languages</a><ul>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#r"><i class="fa fa-check"></i>R</a></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#python"><i class="fa fa-check"></i>Python</a></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#julia"><i class="fa fa-check"></i>Julia</a></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#proprietary"><i class="fa fa-check"></i>Proprietary</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#reference-texts-and-other-stuff"><i class="fa fa-check"></i>Reference texts and other stuff</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://m-clark.github.io/"><img src="img/mc.png" style="width:50%; padding:0px 0; display:block; margin: 0 auto;" alt="MC logo"></a></li>
+<li><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="width:50%; border-width:0; display:block; margin: 0 auto;" src="img/ccbysa_test.png" /></a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./"><span style="font-size:200%; font-variant:small-caps; ">Mixed Models in R</span></a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="issues" class="section level1">
+<h1>Issues</h1>
+<div id="variance-accounted-for" class="section level2">
+<h2>Variance accounted for</h2>
+<p>People really love the R-squared value that comes from standard regression. Never mind that it is inherently biased, nor does it matter that there is no way to state what would be a ‘good’ result for a given data situation, nor that many of these same people actually don’t know how to interpret it, nor does it even matter that the same kinds of folks have no qualms about dropping it from a report at the first sign of trouble.</p>
+<p>Suffice it to say that when there are multiple sources of ‘variance’, talking about <em>variance accounted for</em> is not straightforward. Still, many have tried. You might look at <a href="https://cran.r-project.org/web/packages/r2glmm/">this package</a> and the references noted in the description. See also the <a href="https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#how-do-i-compute-a-coefficient-of-determination-r2-or-an-analogue-for-glmms">GLMM FAQ</a>. I would suggest not even bothering beyond the standard linear mixed model.</p>
+</div>
+<div id="alternative-approaches-to-mixed-models" class="section level2">
+<h2>Alternative approaches to mixed models</h2>
+<p>I have a <a href="https://m-clark.github.io/docs/clustered/">document</a> that goes into more detail about many approaches to dealing with clustered data, but we can briefly talk about some here. Common alternatives used in clustered data situations include:</p>
+<ul>
+<li>Fixed effects models (also panel linear models with fixed, as opposed to random, effects)</li>
+<li>Using cluster-robust standard errors</li>
+<li>Generalized estimating equations (GEE)</li>
+</ul>
+<p>The first two are commonly used by those trained with an econometrics perspective, while you might see GEE more with those of a biostatistics or other perspective. GEE are in fact a generalization of the cluster-robust approach, and extend generalized least squares (GLS) to nonlinear/GLM settings. The nature of fixed effects models allow you to control for, but not investigate, any cluster level effects. This makes them a non-starter for many investigations, as those are typically of prime theoretical interest. GEE approaches allow one to take into account the dependency in the data, but ignore what might be very interesting, i.e. the random effects and associated variance. There are also few tools for GEE in more complicated correlational structures beyond a single clustering variable.</p>
+<div id="growth-curve-models" class="section level3">
+<h3>Growth curve models</h3>
+<p>With longitudinal data, growth curve models are a latent variable approach that is commonly used in these situations. With appropriate setup, they will duplicate the results of a mixed model. In my opinion, there are few reasons to use a growth curve approach over a mixed model, and many reasons not to, not least of which is that effects which would be simple to interpret in the mixed model approach are now a source of confusion to applied researchers in the growth curve model, even though it’s the same thing. Furthermore, indirect effects, growth mixture models and other extensions common in the latent variable approach are more easily implemented in the mixed model approach. In short, only the most complicated models would perhaps require a growth curve model, but would also bring with it many other complications. See more <a href="https://m-clark.github.io/docs/sem/latent-growth-curves.html">here</a>.</p>
+</div>
+</div>
+<div id="sample-sizes" class="section level2">
+<h2>Sample sizes</h2>
+<div id="small-number-of-clusters" class="section level3">
+<h3>Small number of clusters</h3>
+<p>Think about how many values of some variable you’d need before you felt comfortable with statistics based on it, especially standard deviation/variance. That’s at play with mixed models, in the sense you’d like to have enough groups to adequately assess the variance components. Mixed models will run with very small numbers, though the estimates will generally be biased. I have a demo <a href="https://m-clark.github.io/docs/mixedModels/growth_vs_mixed_sim.html">here</a> if interested. One way to deal with this is to move to the Bayesian context, which will automatically induce some regularization in parameter estimates.</p>
+<p>This also speaks to the issue some will have regarding whether they should treat something as a <span class="emph">fixed vs. random</span> reffect. Historical definitions would unnecessarily restrict usage of random effects approaches. For example, random effects were defined to be a (random) sample from some population. If this were the case some might take issue when your levels do not deal with a sample, but the whole population, as in the case where your cluster is state and you have all 50 states. This doesn’t matter. If you have enough levels to consider a mixed model approach, feel free to do so.</p>
+</div>
+<div id="small-n-within-cluster" class="section level3">
+<h3>Small N within cluster</h3>
+<p>Mixed models work even with no more than two in each cluster and some singletons. Even in the simple case of pre-post design, mixed models are entirely applicable, though limited (you can’t have random slopes). So whenever you have clustering of some kind, you should consider mixed models.</p>
+</div>
+<div id="balancedmissing-values" class="section level3">
+<h3>Balanced/Missing values</h3>
+<p>We’ve primarily been looking at <span class="emph">balanced</span> data, where each clusters have the same number of observations within them. There is no requirement for this, and in many cases we wouldn’t even expect it, e.g. people within geographical units.</p>
+<p>However, if data is only missing on the outcome, or a mix of variables, we essentially have the same issue as with typical data situations, and will have the same considerations for dealing with missingness. If you don’t lose much data, the practical gain by ignoring missingness generally outweighs the complexities that can come with, for example, multiple imputation<a href="#fn20" class="footnoteRef" id="fnref20"><sup>20</sup></a>, even in the best of settings. By default, mixed models assume missing at random. On the other hand, longitudinal data has special considerations, as there is typically increasing dropout over time.</p>
+<p>Having dealt with missingness in a variety of contexts with different approaches (FIML, MI, Bayesian), the end result is usually that you spend vast amounts more time dealing with the missing data than you do understanding your models, and yet don’t feel any better about the results. Unless the missingness would make you lose a good chunk of the data, it’s probably best just to leave that to the limitations section of your report<a href="#fn21" class="footnoteRef" id="fnref21"><sup>21</sup></a>. If you do deal with it, I’d suggest an approach that is essentially a one-off (e.g. with <span class="pack">missForest</span>) to be compared to the data that ignores the missingness, but still allows you to do everything you want. While you may not incorporate all sources of uncertainty in doing so, it seems to me a viable compromise.</p>
+</div>
+</div>
+<div id="model-comparison" class="section level2">
+<h2>Model Comparison</h2>
+<p>Model comparison takes place in the usual way in the sense of potentially having statistical tests and information criteria. Unfortunately, the typical likelihood ratio tests one might use in standard settings are not so straightforward here. For example, at a minimum you’d have to change the default estimation from REML to ML, and the models must have the same random effects structure, in order to compare models with different fixed effects for the resulting test p-value to be correct. It works the other way to compare models with different random effects structure.</p>
+<p>In my opinion, model selection involves considerations of theory, parsimony, and prediction, and those tests do not. I’m not partial to such tests even in the standard setting, and would use AIC here to potentially aid (not make) a model choice if I thought it was necessary, as I would there<a href="#fn22" class="footnoteRef" id="fnref22"><sup>22</sup></a>. In general though, trying to determine a ‘best’ model with one set of data is a problematic endeavor at best, and at worst, completely misguided. I think it’s very useful to build models of increasing complexity, and select one to focus on based on the available evidence. Just don’t get hung up on choosing one based solely on the outcome of a single statistic. If you have a lot of data, you should consider some sort of explicit validation approach if you really want to compare competing models, but that is not without complication given the dependency in the data.</p>
+
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="20">
+<li id="fn20"><p>Multiple imputation is straightforward only in theory. In practice it becomes a major pain to go very far beyond getting the parameter estimates for simple models. Full information maximum likelihood (FIML) is little implemented outside of SEM software/packages, and more problematic in its assumptions.<a href="issues.html#fnref20">↩</a></p></li>
+<li id="fn21"><p>Just note that in some disciplines, the reviewers, who will never actually do this themselves for the same reasons, nevertheless will make a big deal about the missing data because it’s an easy point for them to make. This is similar to economics reviewers who shout ‘endogeneity!’ at every turn, but won’t bother to tell you where to get the instrument in the first place, admit that IV analysis is problematic in its own right, or what the approach should be in complex model settings such as mixed models with nonlinear, spatial effects, multiple levels of clustering etc.<a href="issues.html#fnref21">↩</a></p></li>
+<li id="fn22"><p>If you really want them see the <span class="pack">lmertest</span> package. Note also that AIC <a href="https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#can-i-use-aic-for-mixed-models-how-do-i-count-the-number-of-degrees-of-freedom-for-a-random-effect">does not come with a free lunch</a>. See the <span class="pack">cAIC4</span> package and references therein.<a href="issues.html#fnref22">↩</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="common-extensions.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="going-further.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": false,
+"twitter": false,
+"google": false,
+"weibo": false,
+"instapper": false,
+"vk": false,
+"all": ["twitter", "facebook", "google", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": null,
+"download": null,
+"toc": {
+"collapse": "section",
+"depth": 2,
+"scroll_highlight": true
+},
+"highlight": "pygments",
+"search": true
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(script.src))
+      script.src  = script.src.replace(/^https?:/, '');
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

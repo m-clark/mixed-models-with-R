@@ -1,0 +1,112 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto");
+
+.book  {
+  background-color: #fffff8;
+}
+
+.section {
+  background-color: #fffff8;
+}
+
+.book .book-body .page-wrapper .page-inner section.normal {
+    display: block;
+    background-color: #fffff8;
+    color: #585858;
+    padding: 5px 15px;
+    font-family: Roboto;
+    word-wrap: break-word;
+    overflow: hidden;
+    line-height: 1.7;
+    text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+}
+
+
+.book .book-body .page-wrapper .page-inner section.normal a {
+    color: #3D68FF;  /*1B4D9E #4183c4; changed for contrast and complement*/
+    text-decoration: none;
+    background: 0 0;
+}
+.body-inner {
+    background-color: #fffff8;
+}
+
+.book .book-body .page-wrapper {
+    position: relative;
+    outline: 0;
+    background-color: #fffff8;
+}
+
+.book .book-body .page-wrapper .page-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 0 40px;
+}
+
+.book .book-header {
+    overflow: visible;
+    height: 50px;
+    padding: 0 8px;
+    z-index: 2;
+    font-family: Roboto sans-serif;
+    font-size: .85em;
+    color: #7e888b;
+    background-color: #fffff8;
+    /* background: 0 0; */
+}
+
+element .style {
+  background-color: #fffff8;
+}
+
+.book.with-summary .book-header.fixed {
+  background-color: #fffff8;
+}
+
+i {
+  background-color: #fffff8;
+}
+
+.book .book-summary {
+    position: absolute;
+    font-family: "Open Sans", Roboto, sans-serif;
+    top: 0;
+    left: -300px;
+    bottom: 0;
+    z-index: 1;
+    width: 300px;
+    color: #364149;  /**/
+    background: #eaf5fb; /*#d9edf7#bdcadb #3572D9 #fafafa*/
+    border-right: 1px solid rgba(0,0,0,.07);
+    -webkit-transition: left 250ms ease;
+    -moz-transition: left 250ms ease;
+    -o-transition: left 250ms ease;
+    transition: left 250ms ease;
+}
+
+/* nav/menu area */
+.book .book-summary ul.summary li a, .book .book-summary ul.summary li span {
+    display: block;
+    padding: 10px 15px;
+    border-bottom: none;
+    color: #364149; /**/
+    background: 0 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+}
+.book .book-summary ul.summary li a:hover, .book .book-summary ul.summary li.active>a {
+  color: #990024;  /*#6197D5*/
+}
+
+
+.book .book-body .page-wrapper .page-inner section.normal pre {
+    overflow: auto;
+    word-wrap: normal;
+    margin: 0 0 1.275em;
+    padding: .85em 1em;
+    background: #fafafa;
+}

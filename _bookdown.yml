@@ -2,3 +2,4 @@ book_filename: "mixed_models"
 language:
   ui:
     chapter_name: "Chapter "
+output_dir: "docs"

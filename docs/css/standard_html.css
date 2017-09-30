@@ -1,0 +1,134 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono|Roboto+Condensed");
+@import url("https://fonts.googleapis.com/css?family=Open+Sans");
+@import url('https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300');
+@import url('https://fonts.googleapis.com/css?family=Source+Code+Pro');
+@import url('https://fonts.googleapis.com/css?family=Stalemate|Alex+Brush');
+
+
+.emph {
+  color: #E32D00 ;  /*#ff5500 #D14300*/
+  font-weight: 500;
+}
+
+/* pack func and objclass colors initially come from hcl(seq(90,360, length.out=4), c=80, l=80); redone for contrast*/
+.pack {
+  color: #990071; /*#AC9CFF #e41a1c*/
+  font-weight: 500;
+}
+
+.func {
+  color: #007199;   /*#00CBB6; #984ea3; can just use `` instead*/
+  font-weight: 500;
+}
+
+.objclass {
+  color:  #947100;  /*#AAB400 #4daf4a; #FFC5D0*/
+  font-weight: 500;
+}
+
+a {
+  color: #1e90ff;  /*dodgerblue*/
+}
+
+body {
+  color: #585858; /*#595959 (i.e. gray35) provides recommended contrast ratio 7:1 on white; change 9s to 8s for offwhite;*/
+  background-color: #fffff8;
+}
+
+p {
+
+}
+
+.author {
+  font-variant: small-caps;
+}
+
+code {
+  box-sizing: border-box;
+  left: 0; /* This changes where the code chunk box actually starts */
+  /* padding: 10px 0 10px 60px; /* Change the last value here to move the text left or right */
+  position: relative;
+  width: 100%; /* This changes where the code chunk box ends on the right side */
+  font-family: 'Roboto Mono' 'Lucida Sans' Consolas monospace;
+  font-size: 100%; /*changes output size; and comments*/
+  /*border: 10px solid #ff5500;*/  /*code block and results border*/
+  /*background-color:#ff5500;*/   /* results background*/
+
+}
+pre .r {
+  box-sizing: border-box;
+  left: 0; /* This changes where the code chunk box actually starts */
+  /* padding: 10px 0 10px 60px; /* Change the last value here to move the text left or right */
+  position: relative;
+  /*width: 100%; /* This changes where the code chunk box ends on the right side */
+  font-family: 'Roboto Mono' 'Lucida Sans' Consolas monospace;
+  /*font-size: 100%; /*changes output size; and comments*/
+  /*border: 10px solid #ff5500;*/  /*code block and results border*/
+  /*background-color:#ff5500;*/   /* results background*/
+
+}
+
+#TOC{
+  font-size: 75%;
+
+}
+
+.table {
+  margin: 0 auto;
+}
+
+
+.tocify ul, .tocify li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    width: 100%;
+    line-height: 30px;
+    background-color: #fffff9;
+}
+
+li.tocify-item.list-group-item.active {
+  background-color: rgb(97,151,213);             /* background of current section in toc */
+}
+
+h1, h2, h3, h4, h5 {
+  color:#990024;
+  font-family: 'Roboto Condensed';
+}
+
+.col2 {
+  columns: 2 200px;         /* number of columns and width in pixels*/
+  -webkit-columns: 2 200px; /* chrome, safari */
+  -moz-columns: 2 200px;    /* firefox */
+}
+.col3 {
+  columns: 3 100px;
+  -webkit-columns: 3 100px;
+  -moz-columns: 3 100px;
+}
+
+.plotly {
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+/*.plotly html-widget {
+  width: 100%;
+}*/
+
+.d3heatmap {
+  margin-left: 5%;
+  margin-right: 5%;
+  width: 75%;
+}
+
+
+div.datatables {
+    margin-left: auto;     /* to center them when full is not necessary. */
+    margin-right: auto;
+}
+
+table {
+  margin: auto;
+}
