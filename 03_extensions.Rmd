@@ -222,14 +222,67 @@ random effects are associated with multiple factors, exactly the same
 computational methods are used whether the factors form a nested sequence or are
 partially crossed or are completely crossed.
 
-See this [discussion also](https://stats.stackexchange.com/questions/228800/crossed-vs-nested-random-effects-how-do-they-differ-and-how-are-they-specified), as well as [this from the FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#nested-or-crossed) from one of the <span class="pack">lme4</span> developers. 
+See this [discussion also](https://stats.stackexchange.com/questions/228800/crossed-vs-nested-random-effects-how-do-they-differ-and-how-are-they-specified), as well as [this from the FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#nested-or-crossed) from one of the <span class="pack">lme4</span> developers. Josh Errickson at CSCAR also has a nice [write-up with visual depiction](http://errickson.net/stats-notes/vizrandomeffects.html) of the underlying matrices of interest, which served as inspiration for some of the visualization in the next section.
 
 So there you have it.  When it comes to <span class="pack">lme4</span>, crossed vs. nested is simply a state of mind (data)[^crossnest].
 
 
 ## Residual Structure
 
-Sometimes we will want to estimate something regarding the residual correlation structure. This especially the case in the longitudinal setting, where we think that observations closer in time would be more strongly correlated than those further apart.  What does this model look like? Consider the following for an individual and three time points.
+Sometimes we will want to estimate something regarding the residual covariance/correlation structure. This especially the case in the longitudinal setting, where we think that observations closer in time would be more strongly correlated than those further apart, or that the variance changes over time.  What does this model look like? 
+
+Let's begin by thinking about the covariance matrix/correlation matrix for the entire set of observations for our target variable, and how we want to represent the dependency in those observations.  I'll show a visualization of the first 5 people. For the GPA data recall that each person has 6 observations.  This display regards our random intercepts only model for GPA. 
+
+```{r residual_varcov, echo=FALSE}
+rescov <- function(model, data) {
+  var.d <- crossprod(getME(model,"Lambdat"))
+  Zt <- getME(model,"Zt")
+  vr <- sigma(model)^2
+  var.b <- vr*(t(Zt) %*% var.d %*% Zt)
+  sI <- vr * Diagonal(nrow(data))
+  var.y <- var.b + sI
+  invisible(var.y)
+}
+# mod1 <- lmer(diameter ~ 1 + (1 | sample), data = Penicillin %>% arrange(sample))
+gpa_vis_cov = lmer(gpa ~ occasion + (1|student), data=gpa)
+# summary(gpa_vis_cov)
+
+rc1 <- rescov(gpa_vis_cov, gpa)
+# image(rc1[1:60,1:60])
+rc1[1:30, 1:30] %>%
+  as.matrix() %>%
+  reshape2::melt() %>% 
+  mutate(value = factor(round(value,5))) %>% 
+  ggplot(aes(Var1, Var2, fill = value)) + 
+  geom_tile(color='gray92', size=1) +
+  scale_y_continuous(trans = 'reverse') +
+  scale_fill_manual(values = c('gray92','#00aaff80', '#ff550080')) +
+  theme_trueMinimal() +
+  theme_void() 
+  
+
+
+# library(plotly); library(viridis)
+# plot_ly(z =~ as.matrix(rc1[1:30, 1:30]), type='contour', colors = viridis(n=3, option = 'plasma')) %>% 
+#   layout(#xaxis = list(autorange = "reversed"),
+#          yaxis = list(autorange = "reversed"))
+```
+
+Each block represents the covariance matrix pertaining to an individual. Within the person there are variances on the diagonal and covariances on the off-diagonal.  When considering the whole data, we can see that observations from one person have no covariance with another person (gray). Furthermore, the covariance within a person is a constant value. Furthermore the variance is also a constant value.  Where did those values come from?
+
+```{r residual_varcov2, echo=F}
+vc = tidy(VarCorr(gpa_vis_cov))
+totvar = sum(vc$vcov)
+tidy(VarCorr(gpa_vis_cov)) %>% 
+  select(-var1, -var2) %>% 
+  rename(variance=vcov, sd=sdcor) %>%  
+  mutate_if(is.numeric, arm::fround, digits=3) %>% 
+  pander()
+```
+
+Remember that there are two sources of variance in this model, the residual observation variance and that pertaining to person. Combined they provide the total residual variance that we aren't capturing with our covariates.  In this case, it's about `r round(totvar, 2)`, the value displayed on our diagonal. The off-diagonal is the variance attributable to student, which we alternately interpreted as an intraclass correlation (dividing by the total variance converts it to the correlation metric).
+
+Now let's start to think about other types of covariance structures. Consider the following for an individual and three time points.
 
 $$\boldsymbol{y} \sim \mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\Sigma})$$
 
@@ -249,8 +302,17 @@ $$\Sigma =
 0   & 0   & \sigma^2 \\
 \end{array}\right]$$
 
+Next, we can relax the assumption of equal variances.
 
-Now we actually want to get at the underlying correlation.  So now we have something like this, where $\rho$ represents the residual correlation.
+$$\Sigma = 
+\left[
+\begin{array}{ccc} 
+\sigma_1^2 & 0   & 0   \\
+0   & \sigma_2^2 & 0   \\
+0   & 0   & \sigma_3^2 \\
+\end{array}\right]$$
+
+Now let's say we actually want to get at the underlying covariance/correlation. I'll switch to the correlation representation, but you can still think of the variances as constant or separately estimated.  So now we have something like this, where $\rho$ represents the residual correlation among observations.
 
 $$\Sigma = 
 \left[
@@ -259,7 +321,6 @@ $$\Sigma =
 \rho_1   & 1 & \rho_3   \\
 \rho_2   & \rho_3   & 1 \\
 \end{array}\right]$$
-
 
 
 In this case we'd estimate a different correlation for all time point pairs.  This is typically described as an <span class="">unstructured</span> or simply 'symmetric' correlation structure. 
@@ -291,11 +352,51 @@ $$\Sigma =
 
 Again, the main point is that points further apart in time are assumed to have less correlation. 
 
-Know that there are many patterns and possibilities to potentially consider, and that they are not limited to the repeated measures scenario.  For example, the correlation could represent spatial structure.  We could also have variances that are different at each time point[^residstruct].
+Know that there are many patterns and possibilities to potentially consider, and that they are not limited to the repeated measures scenario.  For example, the correlation could represent spatial structure.  And as noted we could also have variances that are different at each time point[^residstruct].  We'll start with that for the next example.
 
-Unfortunately, <span class="pack">lme4</span> does not provide the ability to model the residual correlation structure, though many other mixed model packages do[^lmerho].  In fact, two packages that come with the basic R installation do so, <span class="pack">mgcv</span> and <span class="pack">nlme</span>.  We'll demonstrate with the latter. 
+### Heterogeneous Variance
 
-The following example shows the same model we did before, but with the autocorrelation structure we just described. In <span class="pack">nlme</span> we use the built in <span class="func">corAR1</span> function and `correlation` argument.  Note also the different random effect specification (though not *too* different).
+Unfortunately, <span class="pack">lme4</span> does not provide the ability to model the residual covariance structure, at least not in a straightforward fashion, though many other mixed model packages do[^lmerho].  In fact, two packages that come with the basic R installation do so, <span class="pack">mgcv</span> and <span class="pack">nlme</span>.  We'll demonstrate with the latter. 
+
+The <span class="pack">nlme</span> package will have a different random effect specification, though not *too* different.  In addition, to estimate heterogeneous variances, we'll need to use an additional `weights` argument.  The following will allow each time point of occasion to have a unique estimate.
+
+
+```{r heterovar, echo=1:3, eval=-3}
+library(nlme)
+heterovar_res = lme(gpa ~ occasion, 
+                    data = gpa,
+                    random = ~1|student, 
+                    weights = varIdent(form = ~1|occasion))
+summary(heterovar_res)
+pander(heterovar_res, round=3)
+
+vc = VarCorr(heterovar_res) # christ lme objects are the worst
+cbind(rownames(vc), vc[,1:2]) %>% 
+  data.frame(stringsAsFactors=F) %>% 
+  mutate_at(vars(Variance, StdDev), function(x) round(as.numeric(x), 3)) %>% 
+  rename(' ' = V1) %>% 
+  pander
+```
+
+
+Now the not-so fun part.  For the values we're interested in for this example, i.e. the variances at each occasion, <span class="pack">nlme</span> does not make it easy on someone to understand initially, as the output regards the way things are for estimation, not for what one would usually have to report.  The variances are scaled relative to the first variance estimate, which is actually the reported residual variance in the random effects part. Additionally the values are also on the standard deviation rather than variance scale.  From the default output display, we can see that variance decreases over time in this case, but the actual values are not provided.
+
+```{r heterovar_variances}
+summary(heterovar_res$modelStruct)
+```
+
+Relative values are fine, I guess, but what we'd want are the actual estimates.  Here's how you can get them using the residual standard deviation to scale those values, then square them to get on the variance scale.
+
+```{r heterovar_extract_vars_from_nlmes_cold_dead_hands}
+(c(1.0000000, coef(heterovar_res$modelStruct$varStruct, unconstrained=F))*heterovar_res$sigma)^2
+```
+
+Yeah.  You'll have to look this up every time you want to do it, or just make your own function that takes the model input.
+
+
+### Autocorrelation
+
+The following example shows the same basic model, but with the autocorrelation structure we described previously. In <span class="pack">nlme</span> we use the built-in <span class="func">corAR1</span> function and `correlation` argument similar to how we did with the weights argument.  
 
 ```{r corr_residual, echo=1:3, eval=-3}
 library(nlme)
@@ -484,9 +585,9 @@ load('data/patents.RData')
 
 Interestingly, one can model overdispersion in a Poisson model by specifying an random intercept for each observation (`subject` in the data).  In other words, no clustering or grouped structure is necessary.
 
-[^residstruct]: One reason to do so would be that you expect variability to decrease over time, e.g. due to experience.  You might also allow that variance to be different due to some other grouping factor entirely (e.g. due to treatment group membership).  I will likely add an example in the future.  But for the time being, in <span class="pack">nlme</span>, the relevant argument is `weights`.  See `?varIdent` as an example of what you would provide to the `weights` argument.
+[^residstruct]: One reason to do so would be that you expect variability to decrease over time, e.g. due to experience.  You might also allow that variance to be different due to some other grouping factor entirely (e.g. due to treatment group membership).
 
-[^lmerho]: This feature request has been made by its users for over a decade at this point- it's not gonna happen.  The issue is that the way <span class="pack">lmer</span> works by default uses a method that won't allow it (this is why it is faster and better performing than other packages). Unfortunately the only response to this issue is 'use <span class="pack">nlme</span>'.  However many other packages work with <span class="pack">lme4</span> rather than <span class="pack">nlme</span>, and if you aren't going to use <span class="pack">lme4</span> for mixed models you might as well go Bayesian with <span class="pack">rstanarm</span> or <span class="pack">brms</span> instead of <span class="pack">nlme.</span>  I would even prefer <span class="pack">mgcv</span> to <span class="pack">nlme</span> (though it would use <span class="pack">nlme</span> under the hood) because of the other capabilities it provides, and the objects created are easier to work with in my opinion.
+[^lmerho]: This feature request has been made by its users for over a decade at this point- it's not gonna happen.  The issue is that the way <span class="pack">lmer</span> works by default uses a method that won't allow it (this is why it is faster and better performing than other packages). Unfortunately the only response to this issue is 'use <span class="pack">nlme</span>'.  However many other packages work with <span class="pack">lme4</span> rather than <span class="pack">nlme</span>, and if you aren't going to use <span class="pack">lme4</span> for mixed models you might as well go Bayesian with <span class="pack">rstanarm</span> or <span class="pack">brms</span> instead of <span class="pack">nlme.</span>  I would even prefer <span class="pack">mgcv</span> to <span class="pack">nlme</span> (though it can use <span class="pack">nlme</span> under the hood) because of the other capabilities it provides, and the objects created are easier to work with in my opinion.
 
 [^crossed_notation]: I don't show the formal model here as we did before, but this is why depicting mixed models solely as 'multilevel' becomes a bit problematic in my opinion. In the standard mixed model notation it's straightforward though, you just add an addition random effect term, just as we do in the actual model syntax.
 
@@ -494,4 +595,4 @@ Interestingly, one can model overdispersion in a Poisson model by specifying an 
 
 [^crossnest]: Note that it *does* matter if you label your data inappropriately.  For example, if in the nesting situation you start your id variable at 1 for each nested group, then you have to use the nested notation in <span class="pack">lme4</span>, otherwise, e.g. it won't know that id = 1 in group 1 is different from id 1 in group 2.  Again though, if you're not being silly, this wouldn't be an issue.
 
-[^scalecontbin]:  Note that for a balanced binary variable, the mean `p=.5` and sd is `sqrt(p*(1-p)) = .5`
+[^scalecontbin]:  Note that for a balanced binary variable, the mean `p=.5` and standard deviation is `sqrt(p*(1-p)) = .5`

@@ -24,7 +24,7 @@
 
 
 
-<meta name="date" content="2017-12-02">
+<meta name="date" content="2017-12-08">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -152,7 +152,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#hierarchical-structure"><i class="fa fa-check"></i>Hierarchical Structure</a></li>
 <li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#crossed-vs.nested"><i class="fa fa-check"></i>Crossed vs. Nested</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#residual-structure"><i class="fa fa-check"></i>Residual Structure</a></li>
+<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#residual-structure"><i class="fa fa-check"></i>Residual Structure</a><ul>
+<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#heterogeneous-variance"><i class="fa fa-check"></i>Heterogeneous Variance</a></li>
+<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#autocorrelation"><i class="fa fa-check"></i>Autocorrelation</a></li>
+</ul></li>
 <li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#generalized-linear-mixed-models"><i class="fa fa-check"></i>Generalized Linear Mixed Models</a></li>
 <li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#exercises-2"><i class="fa fa-check"></i>Exercises</a><ul>
 <li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#sociometric-data"><i class="fa fa-check"></i>Sociometric data</a></li>
@@ -591,13 +594,44 @@ nurses_crossed =<span class="st"> </span><span class="kw">lmer</span>(stress <sp
 <p>The blurring of mixed-effects models with the concept of multiple, hierarchical levels of variation results in an unwarranted emphasis on ‘levels’ when defining a model and leads to considerable confusion. It is perfectly legitimate to define models having random effects associated with non-nested factors. The reasons for the emphasis on defining random effects with respect to nested factors only are that such cases do occur frequently in practice, and that some of the computational methods for estimating the parameters in the models can only be easily applied to nested factors.</p>
 <p>This is not the case for the methods used in the lme4 package. <em>Indeed there is nothing special done for models with random effects for nested factors</em>. When random effects are associated with multiple factors, exactly the same computational methods are used whether the factors form a nested sequence or are partially crossed or are completely crossed.</p>
 </blockquote>
-<p>See this <a href="https://stats.stackexchange.com/questions/228800/crossed-vs-nested-random-effects-how-do-they-differ-and-how-are-they-specified">discussion also</a>, as well as <a href="https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#nested-or-crossed">this from the FAQ</a> from one of the <span class="pack">lme4</span> developers.</p>
+<p>See this <a href="https://stats.stackexchange.com/questions/228800/crossed-vs-nested-random-effects-how-do-they-differ-and-how-are-they-specified">discussion also</a>, as well as <a href="https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#nested-or-crossed">this from the FAQ</a> from one of the <span class="pack">lme4</span> developers. Josh Errickson at CSCAR also has a nice <a href="http://errickson.net/stats-notes/vizrandomeffects.html">write-up with visual depiction</a> of the underlying matrices of interest, which served as inspiration for some of the visualization in the next section.</p>
 <p>So there you have it. When it comes to <span class="pack">lme4</span>, crossed vs. nested is simply a state of mind (data)<a href="#fn16" class="footnoteRef" id="fnref16"><sup>16</sup></a>.</p>
 </div>
 </div>
 <div id="residual-structure" class="section level2">
 <h2>Residual Structure</h2>
-<p>Sometimes we will want to estimate something regarding the residual correlation structure. This especially the case in the longitudinal setting, where we think that observations closer in time would be more strongly correlated than those further apart. What does this model look like? Consider the following for an individual and three time points.</p>
+<p>Sometimes we will want to estimate something regarding the residual covariance/correlation structure. This especially the case in the longitudinal setting, where we think that observations closer in time would be more strongly correlated than those further apart, or that the variance changes over time. What does this model look like?</p>
+<p>Let’s begin by thinking about the covariance matrix/correlation matrix for the entire set of observations for our target variable, and how we want to represent the dependency in those observations. I’ll show a visualization of the first 5 people. For the GPA data recall that each person has 6 observations. This display regards our random intercepts only model for GPA.</p>
+<p><img src="mixed_models_files/figure-html/residual_varcov-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Each block represents the covariance matrix pertaining to an individual. Within the person there are variances on the diagonal and covariances on the off-diagonal. When considering the whole data, we can see that observations from one person have no covariance with another person (gray). Furthermore, the covariance within a person is a constant value. Furthermore the variance is also a constant value. Where did those values come from?</p>
+<table style="width:40%;">
+<colgroup>
+<col width="15%" />
+<col width="15%" />
+<col width="9%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">grp</th>
+<th align="center">variance</th>
+<th align="center">sd</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">student</td>
+<td align="center">0.064</td>
+<td align="center">0.252</td>
+</tr>
+<tr class="even">
+<td align="center">Residual</td>
+<td align="center">0.058</td>
+<td align="center">0.241</td>
+</tr>
+</tbody>
+</table>
+<p>Remember that there are two sources of variance in this model, the residual observation variance and that pertaining to person. Combined they provide the total residual variance that we aren’t capturing with our covariates. In this case, it’s about 0.12, the value displayed on our diagonal. The off-diagonal is the variance attributable to student, which we alternately interpreted as an intraclass correlation (dividing by the total variance converts it to the correlation metric).</p>
+<p>Now let’s start to think about other types of covariance structures. Consider the following for an individual and three time points.</p>
 <p><span class="math display">\[\boldsymbol{y} \sim \mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\Sigma})\]</span></p>
 <p>So we have three observations of <span class="math inline">\(y\)</span> that are multivariate normally distributed. The mean <span class="math inline">\(\mu\)</span> is a function of covariates just like in standard regression.</p>
 <p><span class="math display">\[\mu = b_0 + b_1\cdot \mathrm{time} + b_2\cdot x_1 ...\]</span></p>
@@ -610,7 +644,15 @@ nurses_crossed =<span class="st"> </span><span class="kw">lmer</span>(stress <sp
 0   &amp; \sigma^2 &amp; 0   \\
 0   &amp; 0   &amp; \sigma^2 \\
 \end{array}\right]\]</span></p>
-<p>Now we actually want to get at the underlying correlation. So now we have something like this, where <span class="math inline">\(\rho\)</span> represents the residual correlation.</p>
+<p>Next, we can relax the assumption of equal variances.</p>
+<p><span class="math display">\[\Sigma = 
+\left[
+\begin{array}{ccc} 
+\sigma_1^2 &amp; 0   &amp; 0   \\
+0   &amp; \sigma_2^2 &amp; 0   \\
+0   &amp; 0   &amp; \sigma_3^2 \\
+\end{array}\right]\]</span></p>
+<p>Now let’s say we actually want to get at the underlying covariance/correlation. I’ll switch to the correlation representation, but you can still think of the variances as constant or separately estimated. So now we have something like this, where <span class="math inline">\(\rho\)</span> represents the residual correlation among observations.</p>
 <p><span class="math display">\[\Sigma = 
 \left[
 \begin{array}{ccc} 
@@ -639,9 +681,104 @@ nurses_crossed =<span class="st"> </span><span class="kw">lmer</span>(stress <sp
 .06      &amp; .25      &amp;  .5      &amp; 1 \\
 \end{array}\right]\]</span></p>
 <p>Again, the main point is that points further apart in time are assumed to have less correlation.</p>
-<p>Know that there are many patterns and possibilities to potentially consider, and that they are not limited to the repeated measures scenario. For example, the correlation could represent spatial structure. We could also have variances that are different at each time point<a href="#fn17" class="footnoteRef" id="fnref17"><sup>17</sup></a>.</p>
-<p>Unfortunately, <span class="pack">lme4</span> does not provide the ability to model the residual correlation structure, though many other mixed model packages do<a href="#fn18" class="footnoteRef" id="fnref18"><sup>18</sup></a>. In fact, two packages that come with the basic R installation do so, <span class="pack">mgcv</span> and <span class="pack">nlme</span>. We’ll demonstrate with the latter.</p>
-<p>The following example shows the same model we did before, but with the autocorrelation structure we just described. In <span class="pack">nlme</span> we use the built in <span class="func">corAR1</span> function and <code>correlation</code> argument. Note also the different random effect specification (though not <em>too</em> different).</p>
+<p>Know that there are many patterns and possibilities to potentially consider, and that they are not limited to the repeated measures scenario. For example, the correlation could represent spatial structure. And as noted we could also have variances that are different at each time point<a href="#fn17" class="footnoteRef" id="fnref17"><sup>17</sup></a>. We’ll start with that for the next example.</p>
+<div id="heterogeneous-variance" class="section level3">
+<h3>Heterogeneous Variance</h3>
+<p>Unfortunately, <span class="pack">lme4</span> does not provide the ability to model the residual covariance structure, at least not in a straightforward fashion, though many other mixed model packages do<a href="#fn18" class="footnoteRef" id="fnref18"><sup>18</sup></a>. In fact, two packages that come with the basic R installation do so, <span class="pack">mgcv</span> and <span class="pack">nlme</span>. We’ll demonstrate with the latter.</p>
+<p>The <span class="pack">nlme</span> package will have a different random effect specification, though not <em>too</em> different. In addition, to estimate heterogeneous variances, we’ll need to use an additional <code>weights</code> argument. The following will allow each time point of occasion to have a unique estimate.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(nlme)
+heterovar_res =<span class="st"> </span><span class="kw">lme</span>(gpa <span class="op">~</span><span class="st"> </span>occasion, 
+                    <span class="dt">data =</span> gpa,
+                    <span class="dt">random =</span> <span class="op">~</span><span class="dv">1</span><span class="op">|</span>student, 
+                    <span class="dt">weights =</span> <span class="kw">varIdent</span>(<span class="dt">form =</span> <span class="op">~</span><span class="dv">1</span><span class="op">|</span>occasion))
+## summary(heterovar_res)</code></pre></div>
+<table style="width:89%;">
+<caption>Linear mixed-effects model fit by REML : gpa ~ occasion</caption>
+<colgroup>
+<col width="25%" />
+<col width="11%" />
+<col width="16%" />
+<col width="8%" />
+<col width="13%" />
+<col width="13%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center"> </th>
+<th align="center">Value</th>
+<th align="center">Std.Error</th>
+<th align="center">DF</th>
+<th align="center">t-value</th>
+<th align="center">p-value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><strong>(Intercept)</strong></td>
+<td align="center">2.493</td>
+<td align="center">0.029</td>
+<td align="center">999</td>
+<td align="center">87.2</td>
+<td align="center">0</td>
+</tr>
+<tr class="even">
+<td align="center"><strong>occasion</strong></td>
+<td align="center">0.106</td>
+<td align="center">0.004</td>
+<td align="center">999</td>
+<td align="center">26.32</td>
+<td align="center">0</td>
+</tr>
+</tbody>
+</table>
+<table style="width:46%;">
+<colgroup>
+<col width="19%" />
+<col width="15%" />
+<col width="11%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th align="center">Variance</th>
+<th align="center">StdDev</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(Intercept)</td>
+<td align="center">0.094</td>
+<td align="center">0.306</td>
+</tr>
+<tr class="even">
+<td>Residual</td>
+<td align="center">0.138</td>
+<td align="center">0.372</td>
+</tr>
+</tbody>
+</table>
+<p>Now the not-so fun part. For the values we’re interested in for this example, i.e. the variances at each occasion, <span class="pack">nlme</span> does not make it easy on someone to understand initially, as the output regards the way things are for estimation, not for what one would usually have to report. The variances are scaled relative to the first variance estimate, which is actually the reported residual variance in the random effects part. Additionally the values are also on the standard deviation rather than variance scale. From the default output display, we can see that variance decreases over time in this case, but the actual values are not provided.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(heterovar_res<span class="op">$</span>modelStruct)</code></pre></div>
+<pre><code>Random effects:
+ Formula: ~1 | student
+        (Intercept) Residual
+StdDev:   0.8232544        1
+
+Variance function:
+ Structure: Different standard deviations per stratum
+ Formula: ~1 | occasion 
+ Parameter estimates:
+        1         2         3         4         5         6 
+1.0000000 0.8261186 0.6272415 0.4311126 0.3484013 0.4324628 </code></pre>
+<p>Relative values are fine, I guess, but what we’d want are the actual estimates. Here’s how you can get them using the residual standard deviation to scale those values, then square them to get on the variance scale.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(<span class="kw">c</span>(<span class="fl">1.0000000</span>, <span class="kw">coef</span>(heterovar_res<span class="op">$</span>modelStruct<span class="op">$</span>varStruct, <span class="dt">unconstrained=</span>F))<span class="op">*</span>heterovar_res<span class="op">$</span>sigma)<span class="op">^</span><span class="dv">2</span></code></pre></div>
+<pre><code>                    2          3          4          5          6 
+0.13815037 0.09428374 0.05435276 0.02567636 0.01676917 0.02583744 </code></pre>
+<p>Yeah. You’ll have to look this up every time you want to do it, or just make your own function that takes the model input.</p>
+</div>
+<div id="autocorrelation" class="section level3">
+<h3>Autocorrelation</h3>
+<p>The following example shows the same basic model, but with the autocorrelation structure we described previously. In <span class="pack">nlme</span> we use the built-in <span class="func">corAR1</span> function and <code>correlation</code> argument similar to how we did with the weights argument.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(nlme)
 corr_res =<span class="st"> </span><span class="kw">lme</span>(gpa <span class="op">~</span><span class="st"> </span>occasion, 
                <span class="dt">data =</span> gpa,
@@ -715,6 +852,7 @@ corr_res =<span class="st"> </span><span class="kw">lme</span>(gpa <span class="
 </table>
 <p><br></p>
 <p>Notice first that the fixed effect for occasion is the same as <a href="mixed-models.html#mixed-model">before</a>. The variance estimates have changed slightly along with the variances of the fixed effects (i.e. the standard errors). The main thing is that we have a new parameter called <code>Phi</code> in the <span class="pack">nlme</span> output, that represents our autocorrelation, with value of 0.418. This suggests at least some correlation exists among the residuals for observations next to each other in time, though it diminishes quickly as observations grow further apart.</p>
+</div>
 </div>
 <div id="generalized-linear-mixed-models" class="section level2">
 <h2>Generalized Linear Mixed Models</h2>
@@ -870,9 +1008,9 @@ sd_model =<span class="st"> </span><span class="kw">glmer</span>(decision <span 
 <li id="fn14"><p>I don’t show the formal model here as we did before, but this is why depicting mixed models solely as ‘multilevel’ becomes a bit problematic in my opinion. In the standard mixed model notation it’s straightforward though, you just add an addition random effect term, just as we do in the actual model syntax.<a href="common-extensions.html#fnref14">↩</a></p></li>
 <li id="fn15"><p>Setting aside our discussion to take a turn regarding regression modeling more generally, this is a good example of ‘surprising’ effects not being so surprising when you consider them more closely. Take a look at the effect of experience. More experience means less stress, this is probably not surprising. Now look at the age effect. It’s positive! But wouldn’t older nurses have more experience? What’s going on here? When interpreting experience, it is with age <em>held constant</em>, thus more experience helps with lowering stress no matter what your age. With age, we’re holding experience constant. If experience doesn’t matter, being older is affiliated with more stress, which might be expected given the type of very busy and high pressure work often being done (the mean age is 43). A good way to better understand this specifically is to look at predicted values when age is young, middle, and older vs. experience levels at low, middle, and high experience, possibly explicitly including the interaction of the two in the model. Also note that if you take experience out of the model, the age effect is negative, which is expected, as it captures experience also.<a href="common-extensions.html#fnref15">↩</a></p></li>
 <li id="fn16"><p>Note that it <em>does</em> matter if you label your data inappropriately. For example, if in the nesting situation you start your id variable at 1 for each nested group, then you have to use the nested notation in <span class="pack">lme4</span>, otherwise, e.g. it won’t know that id = 1 in group 1 is different from id 1 in group 2. Again though, if you’re not being silly, this wouldn’t be an issue.<a href="common-extensions.html#fnref16">↩</a></p></li>
-<li id="fn17"><p>One reason to do so would be that you expect variability to decrease over time, e.g. due to experience. You might also allow that variance to be different due to some other grouping factor entirely (e.g. due to treatment group membership). I will likely add an example in the future. But for the time being, in <span class="pack">nlme</span>, the relevant argument is <code>weights</code>. See <code>?varIdent</code> as an example of what you would provide to the <code>weights</code> argument.<a href="common-extensions.html#fnref17">↩</a></p></li>
-<li id="fn18"><p>This feature request has been made by its users for over a decade at this point- it’s not gonna happen. The issue is that the way <span class="pack">lmer</span> works by default uses a method that won’t allow it (this is why it is faster and better performing than other packages). Unfortunately the only response to this issue is ‘use <span class="pack">nlme</span>’. However many other packages work with <span class="pack">lme4</span> rather than <span class="pack">nlme</span>, and if you aren’t going to use <span class="pack">lme4</span> for mixed models you might as well go Bayesian with <span class="pack">rstanarm</span> or <span class="pack">brms</span> instead of <span class="pack">nlme.</span> I would even prefer <span class="pack">mgcv</span> to <span class="pack">nlme</span> (though it would use <span class="pack">nlme</span> under the hood) because of the other capabilities it provides, and the objects created are easier to work with in my opinion.<a href="common-extensions.html#fnref18">↩</a></p></li>
-<li id="fn19"><p>Note that for a balanced binary variable, the mean <code>p=.5</code> and sd is <code>sqrt(p*(1-p)) = .5</code><a href="common-extensions.html#fnref19">↩</a></p></li>
+<li id="fn17"><p>One reason to do so would be that you expect variability to decrease over time, e.g. due to experience. You might also allow that variance to be different due to some other grouping factor entirely (e.g. due to treatment group membership).<a href="common-extensions.html#fnref17">↩</a></p></li>
+<li id="fn18"><p>This feature request has been made by its users for over a decade at this point- it’s not gonna happen. The issue is that the way <span class="pack">lmer</span> works by default uses a method that won’t allow it (this is why it is faster and better performing than other packages). Unfortunately the only response to this issue is ‘use <span class="pack">nlme</span>’. However many other packages work with <span class="pack">lme4</span> rather than <span class="pack">nlme</span>, and if you aren’t going to use <span class="pack">lme4</span> for mixed models you might as well go Bayesian with <span class="pack">rstanarm</span> or <span class="pack">brms</span> instead of <span class="pack">nlme.</span> I would even prefer <span class="pack">mgcv</span> to <span class="pack">nlme</span> (though it can use <span class="pack">nlme</span> under the hood) because of the other capabilities it provides, and the objects created are easier to work with in my opinion.<a href="common-extensions.html#fnref18">↩</a></p></li>
+<li id="fn19"><p>Note that for a balanced binary variable, the mean <code>p=.5</code> and standard deviation is <code>sqrt(p*(1-p)) = .5</code><a href="common-extensions.html#fnref19">↩</a></p></li>
 </ol>
 </div>
             </section>

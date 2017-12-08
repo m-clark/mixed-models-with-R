@@ -8,4 +8,4 @@ _book
 _bookdown_files
 rsconnect
 */cache
-
+.DS_Store

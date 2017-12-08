@@ -61,9 +61,9 @@ One of the <span class="pack">lme4</span> authors develops a [MixedModels](https
 
 Among the standard stats packages, I can only recommend **Stata** for both ease of implementation and flexibility in modeling. **SAS** and **SPSS** both have non-intuitive and needlessly verbose syntax, and, while SAS is a fairly good tool for mixed models (from my understanding), I've actually seen SPSS consistently struggle with even simple models, and its GUI interface, the only reason to use SPSS in the first place, is not even remotely intuitive.
 
-**Mplus** has a lot of functionality both for standard mixed models and growth curve models, though between <span class="pack">lavaan</span>, <span class="pack">mediation</span>, and the rest of R, there is little need to use Mplus except for very complicated multilevel SEM, which requires very large samples and a lot of theoretical justification, which most of the people doing SEM I come across rarely have.
+**Mplus** has a lot of functionality both for standard mixed models and growth curve models, though between <span class="pack">lavaan</span>, <span class="pack">mediation</span>, and the rest of R, there is little need to use Mplus except for very complicated multilevel SEM, which requires very large samples and a lot of theoretical justification, which most of the people doing SEM are typically lacking in one or the other.
 
-I will also say that there is zero reason to use mixed model specific software like HLM.  The days for such hijinks have long since passed.
+I will also say that there is no reason to use mixed model specific software like HLM.  The days for such hijinks have long since passed.
 
 
 ## Reference texts and other stuff
