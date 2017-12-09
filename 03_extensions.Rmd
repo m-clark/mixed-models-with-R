@@ -243,7 +243,6 @@ rescov <- function(model, data) {
   var.y <- var.b + sI
   invisible(var.y)
 }
-# mod1 <- lmer(diameter ~ 1 + (1 | sample), data = Penicillin %>% arrange(sample))
 gpa_vis_cov = lmer(gpa ~ occasion + (1|student), data=gpa)
 # summary(gpa_vis_cov)
 
@@ -260,12 +259,11 @@ rc1[1:30, 1:30] %>%
   theme_trueMinimal() +
   theme_void() 
   
-
+# ggplotly()
 
 # library(plotly); library(viridis)
-# plot_ly(z =~ as.matrix(rc1[1:30, 1:30]), type='contour', colors = viridis(n=3, option = 'plasma')) %>% 
-#   layout(#xaxis = list(autorange = "reversed"),
-#          yaxis = list(autorange = "reversed"))
+# plot_ly(z =~ as.matrix(rc1[1:30, 1:30]), type='contour', colors = c('gray92','#00aaff80', '#ff550080')) %>%
+#   layout(yaxis = list(autorange = "reversed"))
 ```
 
 Each block represents the covariance matrix pertaining to an individual. Within the person there are variances on the diagonal and covariances on the off-diagonal.  When considering the whole data, we can see that observations from one person have no covariance with another person (gray). Furthermore, the covariance within a person is a constant value. Furthermore the variance is also a constant value.  Where did those values come from?
@@ -314,7 +312,7 @@ $$\Sigma =
 
 Now let's say we actually want to get at the underlying covariance/correlation. I'll switch to the correlation representation, but you can still think of the variances as constant or separately estimated.  So now we have something like this, where $\rho$ represents the residual correlation among observations.
 
-$$\Sigma = 
+$$\Sigma = \sigma^2
 \left[
 \begin{array}{ccc} 
 1 & \rho_1   & \rho_2   \\
@@ -323,13 +321,13 @@ $$\Sigma =
 \end{array}\right]$$
 
 
-In this case we'd estimate a different correlation for all time point pairs.  This is typically described as an <span class="">unstructured</span> or simply 'symmetric' correlation structure. 
+In this case we'd estimate a different correlation for all time point pairs (with constant variance).  This is typically described as an <span class="emph">unstructured</span> or simply 'symmetric' correlation structure. 
 
 If you are familiar with repeated measures ANOVA, which is a [special case of a mixed model](https://m-clark.github.io/docs/mixedModels/anovamixed.html), you may recall that the usual assumption is a <span class="emph">sphericity</span>, a relaxed form of <span class="emph">compound symmetry</span>, where all the correlations have the same value, i.e. $\rho_1=\rho_2=\rho_3$, and all variances are equal.
 
 Another very commonly used correlation structure is an <span class="emph">autocorrelation</span> structure, of lag order one, for the residuals.  What this means is that we assume the residuals at one time point apart correlate with some value $\rho$, observations at two time points apart correlate $\rho^2$, and so on.  As such we only need to estimate $\rho$, while the rest are then automatically determined.  Here's what it'd look like for four time points.
 
-$$\Sigma = 
+$$\Sigma = \sigma^2
 \left[
 \begin{array}{cccc} 
 1 & \rho     & \rho^2   & \rho^3   \\
@@ -341,7 +339,7 @@ $$\Sigma =
 
 If $\rho$ was estimated to be .5, it would look like the following.
 
-$$\Sigma = 
+$$\Sigma = \sigma^2
 \left[
 \begin{array}{cccc} 
 1 & .5       & .25      & .06   \\

@@ -24,7 +24,7 @@
 
 
 
-<meta name="date" content="2017-12-08">
+<meta name="date" content="2017-12-09">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -653,17 +653,17 @@ nurses_crossed =<span class="st"> </span><span class="kw">lmer</span>(stress <sp
 0   &amp; 0   &amp; \sigma_3^2 \\
 \end{array}\right]\]</span></p>
 <p>Now let’s say we actually want to get at the underlying covariance/correlation. I’ll switch to the correlation representation, but you can still think of the variances as constant or separately estimated. So now we have something like this, where <span class="math inline">\(\rho\)</span> represents the residual correlation among observations.</p>
-<p><span class="math display">\[\Sigma = 
+<p><span class="math display">\[\Sigma = \sigma^2
 \left[
 \begin{array}{ccc} 
 1 &amp; \rho_1   &amp; \rho_2   \\
 \rho_1   &amp; 1 &amp; \rho_3   \\
 \rho_2   &amp; \rho_3   &amp; 1 \\
 \end{array}\right]\]</span></p>
-<p>In this case we’d estimate a different correlation for all time point pairs. This is typically described as an <span>unstructured</span> or simply ‘symmetric’ correlation structure.</p>
+<p>In this case we’d estimate a different correlation for all time point pairs (with constant variance). This is typically described as an <span class="emph">unstructured</span> or simply ‘symmetric’ correlation structure.</p>
 <p>If you are familiar with repeated measures ANOVA, which is a <a href="https://m-clark.github.io/docs/mixedModels/anovamixed.html">special case of a mixed model</a>, you may recall that the usual assumption is a <span class="emph">sphericity</span>, a relaxed form of <span class="emph">compound symmetry</span>, where all the correlations have the same value, i.e. <span class="math inline">\(\rho_1=\rho_2=\rho_3\)</span>, and all variances are equal.</p>
 <p>Another very commonly used correlation structure is an <span class="emph">autocorrelation</span> structure, of lag order one, for the residuals. What this means is that we assume the residuals at one time point apart correlate with some value <span class="math inline">\(\rho\)</span>, observations at two time points apart correlate <span class="math inline">\(\rho^2\)</span>, and so on. As such we only need to estimate <span class="math inline">\(\rho\)</span>, while the rest are then automatically determined. Here’s what it’d look like for four time points.</p>
-<p><span class="math display">\[\Sigma = 
+<p><span class="math display">\[\Sigma = \sigma^2
 \left[
 \begin{array}{cccc} 
 1 &amp; \rho     &amp; \rho^2   &amp; \rho^3   \\
@@ -672,7 +672,7 @@ nurses_crossed =<span class="st"> </span><span class="kw">lmer</span>(stress <sp
 \rho^3   &amp; \rho^2   &amp; \rho     &amp; 1 \\
 \end{array}\right]\]</span></p>
 <p>If <span class="math inline">\(\rho\)</span> was estimated to be .5, it would look like the following.</p>
-<p><span class="math display">\[\Sigma = 
+<p><span class="math display">\[\Sigma = \sigma^2
 \left[
 \begin{array}{cccc} 
 1 &amp; .5       &amp; .25      &amp; .06   \\
