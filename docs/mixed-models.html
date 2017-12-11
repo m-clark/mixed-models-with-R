@@ -216,7 +216,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
             <section class="normal" id="section-">
 <div id="mixed-models" class="section level1">
 <h1>Mixed Models</h1>
-<p>While they might be new to you, mixed models have been around a <em>long</em> time. For example, standard ANOVA methods can be seen as special cases of a mixed model. More recently, mixed models have a variety of applications and extensions, allowing them to encompass a diverse range of data situations. They can be seen as a first step in expanding one’s toolset beyond the generalized linear model.</p>
+<p>While they might be new to you, mixed models have been around a <em>long</em> time. For example, standard ANOVA methods can be seen as special cases of a mixed model. More recently, mixed models have a variety of applications and extensions, allowing them to encompass a diverse range of data situations. They can be seen as a first step in expanding one’s tool set beyond the generalized linear model.</p>
 <div id="terminology" class="section level2">
 <h2>Terminology</h2>
 <p>For the uninitiated, the terminology surrounding mixed models, especially across disciplines, can be a bit confusing. Some terms you might come across regarding these types of models include:</p>
@@ -258,7 +258,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p><span class="math display">\[\epsilon \sim \mathscr{N}(0, \sigma)\]</span></p>
 <p>An alternate way to write the model which puts emphasis on the underlying data generating process for <span class="math inline">\(y\)</span> can be shown as follows.</p>
 <p><span class="math display">\[\mathscr{gpa} \sim \mathscr{N}(\mu, \sigma)\]</span> <span class="math display">\[\mu = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathscr{occasion}\]</span></p>
-<p>More technically, the gpa and <span class="math inline">\(\mu\)</span> variables have an implicit subscript to denote each observation, but you can also think of it as a model for a single individual at a single time point.</p>
+<p>More technically, the GPA and <span class="math inline">\(\mu\)</span> variables have an implicit subscript to denote each observation, but you can also think of it as a model for a single individual at a single time point.</p>
 </div>
 <div id="the-mixed-model" class="section level2">
 <h2>The mixed model</h2>
@@ -360,7 +360,7 @@ gpa_lm =<span class="st"> </span><span class="kw">lm</span>(gpa <span class="op"
 </tr>
 </tbody>
 </table>
-<p>The above tells us that starting out, i.e. when occasion is zero, the average gpa, denoted by the intercept, is 2.49. In addition, as we move from semester to semester, we can expect GPA to increase by about 0.11 points. This would be fine except that we are ignoring the clustering. A side effect of doing so is that our standard errors are incorrect, and thus claims about statistical significance based on them would be off. More importantly however is that we simply don’t get to explore the student effect, which would be of interest by itself.</p>
+<p>The above tells us that starting out, i.e. when occasion is zero, the average GPA, denoted by the intercept, is 2.49. In addition, as we move from semester to semester, we can expect GPA to increase by about 0.11 points. This would be fine except that we are ignoring the clustering. A side effect of doing so is that our standard errors are incorrect, and thus claims about statistical significance based on them would be off. More importantly however is that we simply don’t get to explore the student effect, which would be of interest by itself.</p>
 </div>
 <div id="regression-by-cluster" class="section level4">
 <h4>Regression by cluster</h4>
@@ -702,7 +702,7 @@ d =<span class="st"> </span><span class="kw">data.frame</span>(x, y, groups)</co
 <li id="fn6"><p>See <code>?confint.merMod</code> for details and options.<a href="mixed-models.html#fnref6">↩</a></p></li>
 <li id="fn7"><p>These are sometimes referred to as BLUPs or EBLUPs, which stands for (empirical) best linear unbiased prediction. However, they are only BLUP for <em>linear</em> mixed effects models. As such you will also see them referred to as <span class="emph">conditional mode</span>. Furthermore, in the Bayesian context, the effects are actually estimated as additional model parameters, rather than estimated/predicted after the fact.<a href="mixed-models.html#fnref7">↩</a></p></li>
 <li id="fn8"><p>Note that while <span class="func">predictionInterval</span> does not quite incorporate all sources of uncertainty as does <span class="func">bootMer</span>, it’s actually feasible for larger data sets, and on par with the Bayesian results (e.g. with <span class="pack">rstanarm</span>).<a href="mixed-models.html#fnref8">↩</a></p></li>
-<li id="fn9"><p>This is why the multilevel depiction is subpar, and leads many to confusion at times. You have a target variable and predictor variables based on theory. Whether they are cluster level variables or if there are interactions doesn’t have anything to do with the data structure as much as it does the theoretical motivations. However, if you choose to depict the model in multilevel fashion, the final model must adhere to the ‘plugged in’ result. So if, for example, you posit a cluster level variable for a random slope, you <em>must</em> include the implied interaction of the cluster level and observation level covariates. The HLM software goes so far as to even require a separate data set pertaining to cluster level covariates, which is completely unnecessary in R, Stata, SAS etc.<a href="mixed-models.html#fnref9">↩</a></p></li>
+<li id="fn9"><p>This is why the multilevel depiction is sub-par, and leads many to confusion at times. You have a target variable and predictor variables based on theory. Whether they are cluster level variables or if there are interactions doesn’t have anything to do with the data structure as much as it does the theoretical motivations. However, if you choose to depict the model in multilevel fashion, the final model must adhere to the ‘plugged in’ result. So if, for example, you posit a cluster level variable for a random slope, you <em>must</em> include the implied interaction of the cluster level and observation level covariates. The HLM software goes so far as to even require a separate data set pertaining to cluster level covariates, which is completely unnecessary in R, Stata, SAS etc.<a href="mixed-models.html#fnref9">↩</a></p></li>
 </ol>
 </div>
             </section>

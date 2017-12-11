@@ -23,7 +23,7 @@ Random effects models in the survival context are typically referred to as frail
 
 ##### Item Response Theory
 
-Some IRT models can be estimated as a mixed model, or otherwise thought of as incorporating random effects. See Boeck et al. (2011) The Estimation of Item Response Models with the lmer Function from the lme4 Package in R. I also have some brief demonstration [here](http://m-clark.github.io/docs/sem/item-response-theory.html). 
+Some IRT models can be estimated as a mixed model, or otherwise thought of as incorporating random effects. See Boeck et al. (2011) The Estimation of Item Response Models with the <span class="func">lmer</span> function from the <span class="pack">lme4</span> Package in R. I also have some brief demonstration [here](http://m-clark.github.io/docs/sem/item-response-theory.html). 
 
 ##### Multi-membership
 
