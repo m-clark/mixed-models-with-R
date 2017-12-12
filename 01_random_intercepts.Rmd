@@ -264,15 +264,35 @@ Often, we are keenly interested in these effects, and want some sense of uncerta
 
 ```{r ranef_interval, eval=FALSE}
 library(merTools)
-predictInterval(gpa_mixed)
-plotREsim(REsim(gpa_mixed))
+predictInterval(gpa_mixed)   # for various model predictions, possibly with new data
+REsim(gpa_mixed)             # mean, median and sd of the random effect estimates
+plotREsim(REsim(gpa_mixed))  # plot the interval estimates
 ```
 
+
+The following plot is of the estimated random effects for each student and their interval estimate (a modified version of the plot producted by that last line of code[^mertoolsplotlabels]). Recall that the random effects are on average zero, shown by the horizontal line.  Intervals that do not include zero are in bold.
+
 ```{r ranef_interval_show, echo=FALSE}
-# library(merTools)  # use implicit or it will load bbmle which will load MASS 
-DT::datatable(merTools::predictInterval(gpa_mixed) %>% round(2))
+# library(merTools)  # use implicit or it will load bbmle which will load MASS  
+# also, it will confusingly predict N re rather than Ngroups, as it uses the original data.
+# merTools::predictInterval(gpa_mixed,
+#                           which = 'random',
+#                           newdata = gpa %>% filter(occasion == 1)) %>%
+#                           round(2) %>%
+#                           mutate(student = 1:200) %>%
+#                           select(student, fit, upr, lwr) %>% 
+#   DT::datatable(rownames = F, options=list(dom='ltipr'))
 merTools::plotREsim(merTools::REsim(gpa_mixed)) +
-  theme_trueMinimal()
+  labs(x='Student', y='Value', title='Plot of Random Effects', subtitle='Interval estimates ') +
+  geom_hline(aes(yintercept=0), color='orange', alpha=.5) +
+  theme_trueMinimal() +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        strip.text.x = element_blank(),
+        strip.text.y = element_blank(),
+        panel.background = element_rect(fill='transparent', color=NA),   # apparently all ignored for reasons unknown
+        plot.background = element_rect(fill='transparent', color=NA),
+        strip.background =  element_rect(fill='transparent', color=NA)) 
 ```
 
 ##### Prediction
@@ -457,3 +477,5 @@ qplot(x=re, geom='density', xlim=c(-3,3))
 
 
 [^mlevel]: This is why the multilevel depiction is sub-par, and leads many to confusion at times.  You have a target variable and predictor variables based on theory.  Whether they are cluster level variables or if there are interactions doesn't have anything to do with the data structure as much as it does the theoretical motivations.  However, if you choose to depict the model in multilevel fashion, the final model must adhere to the 'plugged in' result.  So if, for example, you posit a cluster level variable for a random slope, you *must* include the implied interaction of the cluster level and observation level covariates. The HLM software goes so far as to even require a separate data set pertaining to cluster level covariates, which is completely unnecessary in R, Stata, SAS etc.
+
+[^mertoolsplotlabels]: Note that the default plot from <span class="pack">merTools</span> is confusingly labeled for single random effect, because it unnecessarily adds a facet. You'll understand it better by looking the plot in the discussion of [crossed random effects][Cross-classified models] later.

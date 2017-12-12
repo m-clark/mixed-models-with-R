@@ -48,7 +48,7 @@ github-repo:  m-clark/
 ```{r chunk_setup, include=FALSE, eval=TRUE}
 knitr::opts_chunk$set(echo = T, message=F, warning=F, comment=NA, autodep=F, 
                       eval=T, cache.rebuild=F, cache=T, R.options=list(width=120), 
-                      fig.width=8, fig.align = 'center')
+                      fig.width=8, fig.align = 'center', dev.args=list(bg = 'transparent'), dev='svglite')
 ```
 
 ```{r load_common_packages, echo=FALSE, cache=FALSE, eval=TRUE}
