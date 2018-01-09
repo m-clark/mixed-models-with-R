@@ -17,12 +17,12 @@ For the uninitiated, the terminology surrounding mixed models, especially across
 - Growth curve models (possibly Latent GCM)
 - Mixed effects models
 
-All describe types of mixed models.  Some might be more historical, others are more often seen in a specific discipline, others might refer to a certain data structure, and still others are special cases. <span class='emph'>Mixed effects</span>, or simply mixed, models generally refer to a mixture of fixed and random effects.  For the models in general, I prefer the terms 'mixed models' or 'random effects models' because they are simpler terms, no specific structure is implied, and the latter can also apply to extensions that many would not think of when other terms are used[^richlypar].  Regarding the mixed effects, <span class='emph'>fixed effects</span> is perhaps a poor but nonetheless stubborn term for the typical main effects one would see in a linear regression model, i.e. the non-random part of a mixed model, and in some contexts they are referred to as the *population average* effect.  Though you will hear many definitions, random effects are simply those specific to an observational unit, however defined.  The approach outlined in this document largely pertains to the case where the observational unit is the level of some grouping factor, but this is only .
+All describe types of mixed models.  Some might be more historical, others are more often seen in a specific discipline, others might refer to a certain data structure, and still others are special cases. <span class='emph'>Mixed effects</span>, or simply mixed, models generally refer to a mixture of fixed and random effects.  For the models in general, I prefer the terms 'mixed models' or 'random effects models' because they are simpler terms, no specific structure is implied, and the latter can also apply to extensions that many would not think of when other terms are used[^richlypar].  Regarding the mixed effects, <span class='emph'>fixed effects</span> is perhaps a poor but nonetheless stubborn term for the typical main effects one would see in a linear regression model, i.e. the non-random part of a mixed model, and in some contexts they are referred to as the *population average* effect.  Though you will hear many definitions, random effects are simply those specific to an observational unit, however defined.  The approach outlined in this document largely pertains to the case where the observational unit is the level of some grouping factor, but this is only one possibility.
 
 
 ## Kinds of clustering
 
-Data might have one or multiple sources of clustering, and that clustering may be hierarchical, such that clusters are nested within other clusters. An example would be scholastic aptitude tests given multiple times to students (repeated observations nested within students, students nested within schools, schools nested within districts). In other cases, there is no nesting structure. An example would be a reaction time experiment where participants perform the same set of tasks.  While observations are nested within individual, observations are also clustered according to task type.  Some use the terms <span class="emph">nested</span> and <span class="emph">crossed</span> to distinguish between these scenarios.  In addition clustering may be balanced or not. We might expect more balance in studies of an experimental nature, but definitely not in other cases, e.g. where the cluster is something like geographical unit and the observations are people.
+Data might have one or multiple sources of clustering, and that clustering may be hierarchical, such that clusters are nested within other clusters. An example would be scholastic aptitude tests given multiple times to students (repeated observations nested within students, students nested within schools, schools nested within districts). In other cases, there is no nesting structure. An example would be a reaction time experiment where participants perform the same set of tasks.  While observations are nested within individual, observations are also clustered according to task type.  Some use the terms <span class="emph">nested</span> and <span class="emph">crossed</span> to distinguish between these scenarios.  In addition, clustering may be balanced or not. We might expect more balance in studies of an experimental nature, but definitely not in other cases, e.g. where the cluster is something like geographical unit and the observations are people.
 
 In what follows we'll see mixed effect models in all these data situations. In general, our approach will be the same, as such clustering is really more a property of the data than the model.  However, it's important to get a sense of the flexibility of mixed models to handle a variety of data situations.
 
@@ -35,7 +35,7 @@ For the following we'll demonstrate the simplest[^vcmodel] and most common case 
 
 ## Example: student GPA
 
-For the following we'll assess factors predicting college grade point average (GPA).  Each of the 200 students is assessed for six occasions (each semester for the first three years), so we have observations nested within students. We have other variables such as job status, sex, and high school GPA.  Some will be in both labeled and numeric form. See the [appendix][Appendix] for more detail.
+For the following we'll assess factors predicting college grade point average (GPA).  Each of the 200 students is assessed for six occasions (each semester for the first three years), so we have observations clustered within students. We have other variables such as job status, sex, and high school GPA.  Some will be in both labeled and numeric form. See the [appendix][Appendix] for more detail.
 
 ```{r gpa_setup, echo=FALSE, eval=FALSE}
 # MC Note: either the job label is incorrect or this variable makes no sense. 
@@ -65,9 +65,11 @@ DT::datatable(gpa,
               options=list(dom='tp', 
                            scrollX=T,  
                            autoWidth=T,
-                           columnDefs = list(list(width = '150px', targets = 1),
-                                             list(width = '100px', targets = 3))), 
-              rownames=F)
+                           columnDefs = list(list(width = '200px', targets = 1),
+                                             list(width = '100px', targets = 3),
+                                             list(width = '50px', targets = c(0,2,5,7:9)))), 
+              rownames=F,
+              class = 'nowrap|compact')
 ```
 
 <br>
@@ -80,7 +82,7 @@ Now for the underlying model. We can show it in a couple different ways. First w
 
 $$\mathscr{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathscr{occasion} + \epsilon$$
 
-We have coefficients for the intercept and the effect of time.  The error $\epsilon$ is assumed to be normally distributed with mean 0 and some standard deviation $\sigma$.
+We have coefficients ($b$) for the intercept and the effect of time.  The error ($\epsilon$) is assumed to be normally distributed with mean 0 and some standard deviation $\sigma$.
 
 $$\epsilon \sim \mathscr{N}(0, \sigma)$$
 
@@ -95,7 +97,7 @@ More technically, the GPA and $\mu$ variables have an implicit subscript to deno
 
 ##### Initial depiction
 
-Now we show one way of showing it as a mixed model that includes a unique effect for each student. Consider the following model for a single student[^notation]. This depiction shows that the student-specific effect can be seen as an additional source of variance.
+Now we show one way of showing it as a mixed model that includes a unique effect for each student. Consider the following model for a single student[^notation]. This depiction shows that the student-specific effect, i.e. the deviation in GPA just for that student being who they are, can be seen as an additional source of variance.
 
 
 $$\mathscr{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathscr{occasion} + (\mathrm{effect}_{\mathscr{student}} + \epsilon)$$
@@ -107,7 +109,7 @@ $$\mathrm{effect}_{\mathrm{student}} \sim \mathscr{N}(0, \tau)$$
 
 Thus the student effects are random, and specifically are normally distributed with mean of zero and some estimated standard deviation. In other words, conceptually the only difference between this mixed model and a standard regression is the student effect, which is *on average* no effect, but specifically varies from student to student with some standard deviation ($\tau$).
 
-If we rearrange it, we can instead focus on model coefficients.
+If we rearrange it, we can instead focus on model coefficients rather than as an additional source of error.
 
 $$\mathscr{gpa} = (b_{\mathrm{intercept}} + \mathrm{effect}_{\mathscr{student}}) + b_{\mathrm{occ}}\cdot \mathscr{occasion} +  \epsilon$$
 Or more succinctly:
