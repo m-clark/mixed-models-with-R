@@ -7,7 +7,7 @@
 
 ### Cross-classified models
 
-Oftentimes there will be additional sources of variance beyond one grouping factor. Consider as an example, a visual perception experiment where there are multiple trials for each individual along with specific images displayed.  Such data might look like this.
+Oftentimes there will be additional sources of variance beyond one grouping factor. Consider as an example, a visual perception experiment where there are multiple trials for each individual, along with specific images displayed.  Such data might look like this.
 
 ```{r demodata_crossed, echo=FALSE}
 crossing(Person=1:20, Image=letters[1:10]) %>% 
@@ -21,12 +21,12 @@ crossing(Person=1:20, Image=letters[1:10]) %>%
 <br>
 <br>
 
-In such a case we have observations clustered within both person and image, but person and image are not nested within one another- all participants see all 10 items.  Such a situation is typically referred to as one in which there are <span class="emph">crossed</span> random effects.  In such settings we have multiple sources variances to consider.
+In such a case we have observations clustered within both person and image, but person and image are not nested within one another- all participants see all 10 images.  Such a situation is typically referred to as one in which there are <span class="emph">crossed</span> random effects.  In such settings we have multiple sources variances to consider.
 
 
 #### Example: Student achievement
 
-For our own demonstration we'll look at achievement scores for students.  The sources of dependency are due to students having gone to the same primary or secondary schools.  However, in this example, going to a primary school doesn't necessarily mean you'll go to a specific secondary school.  Note also that there are no repeated measures, we see each student only one. Here's a quick look a the data, and for more detail, check the [appendix][Data].
+For our own demonstration we'll look at achievement scores for students.  The sources of dependency are due to students having gone to the same primary or secondary schools.  However, in this example, going to a primary school doesn't necessarily mean you'll go to a specific secondary school.  Note also that there are no repeated measures, we see each student only once. Here's a quick look a the data, and for more detail, check the [appendix][Data].
 
 
 ```{r pupil_nurses_setup, echo=FALSE, eval=FALSE}
@@ -69,7 +69,7 @@ DT::datatable(pupils,
 <br>
 <br>
 
-For our mixed model we'll look at the effects for `sex` and socioeconomic status, `ses`, a six level variable from low to high, on scholastic achievement.  The range of achievement scores is roughly `r round(min(pupils$achievement))` to `r round(max(pupils$achievement))`, with mean of `r round(mean(pupils$achievement), 1)` and standard deviation `r round(sd(pupils$achievement), 1)`.  We'll take into account the clustering at primary school and secondary school.  To incorporate the additional structure in <span class="pack">lme4</span> syntax is very easy, we just do as we did before for both grouping factors[^crossed_notation].
+For our mixed model we'll look at the effects for `sex` and socioeconomic status, `ses`, a six level variable from low to high, on scholastic achievement.  The range of achievement scores is roughly `r round(min(pupils$achievement))` to `r round(max(pupils$achievement))`, with mean of `r round(mean(pupils$achievement), 1)` and standard deviation `r round(sd(pupils$achievement), 1)`.  We'll take into account the clustering at primary school and secondary school.  To incorporate the additional structure in <span class="pack">lme4</span> syntax is very easy, we just do as we did before, though now for both grouping factors[^crossed_notation].
 
 ```{r cross_classified, eval=1}
 pupils_crossed = lmer(achievement ~ sex + ses 
@@ -181,7 +181,7 @@ p
 
 ### Crossed vs. Nested
 
-The following shows the difference in the results from treating ward as nested vs. crossed. Notice anything different?
+The following shows the difference in the results from treating ward as nested vs. crossed. What do you notice is different?
 
 ```{r crossed_vs_nested, echo=1:2}
 nurses_hierarchical = lmer(stress ~ age  + sex + experience 
@@ -205,7 +205,7 @@ crossed_var_cor %>%
 ```
 
 
-No? Good, you're not crazy.  Here's a quote from the [lme4 text](http://lme4.r-forge.r-project.org/book/Ch2.pdf), section 2.2.1.1, which is definitely worth your time.
+Nothing? Good, you're not crazy.  Here's a quote from the [lme4 text](http://lme4.r-forge.r-project.org/book/Ch2.pdf), section 2.2.1.1, which is definitely worth your time.
 
 > The blurring of mixed-effects models with the concept of multiple,
 hierarchical levels of variation results in an unwarranted emphasis on 'levels'
@@ -224,7 +224,7 @@ partially crossed or are completely crossed.
 
 See this [discussion also](https://stats.stackexchange.com/questions/228800/crossed-vs-nested-random-effects-how-do-they-differ-and-how-are-they-specified), as well as [this from the FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#nested-or-crossed) from one of the <span class="pack">lme4</span> developers. Josh Errickson at CSCAR also has a nice [write-up with visual depiction](http://errickson.net/stats-notes/vizrandomeffects.html) of the underlying matrices of interest, which served as inspiration for some of the visualization in the next section.
 
-So there you have it.  When it comes to <span class="pack">lme4</span>, crossed vs. nested is simply a state of mind (data)[^crossnest].
+So there you have it.  When it comes to <span class="pack">lme4</span>, or mixed models more generally, crossed vs. nested is simply a state of mind (data)[^crossnest].
 
 
 ## Residual Structure
@@ -273,7 +273,7 @@ rc1[1:30, 1:30] %>%
 #   layout(yaxis = list(autorange = "reversed"))
 ```
 
-Each block represents the covariance matrix pertaining to an individual. Within the person there are variances on the diagonal and covariances on the off-diagonal.  When considering the whole data, we can see that observations from one person have no covariance with another person (gray). Furthermore, the covariance within a person is a constant value. Furthermore the variance is also a constant value.  Where did those values come from?
+Each block represents the covariance matrix pertaining to an individual. Within the person there are variances on the diagonal and covariances on the off-diagonal.  When considering the whole data, we can see that observations from one person have no covariance with another person (gray). Furthermore, the covariance within a person is a constant value, the variance is also a constant value.  Where did those values come from?
 
 ```{r residual_varcov2, echo=F}
 vc = tidy(VarCorr(gpa_vis_cov))
@@ -287,7 +287,19 @@ tidy(VarCorr(gpa_vis_cov)) %>%
 
 Remember that there are two sources of variance in this model, the residual observation variance and that pertaining to person. Combined they provide the total residual variance that we aren't capturing with our covariates.  In this case, it's about `r round(totvar, 2)`, the value displayed on our diagonal. The off-diagonal is the variance attributable to student, which we alternately interpreted as an intraclass correlation (dividing by the total variance converts it to the correlation metric).
 
-Now let's start to think about other types of covariance structures. Consider the following for an individual and three time points.
+More generically, and referring to previous notation for our estimated variances, we can see the covariance matrix (for a cluster) as follows.
+
+$$\Sigma = 
+\left[
+\begin{array}{ccc} 
+\sigma^2 + \tau^2 & \tau^2   & \tau^2   \\
+\tau^2   & \sigma^2 + \tau^2 & \tau^2   \\
+\tau^2   & \tau^2   & \sigma^2 + \tau^2 \\
+\end{array}\right]$$
+
+This represents a covariance structure of <span class="emph">compound symmetry</span>. It is the default in most mixed model settings, and the same as what is shown visually above. Now let's start to think about other types of covariance structures. 
+
+Consider the following for an individual and three time points.
 
 $$\boldsymbol{y} \sim \mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\Sigma})$$
 
@@ -332,7 +344,7 @@ In this case we'd estimate a different correlation for all time point pairs (wit
 
 If you are familiar with repeated measures ANOVA, which is a [special case of a mixed model](https://m-clark.github.io/docs/mixedModels/anovamixed.html), you may recall that the usual assumption is a <span class="emph">sphericity</span>, a relaxed form of <span class="emph">compound symmetry</span>, where all the correlations have the same value, i.e. $\rho_1=\rho_2=\rho_3$, and all variances are equal.
 
-Another very commonly used correlation structure is an <span class="emph">autocorrelation</span> structure, of lag order one, for the residuals.  What this means is that we assume the residuals at one time point apart correlate with some value $\rho$, observations at two time points apart correlate $\rho^2$, and so on.  As such we only need to estimate $\rho$, while the rest are then automatically determined.  Here's what it'd look like for four time points.
+Another very commonly used correlation structure (for time-based settings) is an <span class="emph">autocorrelation</span> structure, of lag order one, for the residuals.  What this means is that we assume the residuals at one time point apart correlate with some value $\rho$, observations at two time points apart correlate $\rho^2$, and so on.  As such we only need to estimate $\rho$, while the rest are then automatically determined.  Here's what it'd look like for four time points.
 
 $$\Sigma = \sigma^2
 \left[
@@ -426,11 +438,11 @@ Notice first that the fixed effect for occasion is the same as [before][Mixed mo
 
 ## Generalized Linear Mixed Models
 
-Just as generalized linear models extend the standard linear model, we can generalize (linear) mixed models to <span class="emph">generalized linear mixed models</span>.  Furthermore, there is nothing keeping us to only exponential family, as other packages would potentially allow for many other response distributions.
+Just as generalized linear models extend the standard linear model, we can generalize (linear) mixed models to <span class="emph">generalized linear mixed models</span>.  Furthermore, there is nothing restricting us to only the exponential family, as other packages would potentially allow for many other response distributions.
 
 For this example we'll do a logistic regression in the mixed model setting. In this case, we'll use the speed dating data set. In the speed dating events, the experiment randomly assigned each participant to ten short dates (four minutes) with other participants. For each date, each person rated six attributes (attractive, sincere, intelligent, fun, ambitious, shared interests) of the other person on a 10-point scale and wrote down whether he or she would like to see the other person again.
 
-Our target variable is whether the participant would be willing to date the person again (`decision`).  To keep things simple the predictors will be limited to the sex of the participant (`sex`), whether the partner was of the same race (`samerace`), and three of the attribute ratings the participant gave of their partner- attractiveness (`attractive`), sincerity (`sincere`), and intelligence (`intelligent`). The latter have been scaled to have zero mean and standard deviation of .5, which puts them on a more even footing with the binary covariates (`_sc`)[^scalecontbin].
+Our target variable is whether the participant would be willing to date the person again (`decision`).  To keep things simple, the predictors will be limited to the sex of the participant (`sex`), whether the partner was of the same race (`samerace`), and three of the attribute ratings the participant gave of their partner- attractiveness (`attractive`), sincerity (`sincere`), and intelligence (`intelligent`). The latter have been scaled to have zero mean and standard deviation of .5, which puts them on a more even footing with the binary covariates (`_sc`)[^scalecontbin].
 
 ```{r speed_dating, echo=FALSE, eval=FALSE}
 speed_dating0 = readr::read_csv('data/raw_data/ARM_Data/Speed Dating Data.csv')
@@ -496,7 +508,7 @@ summary(sd_model, correlation=F)
 
 ```{r glmm_fixed, echo=FALSE}
 load('data/speed_dating_model.RData')
-pander(tidy(sd_model, 'fixed', conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=2))
+pander(tidy(sd_model, 'fixed', conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=2), justify='lrrrrrr')
 ```
 <br>
 
@@ -598,6 +610,6 @@ Interestingly, one can model overdispersion in a Poisson model by specifying an 
 
 [^signflip]: Setting aside our discussion to take a turn regarding regression modeling more generally, this is a good example of 'surprising' effects not being so surprising when you consider them more closely.  Take a look at the effect of experience. More experience means less stress, this is probably not surprising.  Now look at the age effect. It's positive! But wouldn't older nurses have more experience? What's going on here? When interpreting experience, it is with age *held constant*, thus more experience helps with lowering stress no matter what your age.  With age, we're holding experience constant.  If experience doesn't matter, being older is affiliated with more stress, which might be expected given the type of very busy and high pressure work often being done (the mean age is `r median(nurses$age)`).  A good way to better understand this specifically is to look at predicted values when age is young, middle, and older vs. experience levels at low, middle, and high experience, possibly explicitly including the interaction of the two in the model.  Also note that if you take experience out of the model, the age effect is negative, which is expected, as it captures experience also.
 
-[^crossnest]: Note that it *does* matter if you label your data inappropriately.  For example, if in the nesting situation you start your id variable at 1 for each nested group, then you have to use the nested notation in <span class="pack">lme4</span>, otherwise, e.g. it won't know that id = 1 in group 1 is different from id 1 in group 2.  Again though, if you're not being silly, this wouldn't be an issue.
+[^crossnest]: Note that it *does* matter if you label your data inappropriately.  For example, if in the nesting situation you start your id variable at 1 for each nested group, then you have to use the nested notation in <span class="pack">lme4</span>, otherwise, e.g. it won't know that id = 1 in group 1 is different from id 1 in group 2.  In our hospital example, this would be akin to using `ward` instead of `wardid` as we did.  Again though, this wouldn't be an issue if one practices good data habits.
 
 [^scalecontbin]:  Note that for a balanced binary variable, the mean `p=.5` and standard deviation is `sqrt(p*(1-p)) = .5`

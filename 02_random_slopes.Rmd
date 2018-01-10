@@ -25,14 +25,14 @@ gpa %>%
 ```
 
 <br>
-Let us now assume that the trend over time is allowed to vary by student.  Using <span class="pack">lme4</span>, this is quite straightforward.
+Let us now assume that the trend over time is allowed to vary by student in addition to the intercepts.  Using <span class="pack">lme4</span>, this is quite straightforward.
 
 ```{r random_slope, eval=FALSE}
 gpa_mixed =  lmer(gpa ~ occasion + (1 + occasion|student), data=gpa)
 summary(gpa_mixed)
 ```
 
-Pretty easy huh? To the left of that bar we are simply just positing a formula as we do with most modeling functions[^nointneeded]. Let's look at the results.
+Pretty easy huh? Within the parenthesis, to the left of that bar `|` we are simply just positing a model formula as we would do with most modeling functions[^nointneeded]. Let's look at the results.
 
 
 ```{r random_slope_summary, echo=FALSE}
@@ -119,21 +119,21 @@ gpa_lm_fits_by_group = gpa %>%
   map(~lm(gpa ~ occasion, data=.x)) %>% 
   map(fitted) %>% 
   unlist
-going_down_now = factor(rep(gpa_lm_by_group[,'occasion']<0, e=6), labels=c('Up', 'Down'))
+going_down_now = factor(rep(gpa_lm_by_group[,'occasion']<0, e=6), labels=c('Upward', 'Downward'))
 gpa %>% 
   modelr::add_predictions(gpa_lm, var='lm') %>% 
   mutate(stufit=gpa_lm_fits_by_group) %>% 
   group_by(student) %>% 
   plot_ly %>% 
   add_lines(x=~occasion, y=~lm, opacity=1, color=I(palettes$orange$orange), name='Standard\nRegression') %>%
-  add_lines(x=~occasion, y=~stufit, color=~going_down_now, opacity=.2, color=I(palettes$orange$complementary[2]), name='By Group') %>%
+  add_lines(x=~occasion, y=~stufit, color=~going_down_now, opacity=.2, color=I(palettes$orange$complementary[2]), name='Trend') %>%
   theme_plotly()
 ```
 
 
 ## Summary
 
-At this point it might be clearer why some would call these *richly parameterized linear models*. Relative to a standard regression we get extra variance parameters that add to our understanding of the sources of uncertainty in the model, we can get the subjects specific effects, their correlation, and use that information to obtain far better predictions.  What's not to like?
+At this point it might be clearer why some would call these *richly parameterized linear models*. Relative to a standard regression we get extra variance parameters that add to our understanding of the sources of uncertainty in the model, we can get the subjects specific effects, and their correlation, and use that information to obtain far better predictions.  What's not to like?
 
 ## Exercises
 
