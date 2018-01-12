@@ -92,10 +92,10 @@ gslopes = data_frame(Mixed=coef(gpa_mixed)$student[,2], Separate=gpa_lm_by_group
 gridExtra::grid.arrange(gint, gslopes, ncol=2)
 ```
 
-Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what would have been the by-group estimate, which would otherwise overfit in this scenario.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models[^pool].  It comes into play largely when we have few observations per group and less estimated variance for the random effects.  In other words, when there is little information in a group, or less group-level variance relative to the observation variance, then the mixed model will produce a group-specific effect that is closer to the overall population effect.  In that sense, the mixed model group coefficients better reflect our ignorance.
+Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what would have been the by-group estimate, which would otherwise overfit in this scenario.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models[^pool].  It comes into play largely when we have few observations per group and less estimated variance for the random effects.  In other words, when there is little information in a group, or less group-level variance relative to the observation variance, then the mixed model will produce a group-specific effect that is closer to the overall population effect.  In that sense, the mixed model group coefficients better reflect our ignorance.  Conversely, with more pronounced group effects, our uncertainty about the overall effect increases.
 
 
-## Visual prediction
+## Visualization of effects
 
 Let's compare our results visually. First there is the linear regression fit. We assume the same trend for everyone.  If we add the conditional predictions that include the subject specific effects from the mixed model, we now can also make subject specific predictions, greatly enhancing the practical use of the model.  As the code to create this plot (using <span class="pack">plotly</span>) was very easy, I go ahead and show it.
 
@@ -111,7 +111,7 @@ gpa %>%
   theme_plotly()
 ```
 
-By contrast, the by-group approach is more noisy due to treating everyone independently.  Many more students are expected to have downward or flat trends relative to the mixed model (the mixed model only had `r sum(coef(gpa_mixed)$student[,'occasion']<0)` trends estimated to be negative).
+By contrast, the by-group approach is more noisy due to treating everyone independently.  Many more students are expected to have downward or flat trends relative to the mixed model. The mixed model meanwhile only had `r sum(coef(gpa_mixed)$student[,'occasion']<0)` trends estimated to be negative.
 
 ```{r visualize_bygroup_fit, echo=FALSE}
 gpa_lm_fits_by_group = gpa %>% 
@@ -202,4 +202,4 @@ Compare model fit using the <span class="func">AIC</span> function, e.g. `AIC(mo
 [^nocorr]: I personally have not come across a situation where I'd do this in practice.  Even if the simpler model with no correlation was a slightly better fit, there isn't much to be gained by it.
 
 
-[^pool]: This phenomenon is also sometimes referred to as <span class="emph">partial pooling</span>.  This idea of pooling is as in pooling resources or borrowing strength.  You have complete pooling, which would be the standard regression model case of ignoring the clusters. No pooling, which assumes the clusters have nothing in common, i.e. the separate regressions approach.  Partial pooling is seen the mixed model scenario, where the similarity among the clusters is estimated in some fashion, and data for all observations informs the estimates for each cluster.  I've never really liked the 'pooling' terminology, as regularization is a more broad concept that applies beyond mixed models, and I'd prefer to stick to that.  In any case, see the pool-no-pool document [here](https://github.com/stan-dev/example-models/tree/master/knitr/pool-binary-trials).
+[^pool]: This phenomenon is also sometimes referred to as <span class="emph">partial pooling</span>.  This idea of pooling is as in 'pooling resources' or borrowing strength.  You have complete pooling, which would be the standard regression model case of ignoring the clusters, i.e. all cluster effects are assumed to be the same. With no pooling, we assumes the clusters have nothing in common, i.e. the separate regressions approach.  Partial pooling is seen in the mixed model scenario, where the similarity among the clusters is estimated in some fashion, and data for all observations informs the estimates for each cluster.  I've never really liked the 'pooling' terminology, as regularization/shrinkage is a more broad concept that applies beyond mixed models, and I'd prefer to stick to that.  In any case, see practically anything Andrew Gelman  and the pool-no-pool document [here](https://github.com/stan-dev/example-models/tree/master/knitr/pool-binary-trials).
