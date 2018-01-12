@@ -272,7 +272,7 @@ plotREsim(REsim(gpa_mixed))  # plot the interval estimates
 ```
 
 
-The following plot is of the estimated random effects for each student and their interval estimate (a modified version of the plot producted by that last line of code[^mertoolsplotlabels]). Recall that the random effects are on average zero, shown by the horizontal line.  Intervals that do not include zero are in bold.
+The following plot is of the estimated random effects for each student and their interval estimate (a modified version of the plot produced by that last line of code[^mertoolsplotlabels]). Recall that the random effects are on average zero, shown by the horizontal line.  Intervals that do not include zero are in bold.
 
 ```{r ranef_interval_show, echo=FALSE}
 # library(merTools)  # use implicit or it will load bbmle which will load MASS  
