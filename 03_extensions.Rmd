@@ -231,7 +231,7 @@ So there you have it.  When it comes to <span class="pack">lme4</span>, or mixed
 
 Sometimes we will want to obtain more specific estimates regarding the residual covariance/correlation structure. This is especially the case in the longitudinal setting, where we think that observations closer in time would be more strongly correlated than those further apart, or that the variance changes over time.  What does this model look like? 
 
-Let's begin by thinking about the covariance matrix/correlation matrix for the entire set of observations for our target variable, and how we want to represent the dependency in those observations.  I'll show a visualization of the first 5 people from our GPA data and modeling situation. Recall that each person has 6 observations.  This display regards our random intercepts (only) model for GPA. 
+Let's begin by thinking about the covariance/correlation matrix for the entire set of observations for our target variable, and how we want to represent the dependency in those observations.  I'll show a visualization of the first 5 people from our GPA data and modeling situation. Recall that each person has 6 observations.  This display regards the results from our random intercepts (only) model for GPA. 
 
 ```{r residual_varcov, echo=FALSE}
 rescov <- function(model, data) {
@@ -273,7 +273,7 @@ rc1[1:30, 1:30] %>%
 #   layout(yaxis = list(autorange = "reversed"))
 ```
 
-Each block represents the covariance matrix pertaining to an individual. Within the person there are variances on the diagonal and covariances on the off-diagonal.  When considering the whole data, we can see that observations from one person have no covariance with another person (gray). Furthermore, the covariance within a person is a constant value, the variance is also a constant value.  Where did those values come from?
+Each block represents the covariance matrix pertaining to observations within an individual. Within the person there are variances on the diagonal and covariances on the off-diagonal.  When considering the whole data, we can see that observations from one person have no covariance with another person (gray). Furthermore, the covariance within a person is a constant value, the variance is also a constant value.  Where did those values come from?
 
 ```{r residual_varcov2, echo=F}
 vc = tidy(VarCorr(gpa_vis_cov))
@@ -319,7 +319,7 @@ $$\Sigma =
 0   & 0   & \sigma^2 \\
 \end{array}\right]$$
 
-Next, we can relax the assumption of equal variances.
+Next, we can relax the assumption of equal variances, and estimate each separately.
 
 $$\Sigma = 
 \left[
@@ -408,7 +408,30 @@ Relative values are fine, I guess, but what we'd want are the actual estimates. 
 (c(1.0000000, coef(heterovar_res$modelStruct$varStruct, unconstrained=F))*heterovar_res$sigma)^2
 ```
 
-Yeah.  You'll have to look this up every time you want to do it, or just make your own function that takes the model input.
+Yeah.  You'll have to look this up every time you want to do it, or just make your own function that takes the model input.  A newer alternative to keep in mind is <span class="pack">glmmTMB</span>.  It would allow one to stay more in the <span class="pack">lme4</span> style and output.
+
+```{r glmmTMB_hetero}
+library(glmmTMB)
+heterovar_res2 = glmmTMB(gpa ~ occasion + (1|student) + diag(0 + occas |student), 
+                         data = gpa)
+summary(heterovar_res2)
+```
+
+Note that the variances dispalyed for each time point are not conflated with the residual variance. To compare with <span class="pack">nlme</span>, just add the residual variance to the estimates.  As with every mixed model package (apparently), it still takes a bit to get the variances in a usable form from the <span class="func">VarCorr</span> object. The following shows how though, and compares to the <span class="pack">nlme</span> result.
+
+```{r glmmTMB_hetero_compare_nlme, echo=1:2}
+vc_glmmtmb = VarCorr(heterovar_res2)
+vc_glmmtmb = attr(vc_glmmtmb$cond$student.1, 'stddev')^2 + sigma(heterovar_res2)^2
+vc_nlme = (c(1.0000000, coef(heterovar_res$modelStruct$varStruct, unconstrained=F))*heterovar_res$sigma)^2
+vc_compare = rbind(glmmTMB=vc_glmmtmb, nlme=vc_nlme) %>% 
+  round(4)
+colnames(vc_compare) = expand.grid('year', 1:3, 'sem', 1:2) %>% unite(col = year_sem, everything()) %>% pull()
+
+vc_compare %>% 
+  pander(split.tables=Inf)
+```
+
+
 
 
 ### Autocorrelation
@@ -433,7 +456,54 @@ cbind(rownames(vc), vc[,1:2]) %>%
 ```
 <br>
 
-Notice first that the fixed effect for occasion is the same as [before][Mixed model]. The variance estimates have changed slightly along with the variances of the fixed effects (i.e. the standard errors). The main thing is that we have a new parameter called `Phi` in the <span class="pack">nlme</span> output,  that represents our autocorrelation, with value of `r round(coef(corr_res$model$corStruct, unconstrained = F), 3)`. This suggests at least some correlation exists among the residuals for observations next to each other in time, though it diminishes quickly as observations grow further apart.
+Notice first that the fixed effect for occasion is the same as [before][Mixed model]. The variance estimates have changed slightly along with the variances of the fixed effects (i.e. the standard errors). The main thing is that we have a new parameter called `Phi` in the <span class="pack">nlme</span> output that represents our autocorrelation, `Phi`, with value of `r round(coef(corr_res$model$corStruct, unconstrained = F), 3)`. This suggests at least some correlation exists among the residuals for observations next to each other in time, though it diminishes quickly as observations grow further apart.
+
+```{r glmmTMB_autocor, eval=FALSE, echo=FALSE}
+# currently as of 2018-2 there is a bug in VarCorr at the end where it calls
+# structure() when adding random intercept. Thus the model runs but one can't do
+# anything with it because practically everything calls VarCorr; Inspection
+# suggests the estimate (0.80877943) duplicates
+# https://bbolker.github.io/mixedmodels-misc/notes/corr_braindump.html and brms
+# gets .83
+
+simCor1 <- function(phi=0.8,sdgrp=2,sdres=1,
+                    npergrp=20,ngrp=20,
+                    seed=NULL,
+                    ## set linkinv/simfun for GLMM sims
+                    linkinv=identity,
+                    simfun=identity) {
+    if (!is.null(seed)) set.seed(seed)
+    cmat <- sdres*phi^abs(outer(0:(npergrp-1),0:(npergrp-1),"-"))
+    errs <- MASS::mvrnorm(ngrp,mu=rep(0,npergrp),Sigma=cmat)
+    ranef <- rnorm(ngrp,mean=0,sd=sdgrp)
+    d <- data.frame(f=rep(1:ngrp,each=npergrp))
+    eta <- ranef[as.numeric(d$f)] + c(t(errs)) ## unpack errors by row
+    mu <- linkinv(eta)
+    d$y <- simfun(mu)
+    d$tt <- factor(rep(1:npergrp,ngrp))
+    return(d)
+}
+
+d <- simCor1(phi=0.8,sdgrp=2,sdres=1,seed=101)
+
+corr_res2 = glmmTMB(gpa ~ occasion + (1|student) + ar1(0 + occasion |student), 
+                         data = gpa)
+summary(corr_res2)
+VarCorr(corr_res2, sigma=.16707)
+corr_res2$obj$env$report(corr_res2$fit$parfull)$corr[[2]]
+
+test = brm(gpa ~ occasion + (1|student), 
+           data = gpa,
+           autocor = cor_ar(form = ~occas), cores=4)
+
+(lme_simple_fit <- lme(y~1,random=~1|f,data=d,correlation=corAR1()))
+glmmTMB_simple_fit <- glmmTMB(y~1 + (1|f) + ar1(tt-1|f), data=d,family=gaussian)
+glmmTMB_simple_fit
+
+glmmTMB_simple_fit$obj$env$report(glmmTMB_simple_fit$fit$parfull)$corr[[2]][2,1]
+corr_res2$obj$env$report(corr_res2$fit$parfull)$corr[[2]][2,1]
+```
+
 
 
 ## Generalized Linear Mixed Models

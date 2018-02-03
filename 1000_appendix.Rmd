@@ -18,17 +18,17 @@ Note that I have converted these from their original SPSS format to R data.frame
 
 - <span class="emph">speed dating</span>: Data involve a speed dating experiment on a sample of a few hundred students in graduate and professional schools at Columbia University. In the speed dating events, the experiment randomly assigned each participant to ten short dates (four minutes) with participants of the opposite sex. For each date, each person rated six attributes (attractive, sincere, intelligent, fun, ambitious, shared interests) of the other person on a 10-point scale and wrote down whether he or she would like to see the other person again. The data have been filtered to remove constant responders, i.e. those who always or never wanted to see  their partner again, those six attributes have scaled versions with mean 0 and standard deviation 1 (`_sc`), column names have been made useful, and only some of the variables have been kept for the demo. If you run the same model, you can get very similar estimates to that in the Fahrmeier et al. text, table 7.4 (though there is a typo for the Male effect).
 
-- The data come from Gelman's website but are based on [this article](http://faculty.chicagobooth.edu/emir.kamenica/documents/genderDifferences.pdf).
+    - The data come from Gelman's website but are based on [this article](http://faculty.chicagobooth.edu/emir.kamenica/documents/genderDifferences.pdf).
 
 
 - <span class="emph">patents</span>:
 The European Patent Office is able to protect a patent from competition for a certain period of time. The Patent Office has the task to examine inventions and to declare patent if certain prerequisites are fulfilled. The most important requirement is that the invention is something truly new. Even though the office examines each patent carefully, in about 80% of cases competitors raise an objection against already assigned patents. In the economic literature the analysis of patent opposition plays an important role as it allows one to (indirectly) investigate a number of economic questions. For instance, the frequency of patent opposition can be used as an indicator for the intensity of the competition in different
 market segments.
 
-- The primary variables are: `opp`: Patent opposition (1=yes 0=no), `biopharm`: Patent from biotech/pharma sector, `ustwin`: US twin patent exists, `patus`: Patent holder from the USA, `patgsgr`: Patent holder from Germany, Switzerland, or Great Britain, `year`, `ncit`: Number of citations for the patent, `ncountry`: Number of designated states for the patent, and 
+    - The primary variables are: `opp`: Patent opposition (1=yes 0=no), `biopharm`: Patent from biotech/pharma sector, `ustwin`: US twin patent exists, `patus`: Patent holder from the USA, `patgsgr`: Patent holder from Germany, Switzerland, or Great Britain, `year`, `ncit`: Number of citations for the patent, `ncountry`: Number of designated states for the patent, and 
 `nclaims`: Number of claims. Centered and other transformed variables are also present.
 
-- In order to analyze objections against patents, a data set with 4,866 patents from the sectors biotechnology/pharmaceutics and semiconductor/computer was collected.  The goal of one analysis is to model the probability of patent opposition, while using a variety of explanatory variables for the binary response variable patent opposition (yes/no). This corresponds to a regression problem with a binary response. In other cases you might wish to analyze the number of citations.
+    - In order to analyze objections against patents, a data set with 4,866 patents from the sectors biotechnology/pharmaceutics and semiconductor/computer was collected.  The goal of one analysis is to model the probability of patent opposition, while using a variety of explanatory variables for the binary response variable patent opposition (yes/no). This corresponds to a regression problem with a binary response. In other cases you might wish to analyze the number of citations.
 
 
 
@@ -42,6 +42,7 @@ R has more mixed modeling capabilities [than anything else out there](https://ww
 - <span class="pack">lme4</span>: generalized linear mixed models; extremely efficient
 - <span class="pack">nlme</span>: (non-)linear mixed models but only for the gaussian case.
 - <span class="pack">mgcv</span>: provides means to use both lme4 or nlme, extends distributional families, correlated residuals, and all that additive model stuff too
+- <span class="pack">glmmTMB</span>: newer package that similarly extends beyond lme4
 - <span class="pack">ordinal</span>: for various types of ordinal models
 - <span class="pack">rstanarm</span>:  Bayesian with lme4 level options
 - <span class="pack">brms</span>: Bayesian with possibly the most extensive mixed model capabilities out there
@@ -50,7 +51,19 @@ R has more mixed modeling capabilities [than anything else out there](https://ww
 
 ### Python
 
-In Python, the [statsmodels](http://www.statsmodels.org/stable/mixed_linear.html) module has basic capabilities for mixed models but not too many frills (e.g. no crossed random effects).  CSCAR directory Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series [here](https://github.com/kshedden/Statsmodels-MixedLM).
+In Python, the [statsmodels](http://www.statsmodels.org/stable/mixed_linear.html) module has basic capabilities for mixed models but not too many frills (e.g. no crossed random effects).  CSCAR directory Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series [here](https://github.com/kshedden/Statsmodels-MixedLM).  The following provides an example.
+
+```{python gpa_py, engine.path="/Users/micl/anaconda3/bin/python"}
+import pandas as pd
+import statsmodels as sm
+import statsmodels.formula.api as smf
+
+gpa = pd.read_csv('data/gpa.csv')
+
+gpa_py_mixed = smf.mixedlm("gpa ~ occasion", gpa, groups=gpa["student"]).fit()
+print(gpa_py_mixed.summary())
+```
+
 
 
 ### Julia
@@ -59,7 +72,7 @@ One of the <span class="pack">lme4</span> authors develops a [MixedModels](https
 
 ### Proprietary
 
-Among the standard stats packages, I can only recommend **Stata** for both ease of implementation and flexibility in modeling. **SAS** and **SPSS** both have non-intuitive and needlessly verbose syntax, and, while SAS is a fairly good tool for mixed models (from my understanding), I've actually seen SPSS consistently struggle with even simple models, and its GUI interface, the only reason to use SPSS in the first place, is not even remotely intuitive.
+Among the standard stats packages, I can only recommend **Stata** for both ease of implementation and flexibility in modeling. **SAS** and **SPSS** both have non-intuitive and needlessly verbose syntax, and, while SAS is in fact a fairly good tool for mixed models (from my understanding), I've actually seen SPSS consistently struggle with even simple models, and its GUI interface, the only reason to use SPSS in the first place, is not even remotely intuitive.
 
 **Mplus** has a lot of functionality both for standard mixed models and growth curve models, though between <span class="pack">lavaan</span>, <span class="pack">mediation</span>, and the rest of R, there is little need to use Mplus except for very complicated multilevel SEM, which requires very large samples and a lot of theoretical justification, which most of the people doing SEM are typically lacking in one or the other.
 

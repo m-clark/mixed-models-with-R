@@ -44,7 +44,7 @@ For the following we'll assess factors predicting college grade point average (G
 # hell do you 'simulate' a factor that only has 3 of 5 levels and one category
 # that makes up 80% of the data? Avoid or change.
 
-gpa = read_spss('data/raw_data/joop_hox_data2/5 Longitudinal/gpa2long.sav') %>% 
+gpa0 = read_spss('data/raw_data/joop_hox_data2/5 Longitudinal/gpa2long.sav') %>% 
   mutate(highgpa=as.numeric(highgpa),
          student = factor(student),
          occas = as_factor(occas),
@@ -55,11 +55,16 @@ gpa = read_spss('data/raw_data/joop_hox_data2/5 Longitudinal/gpa2long.sav') %>%
          semester = as_factor(str_sub(occas, -1,-1)),
          occasion = as.numeric(occas)-1) # to get rid of stupid labels
 
+glimpse(gpa0)
+gpa = gpa0 %>% 
+  map_if(is.numeric, function(x) {attributes(x) = NULL; x}) %>% 
+  as.data.frame()
 glimpse(gpa)
+readr::write_csv(gpa, 'data/gpa.csv')
 save(gpa, file='data/gpa.RData')
 ```
 
-```{r show_gpa_data, echo=FALSE}
+```{r show_gpa_data, echo=FALSE, cache.rebuild=F}
 load('data/gpa.RData')
 DT::datatable(gpa, 
               options=list(dom='tp', 

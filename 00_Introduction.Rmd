@@ -2,7 +2,7 @@
 
 ## Overview
 
-Mixed models are an extremely useful modeling tool for situations in which there is some dependency among observations in the data, where the correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements for the units of observation, or in which the units of observation are otherwise clustered (e.g. students within school, cities within geographic region).   While there are different ways to approach such a situation, mixed models are a very common and powerful tool to do so.  In addition, they have ties to other statistical approaches that further expand their applicability.
+Mixed models are an extremely useful modeling tool for situations in which there is some dependency among observations in the data, where the correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements for the units of observation, or in which the units of observation are otherwise grouped together (e.g. students within school, cities within geographic region).   While there are different ways to approach such a situation, mixed models are a very common and powerful tool to do so.  In addition, they have ties to other statistical approaches that further expand their applicability.
 
 ### Goals
 
@@ -27,7 +27,7 @@ Note the following color coding used in this document:
 0. Download the zip file at https://github.com/m-clark/mixed-models-with-R/raw/master/mem_workshop.zip. Be mindful of where you put it.
 1. Unzip it. Be mindful of where you put the resulting folder.
 2. Open RStudio.
-3. File/Open Project and click on the blue icon in the folder you just created.
+3. File/Open Project and click on the blue icon (`mem_workshop.Rproj`) in the folder you just created.
 4. File/Open Click on the ReadMe file and do what it says.
 
 ## Key packages

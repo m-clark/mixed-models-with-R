@@ -24,7 +24,7 @@
 
 
 
-<meta name="date" content="2018-01-12">
+<meta name="date" content="2018-02-03">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -46,7 +46,7 @@
 
 
 
-<script src="libs/htmlwidgets-0.9/htmlwidgets.js"></script>
+<script src="libs/htmlwidgets-1.0/htmlwidgets.js"></script>
 <script src="libs/datatables-binding-0.2/datatables.js"></script>
 <link href="libs/dt-core-1.10.12/css/jquery.dataTables.min.css" rel="stylesheet" />
 <link href="libs/dt-core-1.10.12/css/jquery.dataTables.extra.css" rel="stylesheet" />
@@ -603,9 +603,9 @@ nurses_crossed =<span class="st"> </span><span class="kw">lmer</span>(stress <sp
 <div id="residual-structure" class="section level2">
 <h2>Residual Structure</h2>
 <p>Sometimes we will want to obtain more specific estimates regarding the residual covariance/correlation structure. This is especially the case in the longitudinal setting, where we think that observations closer in time would be more strongly correlated than those further apart, or that the variance changes over time. What does this model look like?</p>
-<p>Let’s begin by thinking about the covariance matrix/correlation matrix for the entire set of observations for our target variable, and how we want to represent the dependency in those observations. I’ll show a visualization of the first 5 people from our GPA data and modeling situation. Recall that each person has 6 observations. This display regards our random intercepts (only) model for GPA.</p>
+<p>Let’s begin by thinking about the covariance/correlation matrix for the entire set of observations for our target variable, and how we want to represent the dependency in those observations. I’ll show a visualization of the first 5 people from our GPA data and modeling situation. Recall that each person has 6 observations. This display regards the results from our random intercepts (only) model for GPA.</p>
 <p><img src="mixed_models_files/figure-html/residual_varcov-1.svg" width="768" style="display: block; margin: auto;" /></p>
-<p>Each block represents the covariance matrix pertaining to an individual. Within the person there are variances on the diagonal and covariances on the off-diagonal. When considering the whole data, we can see that observations from one person have no covariance with another person (gray). Furthermore, the covariance within a person is a constant value, the variance is also a constant value. Where did those values come from?</p>
+<p>Each block represents the covariance matrix pertaining to observations within an individual. Within the person there are variances on the diagonal and covariances on the off-diagonal. When considering the whole data, we can see that observations from one person have no covariance with another person (gray). Furthermore, the covariance within a person is a constant value, the variance is also a constant value. Where did those values come from?</p>
 <table style="width:40%;">
 <colgroup>
 <col width="15%" />
@@ -655,7 +655,7 @@ nurses_crossed =<span class="st"> </span><span class="kw">lmer</span>(stress <sp
 0   &amp; \sigma^2 &amp; 0   \\
 0   &amp; 0   &amp; \sigma^2 \\
 \end{array}\right]\]</span></p>
-<p>Next, we can relax the assumption of equal variances.</p>
+<p>Next, we can relax the assumption of equal variances, and estimate each separately.</p>
 <p><span class="math display">\[\Sigma = 
 \left[
 \begin{array}{ccc} 
@@ -785,7 +785,85 @@ Variance function:
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(<span class="kw">c</span>(<span class="fl">1.0000000</span>, <span class="kw">coef</span>(heterovar_res<span class="op">$</span>modelStruct<span class="op">$</span>varStruct, <span class="dt">unconstrained=</span>F))<span class="op">*</span>heterovar_res<span class="op">$</span>sigma)<span class="op">^</span><span class="dv">2</span></code></pre></div>
 <pre><code>                    1          2          3          4          5 
 0.13815037 0.09428374 0.05435276 0.02567636 0.01676917 0.02583744 </code></pre>
-<p>Yeah. You’ll have to look this up every time you want to do it, or just make your own function that takes the model input.</p>
+<p>Yeah. You’ll have to look this up every time you want to do it, or just make your own function that takes the model input. A newer alternative to keep in mind is <span class="pack">glmmTMB</span>. It would allow one to stay more in the <span class="pack">lme4</span> style and output.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(glmmTMB)
+heterovar_res2 =<span class="st"> </span><span class="kw">glmmTMB</span>(gpa <span class="op">~</span><span class="st"> </span>occasion <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>student) <span class="op">+</span><span class="st"> </span><span class="kw">diag</span>(<span class="dv">0</span> <span class="op">+</span><span class="st"> </span>occas <span class="op">|</span>student), 
+                         <span class="dt">data =</span> gpa)
+<span class="kw">summary</span>(heterovar_res2)</code></pre></div>
+<pre><code> Family: gaussian  ( identity )
+Formula:          gpa ~ occasion + (1 | student) + diag(0 + occas | student)
+Data: gpa
+
+     AIC      BIC   logLik deviance df.resid 
+   261.1    312.0   -120.5    241.1     1190 
+
+Random effects:
+
+Conditional model:
+ Groups    Name                   Variance Std.Dev. Corr                    
+ student   (Intercept)            0.093123 0.30516                          
+ student.1 occasyear 1 semester 1 0.129833 0.36032                          
+           occasyear 1 semester 2 0.086087 0.29341  0.00                    
+           occasyear 2 semester 1 0.046240 0.21503  0.00 0.00               
+           occasyear 2 semester 2 0.017615 0.13272  0.00 0.00 0.00          
+           occasyear 3 semester 1 0.008709 0.09332  0.00 0.00 0.00 0.00     
+           occasyear 3 semester 2 0.017730 0.13316  0.00 0.00 0.00 0.00 0.00
+ Residual                         0.008065 0.08980                          
+Number of obs: 1200, groups:  student, 200
+
+Dispersion estimate for gaussian family (sigma^2): 0.00806 
+
+Conditional model:
+            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept) 2.598788   0.026201   99.19   &lt;2e-16 ***
+occasion    0.106141   0.004034   26.31   &lt;2e-16 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Note that the variances dispalyed for each time point are not conflated with the residual variance. To compare with <span class="pack">nlme</span>, just add the residual variance to the estimates. As with every mixed model package (apparently), it still takes a bit to get the variances in a usable form from the <span class="func">VarCorr</span> object. The following shows how though, and compares to the <span class="pack">nlme</span> result.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">vc_glmmtmb =<span class="st"> </span><span class="kw">VarCorr</span>(heterovar_res2)
+vc_glmmtmb =<span class="st"> </span><span class="kw">attr</span>(vc_glmmtmb<span class="op">$</span>cond<span class="op">$</span>student.<span class="dv">1</span>, <span class="st">&#39;stddev&#39;</span>)<span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span><span class="kw">sigma</span>(heterovar_res2)<span class="op">^</span><span class="dv">2</span></code></pre></div>
+<table style="width:100%;">
+<colgroup>
+<col width="13%" />
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center"> </th>
+<th align="center">year_1_sem_1</th>
+<th align="center">year_2_sem_1</th>
+<th align="center">year_3_sem_1</th>
+<th align="center">year_1_sem_2</th>
+<th align="center">year_2_sem_2</th>
+<th align="center">year_3_sem_2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><strong>glmmTMB</strong></td>
+<td align="center">0.1379</td>
+<td align="center">0.0942</td>
+<td align="center">0.0543</td>
+<td align="center">0.0257</td>
+<td align="center">0.0168</td>
+<td align="center">0.0258</td>
+</tr>
+<tr class="even">
+<td align="center"><strong>nlme</strong></td>
+<td align="center">0.1382</td>
+<td align="center">0.0943</td>
+<td align="center">0.0544</td>
+<td align="center">0.0257</td>
+<td align="center">0.0168</td>
+<td align="center">0.0258</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="autocorrelation" class="section level3">
 <h3>Autocorrelation</h3>
@@ -862,7 +940,7 @@ corr_res =<span class="st"> </span><span class="kw">lme</span>(gpa <span class="
 </tbody>
 </table>
 <p><br></p>
-<p>Notice first that the fixed effect for occasion is the same as <a href="mixed-models.html#mixed-model">before</a>. The variance estimates have changed slightly along with the variances of the fixed effects (i.e. the standard errors). The main thing is that we have a new parameter called <code>Phi</code> in the <span class="pack">nlme</span> output, that represents our autocorrelation, with value of 0.418. This suggests at least some correlation exists among the residuals for observations next to each other in time, though it diminishes quickly as observations grow further apart.</p>
+<p>Notice first that the fixed effect for occasion is the same as <a href="mixed-models.html#mixed-model">before</a>. The variance estimates have changed slightly along with the variances of the fixed effects (i.e. the standard errors). The main thing is that we have a new parameter called <code>Phi</code> in the <span class="pack">nlme</span> output that represents our autocorrelation, <code>Phi</code>, with value of 0.418. This suggests at least some correlation exists among the residuals for observations next to each other in time, though it diminishes quickly as observations grow further apart.</p>
 </div>
 </div>
 <div id="generalized-linear-mixed-models" class="section level2">
