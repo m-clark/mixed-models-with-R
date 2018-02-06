@@ -21,7 +21,7 @@ crossing(Person=1:20, Image=letters[1:10]) %>%
 <br>
 <br>
 
-In such a case we have observations clustered within both person and image, but person and image are not nested within one another- all participants see all 10 images.  Such a situation is typically referred to as one in which there are <span class="emph">crossed</span> random effects.  In such settings we have multiple sources variances to consider.
+In such a case we have observations clustered within both person and image, but person and image are not nested within one another- all participants see all 10 images.  Such a situation is typically referred to as one in which there are <span class="emph">crossed</span> random effects, which just means non-nested.  In such settings we have multiple sources variances to consider.
 
 
 #### Example: Student achievement

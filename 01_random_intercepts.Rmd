@@ -91,7 +91,7 @@ We have coefficients ($b$) for the intercept and the effect of time.  The error 
 
 $$\epsilon \sim \mathscr{N}(0, \sigma)$$
 
-An alternate way to write the model which puts emphasis on the underlying data generating process for $y$ can be shown as follows.
+An alternate way to write the model which puts emphasis on the underlying data generating process for $\mathrm{gpa}$ can be shown as follows.
 
 $$\mathscr{gpa} \sim \mathscr{N}(\mu, \sigma)$$
 $$\mu = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathscr{occasion}$$
@@ -112,7 +112,7 @@ We (usually) assume the following for the student effects.
 
 $$\mathrm{effect}_{\mathrm{student}} \sim \mathscr{N}(0, \tau)$$
 
-Thus the student effects are random, and specifically are normally distributed with mean of zero and some estimated standard deviation. In other words, conceptually the only difference between this mixed model and a standard regression is the student effect, which is *on average* no effect, but specifically varies from student to student with some standard deviation ($\tau$).
+Thus the student effects are random, and specifically are normally distributed with mean of zero and some estimated standard deviation ($\tau$). In other words, conceptually the only difference between this mixed model and a standard regression is the student effect, which is *on average* no effect, but typically varies from student to student by some amount that is on average $\tau$.
 
 If we rearrange it, we can instead focus on model coefficients rather than as an additional source of error.
 
@@ -166,11 +166,11 @@ gpa %>%
 
 <br>
 
-All student paths are shown in blue, with a sample of 10 shown in orange. The overall trend as estimated by the regression we'll do later is shown in red. Two things stand out.  One is that students have a lot of variability in starting out. Secondly, while the general trend in GPA is upward over time as we'd expect, individual students may vary in that trajectory.
+All student paths are shown in blue, with a sample of 10 shown in orange. The overall trend, as estimated by the regression we'll do later, is shown in red. Two things stand out.  One is that students have a lot of variability in starting out. Secondly, while the general trend in GPA is upward over time as we'd expect, individual students may vary in that trajectory.
 
 #### Standard regression
 
-So let's get started. First, we'll look at the regression and only the time trend.  Note that I present a cleaner version of the summarized objects for the purposes of this document.
+So let's get started. First, we'll look at the regression and only the time indicator as a covariate, which we'll treat as numeric.  Note that I present a cleaner version of the summarized objects for the purposes of this document.
 
 ```{r gpa_lm, echo=1:3, eval=-3}
 load('data/gpa.RData')
@@ -185,7 +185,7 @@ gpa_lm_by_group = gpa %>%
 coef_lm = coef(gpa_lm)
 ```
 
-The above tells us that starting out, i.e. when occasion is zero, the average GPA, denoted by the intercept, is `r round(coef_lm[1], 2)`.  In addition, as we move from semester to semester, we can expect GPA to increase by about `r round(coef_lm[2], 2)` points.  This would be fine except that we are ignoring the clustering.  A side effect of doing so is that our standard errors are incorrect, and thus claims about statistical significance based on them would be off.  More importantly however is that we simply don't get to explore the student effect, which would be of interest by itself.
+The above tells us that starting out, i.e. when occasion is zero, the average GPA, denoted by the intercept, is `r round(coef_lm[1], 2)`.  In addition, as we move from semester to semester, we can expect GPA to increase by about `r round(coef_lm[2], 2)` points.  This would be fine except that we are ignoring the clustering.  A side effect of doing so is that our standard errors are biased, and thus claims about statistical significance based on them would be off.  More importantly however is that we simply don't get to explore the student effect, which would be of interest by itself.
 
 #### Regression by cluster
 
@@ -193,7 +193,7 @@ An alternative approach would be to run separate regressions for every student. 
 
 #### Mixed model
 
-Next we run a mixed model that will allow for a student specific effect.  Such a model is easily conducted in R, specifically with the package <span class="pack">lme4</span>.  In the following, the code will look just like what you used for regression with <span class="func">lm</span>, but with an additional component specifying the group, i.e. student, effect.  The `(1|student)` means that we are allowing the intercept, represented by `1`, to vary by student. With the mixed model, we get the same results as the regression, but with more to talk about.
+Next we run a mixed model that will allow for a student specific effect.  Such a model is easily conducted in R, specifically with the package <span class="pack">lme4</span>.  In the following, the code will look just like what you used for regression with <span class="func">lm</span>, but with an additional component specifying the group, i.e. student, effect.  The `(1|student)` means that we are allowing the intercept, represented by `1`, to vary by student. With the mixed model, we get the same results as the regression, but as we'll see we'll have more to talk about.
 
 
 ```{r gpa_mixed, eval=-3}
@@ -215,7 +215,9 @@ tidy(VarCorr(gpa_mixed)) %>%
 ```
 
 
-First we see that the coefficients, i.e. or in this context they can be called the *fixed* effects, for the intercept and time are the same[^lmlmercoef] as we saw with the standard regression, as would be their interpretation.  The standard errors, on the other hand are different here, though in the end our conclusion as far as statistical significance goes would be the same. However, the <span class="pack">lme4</span> does not provide p-values!  There are [several reasons](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#why-doesnt-lme4-display-denominator-degrees-of-freedomp-values-what-other-options-do-i-have) for this, namely that with mixed models we are essentially dealing with different sample sizes, the $N_c$ within cluster, which may vary from cluster to cluster (and even be a single observation!), and N total observations, which puts us in kind of a fuzzy situation with regard to reference distributions, denominator degrees of freedom and how to approximate a 'best' solution. Other programs provide p-values automatically as if there is no issue, and without telling you *which* approach they use to calculate them (there are several).  Furthermore, those approximations may be very poor in some scenarios, or make assumptions that may not be appropriate for the situation[^fuzzyp].
+First we see that the coefficients, i.e. or in this context they can be called the *fixed* effects, for the intercept and time are the same[^lmlmercoef] as we saw with the standard regression, as would be their interpretation.  The standard errors, on the other hand are different here, though in the end our conclusion as far as statistical significance goes would be the same. Note specifically that the standard error for the intercept has increased.  Conceptually you can think about allowing random intercepts per person allows us to gain information about the individual, while recognizing the uncertainty with regard to the overall average that we were underestimating before[^sewithin].
+
+While we have coefficients, and standard errors, you might have noticed that <span class="pack">lme4</span> does not provide p-values!  There are [several reasons](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#why-doesnt-lme4-display-denominator-degrees-of-freedomp-values-what-other-options-do-i-have) for this, namely that with mixed models we are essentially dealing with different sample sizes, the $N_c$ within cluster, which may vary from cluster to cluster (and even be a single observation!), and N total observations, which puts us in kind of a fuzzy situation with regard to reference distributions, denominator degrees of freedom and how to approximate a 'best' solution. Other programs provide p-values automatically as if there is no issue, and without telling you *which* approach they use to calculate them (there are several).  Furthermore, those approximations may be very poor in some scenarios, or make assumptions that may not be appropriate for the situation[^fuzzyp].
 
 However, it's more straightforward to get confidence intervals, and we can do so with <span class="pack">lme4</span> as follows[^confint].
 
@@ -241,13 +243,13 @@ confint(gpa_mixed) %>%
 
 ##### Variance components
 
-One thing that's new compared to the standard regression output is the estimated variance/standard deviation of the student effect ($\tau$ in our formula depiction from before).  This tells us how much, on average, GPA bounces around as we move from student to student. In other words, even after making a prediction based on time point, each student has their own unique deviation, and that value (in terms of the standard deviation) is the estimated average deviation.  Note that scores move due to the student more than double what they move based on a semester change.
+One thing that's new compared to the standard regression output is the estimated variance/standard deviation of the student effect ($\tau$ in our formula depiction from before).  This tells us how much, on average, GPA bounces around as we move from student to student. In other words, even after making a prediction based on time point, each student has their own unique deviation, and that value (in terms of the standard deviation) is the estimated average deviation across students.  Note that scores move due to the student more than double what they move based on a semester change.
 
-Another way to interpret the variance output is to note percentage of the student variance out of the total, or `r round(vcovs[1,1], 3)` / `r round(sum(vcovs), 3)` =  `r round(vcovs[1,1]/sum(vcovs), 2)*100`%.  This is also called the <span class="emph">intraclass correlation</span>, because it is also an estimate of the within cluster correlation.
+Another way to interpret the variance output is to note percentage of the student variance out of the total, or `r round(vcovs[1,1], 3)` / `r round(sum(vcovs), 3)` =  `r round(vcovs[1,1]/sum(vcovs), 2)*100`%.  This is also called the <span class="emph">intraclass correlation</span>, because it is also an estimate of the within cluster correlation, as we'll see later.
 
 ##### Estimates of the random effects
 
-After running the model, we can actually get estimates of the student effects[^blup].  I show two ways for the first five students, as random effect and as random intercept (i.e. intercept + random effect).
+After running the model, we can actually get estimates of the student effects[^blup].  I show two ways for the first five students, both as random effect and as random intercept (i.e. intercept + random effect).
 
 ```{r randeffs, eval=FALSE}
 ranef(gpa_mixed)$student %>% head(5)
@@ -473,6 +475,7 @@ qplot(x=re, geom='density', xlim=c(-3,3))
 
 [^lmlmercoef]: This will not always be the case, e.g. with unbalanced data, but they should be fairly close.
 
+[^sewithin]: The standard error for our time covariate went down due to our estimate of $\sigma$ being lower for this model, and there being no additional variance due to cluster membership.
 
 [^fuzzyp]: Note that many common modeling situations involve a fuzzy p setting, but especially penalized regression approaches such as mixed, additive, ridge regression models etc.  Rather than be a bad thing, this usually is a sign you're doing something interesting, or handling complexity in an appropriate way.
 

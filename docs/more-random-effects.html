@@ -24,13 +24,13 @@
 
 
 
-<meta name="date" content="2018-02-03">
+<meta name="date" content="2018-02-05">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   
-  
+  <link rel="shortcut icon" href="img/R.ico" type="image/x-icon">
 <link rel="prev" href="mixed-models.html">
 <link rel="next" href="common-extensions.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
@@ -225,7 +225,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p><br> Let us now assume that the trend over time is allowed to vary by student in addition to the intercepts. Using <span class="pack">lme4</span>, this is quite straightforward.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gpa_mixed =<span class="st">  </span><span class="kw">lmer</span>(gpa <span class="op">~</span><span class="st"> </span>occasion <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>occasion<span class="op">|</span>student), <span class="dt">data=</span>gpa)
 <span class="kw">summary</span>(gpa_mixed)</code></pre></div>
-<p>Pretty easy huh? Within the parenthesis, to the left of that bar <code>|</code> we are simply just positing a model formula as we would do with most modeling functions<a href="#fn11" class="footnoteRef" id="fnref11"><sup>11</sup></a>. Let’s look at the results.</p>
+<p>Pretty easy huh? Within the parenthesis, to the left of that bar <code>|</code> we are simply just positing a model formula as we would do with most modeling functions<a href="#fn12" class="footnoteRef" id="fnref12"><sup>12</sup></a>. Let’s look at the results.</p>
 <table style="width:99%;">
 <colgroup>
 <col width="19%" />
@@ -301,14 +301,14 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </tbody>
 </table>
 <p>As before, since we have 0 as our starting semester, the intercept tells us what the average GPA is in the first semester. The coefficient for occasion still reflects a one semester change in GPA. As we have not changed the fixed effect portion of the model, the values are the same as before.</p>
-<p>The associated intercept variance tells us how much that starting GPA bounces around from student to student. The variance for the occasion effect might not look like much in comparison, but slopes are on a notably different scale than the intercept. Note that the mean slope for the semester to semester effect, our fixed effect, is 0.11, but from student to student it bounces around half that. Thus we could expect most students to fall somewhere between a flat effect of zero to more than double the population average<a href="#fn12" class="footnoteRef" id="fnref12"><sup>12</sup></a>.</p>
+<p>The associated intercept variance tells us how much that starting GPA bounces around from student to student. The variance for the occasion effect might not look like much in comparison, but slopes are on a notably different scale than the intercept. Note that the mean slope for the semester to semester effect, our fixed effect, is 0.11, but from student to student it bounces around half that. Thus we could expect most students to fall somewhere between a flat effect of zero to more than double the population average<a href="#fn13" class="footnoteRef" id="fnref13"><sup>13</sup></a>.</p>
 <p>Yet another point of interest is the correlation of the intercepts and slopes. In this case it’s -0.1. That’s pretty small, but the interpretation is the same as with any correlation. In this case specifically, it tells us that those with lower intercepts would be associated with increased time trajectories. This makes intuitive sense in that people are improving in general, and those at the bottom would have more room to improve. However, this is very slight, and practically speaking we might not put too much weight on it.</p>
 </div>
 <div id="comparison-to-many-regressions" class="section level2">
 <h2>Comparison to many regressions</h2>
 <p>Let’s compare these results to the ones we would have gotten had we run a separate regression for each student. In what follows we see the distribution of of the estimated intercept and slope coefficients for all the students.</p>
 <p><img src="mixed_models_files/figure-html/ranints_vs_separateints-1.svg" width="768" style="display: block; margin: auto;" /></p>
-<p>Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect. Same goes for the slopes. In both cases the mixed model shrinks what would have been the by-group estimate, which would otherwise overfit in this scenario. This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models<a href="#fn13" class="footnoteRef" id="fnref13"><sup>13</sup></a>. It comes into play largely when we have few observations per group and less estimated variance for the random effects. In other words, when there is little information in a group, or less group-level variance relative to the observation variance, then the mixed model will produce a group-specific effect that is closer to the overall population effect. In that sense, the mixed model group coefficients better reflect our ignorance. Conversely, with more pronounced group effects, our uncertainty about the overall effect increases.</p>
+<p>Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect. Same goes for the slopes. In both cases the mixed model shrinks what would have been the by-group estimate, which would otherwise overfit in this scenario. This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models<a href="#fn14" class="footnoteRef" id="fnref14"><sup>14</sup></a>. It comes into play largely when we have few observations per group and less estimated variance for the random effects. In other words, when there is little information in a group, or less group-level variance relative to the observation variance, then the mixed model will produce a group-specific effect that is closer to the overall population effect. In that sense, the mixed model group coefficients better reflect our ignorance. Conversely, with more pronounced group effects, our uncertainty about the overall effect increases.</p>
 </div>
 <div id="visualization-of-effects" class="section level2">
 <h2>Visualization of effects</h2>
@@ -359,7 +359,7 @@ x =<span class="st"> </span><span class="kw">rnorm</span>(N)
 y =<span class="st"> </span>(<span class="dv">2</span> <span class="op">+</span><span class="st"> </span>re_int[groups]) <span class="op">+</span><span class="st"> </span>(.<span class="dv">5</span> <span class="op">+</span><span class="st"> </span>re_slope[groups])<span class="op">*</span>x <span class="op">+</span><span class="st">  </span><span class="op">+</span><span class="st"> </span>e
 
 d =<span class="st"> </span><span class="kw">data.frame</span>(x, y, groups)</code></pre></div>
-<p>This next bit of code shows a way to run a mixed model while specifying that there is no correlation between intercepts and slopes. There is generally no reason to do this unless the study design warrants it<a href="#fn14" class="footnoteRef" id="fnref14"><sup>14</sup></a>, but you could do it as a step in the model-building process, such that you fit a model with no correlation, then one with it.</p>
+<p>This next bit of code shows a way to run a mixed model while specifying that there is no correlation between intercepts and slopes. There is generally no reason to do this unless the study design warrants it<a href="#fn15" class="footnoteRef" id="fnref15"><sup>15</sup></a>, but you could do it as a step in the model-building process, such that you fit a model with no correlation, then one with it.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">model_ints_only =<span class="st"> </span><span class="kw">lmer</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>groups), <span class="dt">data=</span>d)
 model_with_slopes =<span class="st"> </span><span class="kw">lmer</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>groups) <span class="op">+</span><span class="st"> </span>(<span class="dv">0</span> <span class="op">+</span><span class="st"> </span>x<span class="op">|</span>groups), <span class="dt">data=</span>d)
 <span class="kw">summary</span>(model_with_slopes)
@@ -377,11 +377,11 @@ model_with_slopes =<span class="st"> </span><span class="kw">lmer</span>(y <span
 </div>
 <div class="footnotes">
 <hr />
-<ol start="11">
-<li id="fn11"><p>Technically the intercept is assumed but you should keep it for clarity.<a href="more-random-effects.html#fnref11">↩</a></p></li>
-<li id="fn12"><p>In case it’s not clear, I’m using the fact that we assume a normal distribution for the random effect of occasion. A quick rule of thumb for a normal distribution is that 95% falls between <span class="math inline">\(\pm\)</span> 2 standard deviations of the mean.<a href="more-random-effects.html#fnref12">↩</a></p></li>
-<li id="fn13"><p>This phenomenon is also sometimes referred to as <span class="emph">partial pooling</span>. This idea of pooling is as in ‘pooling resources’ or borrowing strength. You have complete pooling, which would be the standard regression model case of ignoring the clusters, i.e. all cluster effects are assumed to be the same. With no pooling, we assumes the clusters have nothing in common, i.e. the separate regressions approach. Partial pooling is seen in the mixed model scenario, where the similarity among the clusters is estimated in some fashion, and data for all observations informs the estimates for each cluster. I’ve never really liked the ‘pooling’ terminology, as regularization/shrinkage is a more broad concept that applies beyond mixed models, and I’d prefer to stick to that. In any case, see practically anything Andrew Gelman and the pool-no-pool document <a href="https://github.com/stan-dev/example-models/tree/master/knitr/pool-binary-trials">here</a>.<a href="more-random-effects.html#fnref13">↩</a></p></li>
-<li id="fn14"><p>I personally have not come across a situation where I’d do this in practice. Even if the simpler model with no correlation was a slightly better fit, there isn’t much to be gained by it.<a href="more-random-effects.html#fnref14">↩</a></p></li>
+<ol start="12">
+<li id="fn12"><p>Technically the intercept is assumed but you should keep it for clarity.<a href="more-random-effects.html#fnref12">↩</a></p></li>
+<li id="fn13"><p>In case it’s not clear, I’m using the fact that we assume a normal distribution for the random effect of occasion. A quick rule of thumb for a normal distribution is that 95% falls between <span class="math inline">\(\pm\)</span> 2 standard deviations of the mean.<a href="more-random-effects.html#fnref13">↩</a></p></li>
+<li id="fn14"><p>This phenomenon is also sometimes referred to as <span class="emph">partial pooling</span>. This idea of pooling is as in ‘pooling resources’ or borrowing strength. You have complete pooling, which would be the standard regression model case of ignoring the clusters, i.e. all cluster effects are assumed to be the same. With no pooling, we assumes the clusters have nothing in common, i.e. the separate regressions approach. Partial pooling is seen in the mixed model scenario, where the similarity among the clusters is estimated in some fashion, and data for all observations informs the estimates for each cluster. I’ve never really liked the ‘pooling’ terminology, as regularization/shrinkage is a more broad concept that applies beyond mixed models, and I’d prefer to stick to that. In any case, see practically anything Andrew Gelman and the pool-no-pool document <a href="https://github.com/stan-dev/example-models/tree/master/knitr/pool-binary-trials">here</a>.<a href="more-random-effects.html#fnref14">↩</a></p></li>
+<li id="fn15"><p>I personally have not come across a situation where I’d do this in practice. Even if the simpler model with no correlation was a slightly better fit, there isn’t much to be gained by it.<a href="more-random-effects.html#fnref15">↩</a></p></li>
 </ol>
 </div>
             </section>
