@@ -24,7 +24,7 @@
 
 
 
-<meta name="date" content="2018-02-05">
+<meta name="date" content="2018-02-06">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -271,7 +271,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <ul>
 <li><p>Lack of centering/standardizing will often result in scaling warnings for <span class="pack">lme4</span>. It makes sense to do it anyway, so the same goes for mixed models as any other.</p></li>
 <li><p>Zero estimates for the random effect variance, or <span class="math inline">\(\pm 1\)</span> estimates for correlation of intercepts and slopes, often can be attributed to not having enough data, not having enough clusters, or an overlooked data issue. You won’t have this issue in the Bayesian context, but in others, you may have to deal with the dependency in some other fashion (e.g. cluster-robust standard errors/GEE).</p></li>
-<li><p>Any complicated GLMM or similar model is likely to have problems, so be prepared. If you want to go beyond glm, you’ll have fewer tools and likely more issues. There are packages like <span class="pack">ordinal</span>, <span class="pack">mgcv</span>, <span class="pack">glmmamdb</span>, and others that can <em>potentially</em> handle alternate distributions and other complexities, however I think one would be better off with a Bayesian approach (e.g. <span class="pack">brms</span>/<span class="pack">rstan</span>). In practice, I’ve found others to be prohibitively slow, unable to converge, or to limited in post-estimation options.</p></li>
+<li><p>Any complicated GLMM or similar model is likely to have problems, so be prepared. If you want to go beyond glm, you’ll have fewer tools and likely more issues. There are packages like <span class="pack">ordinal</span>, <span class="pack">mgcv</span>, <span class="pack">glmmTMB</span>, and others that can <em>potentially</em> handle alternate distributions and other complexities, however I think one would be better off with a Bayesian approach (e.g. <span class="pack">brms</span>/<span class="pack">rstan</span>). In practice, I’ve found others to be prohibitively slow, unable to converge, or to limited in post-estimation options.</p></li>
 </ul>
 <p>The main point is that you’ll need to acknowledge the warnings and messages that the packages provide, and be prepared to take necessary steps to deal with these issues when they arise.</p>
 

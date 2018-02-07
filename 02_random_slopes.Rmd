@@ -88,16 +88,195 @@ gslopes = data_frame(Mixed=coef(gpa_mixed)$student[,2], Separate=gpa_lm_by_group
   xlim(c(-.2,.4)) +
   theme_trueMinimal() 
 
-
 gridExtra::grid.arrange(gint, gslopes, ncol=2)
 ```
 
-Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what would have been the by-group estimate, which would otherwise overfit in this scenario.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models[^pool].  It comes into play largely when we have few observations per group and less estimated variance for the random effects.  In other words, when there is little information in a group, or less group-level variance relative to the observation variance, then the mixed model will produce a group-specific effect that is closer to the overall population effect.  In that sense, the mixed model group coefficients better reflect our ignorance.  Conversely, with more pronounced group effects, our uncertainty about the overall effect increases.
+Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what would have been the by-group estimate, which would otherwise overfit in this scenario.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models[^pool].  It comes into play largely when we have few observations per group and less estimated variance for the random effects.  In other words, when there is little information in a group, or less group-level variance relative to the observation variance, then the mixed model will produce a group-specific effect that is closer to the overall population effect.  In that sense, the mixed model group coefficients better reflect our ignorance.  Conversely, with more pronounced group effects, our uncertainty about the overall effect increases.  
+
+
+The following shows what would happen to similar data under a variety of settings with simulated data that is based on the results of the GPA model we had above. The are three settings. The first shows what would happen had we taken many more measurements per student. In the next we add to the intercept and slope variance, and decrease the residual variance, but keep the sample size the same as the original data.  In both cases we have a less regularizing effect of the mixed model. The random coefficients are very similar to the separate regressions results.  Finally, we keep the data the same but where we only have 4 observations per student.
+
+
+
+```{r ranints_vs_separateints_2, echo=FALSE}
+set.seed(1234)  
+Nstudent = 200
+NperGroup = 100
+N = Nstudent*NperGroup
+
+student = factor(rep(1:Nstudent, each=NperGroup))
+u = mvtnorm::rmvnorm(Nstudent, sigma=matrix(c(.2^2, -.1*.2*.067, -.1*.2*.067, .067^2), 2,2))
+e = rnorm(N, sd=.25)
+occasion = rep(0:(NperGroup-1), Nstudent)
+y = (2.6 + u[student,1]) + (.11+u[student,2])*occasion + e
+
+d = data.frame(occasion, y, student)
+
+model = lmer(y ~ occasion + (1 + occasion |student), data=d)
+
+separate_lm = d %>% 
+  split(.$student) %>% 
+  map_df(~cbind(coef(lm(y ~ occasion, data=.)))) %>%  
+  do.call(rbind, .) %>% 
+  data.frame() 
+
+# lazerhawk::describeAll()
+
+gint2 = data_frame(Mixed=coef(model)$student[,1], Separate=separate_lm[,1]) %>% 
+  gather(key=Model, value=Intercept) %>% 
+  ggplot(aes(x=Intercept)) +
+  geom_density(aes(color=Model, fill=Model), alpha=.25, show.legend = F) +
+  scale_fill_manual(values=c(palettes$orange$orange, palettes$orange$complementary[2])) +
+  ggtitle('Intercepts', subtitle = 'More observations per group') +
+  labs(x='', y='') +
+  xlim(c(1,4)) +
+  theme_trueMinimal() +
+  theme(
+    legend.key.size=unit(2, 'mm'),
+    legend.title=element_text(size=8),
+    legend.text=element_text(size=8),
+    legend.box.spacing=unit(0, 'in'),
+    legend.position=c(.75,.75),
+    title = element_text(size = 8))
+gslopes2 = data_frame(Mixed=coef(model)$student[,2], Separate=separate_lm[,2]) %>% 
+  gather(key=Model, value=Occasion) %>% 
+  ggplot(aes(x=Occasion)) +
+  geom_density(aes(color=Model, fill=Model), alpha=.25, show.legend=F) +
+  scale_fill_manual(values=c(palettes$orange$orange, palettes$orange$complementary[2])) +
+  ggtitle('Slopes for occasion', subtitle = 'More observations per group') +
+  labs(x='', y='') +
+  xlim(c(-.25,.4)) +
+  theme_trueMinimal() +
+  theme(title = element_text(size = 8))
+
+
+# gridExtra::grid.arrange(gint2, gslopes2, ncol=2)
+```
+
+```{r ranints_vs_separateints_3, echo=FALSE}
+set.seed(1234)  
+Nstudent = 200
+NperGroup = 6
+N = Nstudent*NperGroup
+
+student = factor(rep(1:Nstudent, each=NperGroup))
+u = mvtnorm::rmvnorm(Nstudent, sigma=matrix(c(.4^2, -.1*.4*.2, -.1*.4*.2, .2^2), 2,2))
+e = rnorm(N, sd=.15)
+occasion = rep(0:(NperGroup-1), Nstudent)
+y = (2.6 + u[student,1]) + (.11+u[student,2])*occasion + e
+
+d = data.frame(occasion, y, student)
+
+model = lmer(y ~ occasion + (1 + occasion |student), data=d)
+
+separate_lm = d %>% 
+  split(.$student) %>% 
+  map_df(~cbind(coef(lm(y ~ occasion, data=.)))) %>%  
+  do.call(rbind, .) %>% 
+  data.frame() 
+
+# lazerhawk::describeAll()
+
+gint3 = data_frame(Mixed=coef(model)$student[,1], Separate=separate_lm[,1]) %>% 
+  gather(key=Model, value=Intercept) %>% 
+  ggplot(aes(x=Intercept)) +
+  geom_density(aes(color=Model, fill=Model), alpha=.25, show.legend = F) +
+  scale_fill_manual(values=c(palettes$orange$orange, palettes$orange$complementary[2])) +
+  ggtitle('Intercepts', subtitle = 'More RE variance') +
+  labs(x='', y='') +
+  xlim(c(1,4)) +
+  theme_trueMinimal() +
+  theme(
+    legend.key.size=unit(2, 'mm'),
+    legend.title=element_text(size=8),
+    legend.text=element_text(size=8),
+    legend.box.spacing=unit(0, 'in'),
+    legend.position=c(.75,.75),
+    title = element_text(size = 8))
+gslopes3 = data_frame(Mixed=coef(model)$student[,2], Separate=separate_lm[,2]) %>% 
+  gather(key=Model, value=Occasion) %>% 
+  ggplot(aes(x=Occasion)) +
+  geom_density(aes(color=Model, fill=Model), alpha=.25, show.legend=F) +
+  scale_fill_manual(values=c(palettes$orange$orange, palettes$orange$complementary[2])) +
+  ggtitle('Slopes for occasion', subtitle = 'More RE variance') +
+  labs(x='', y='') +
+  xlim(c(-.6,1)) +
+  theme_trueMinimal() +
+  theme(title = element_text(size = 8))
+
+
+# gridExtra::grid.arrange(gint3, gslopes3, ncol=2)
+```
+
+```{r ranints_vs_separateints_4, echo=FALSE}
+set.seed(1234)  
+Nstudent = 200
+NperGroup = 3
+N = Nstudent*NperGroup
+
+student = factor(rep(1:Nstudent, each=NperGroup))
+u = mvtnorm::rmvnorm(Nstudent, sigma=matrix(c(.2^2, -.1*.2*.067, -.1*.2*.067, .067^2), 2,2))
+e = rnorm(N, sd=.25)
+occasion = rep(0:(NperGroup-1), Nstudent)
+y = (2.6 + u[student,1]) + (.11+u[student,2])*occasion + e
+
+d = data.frame(occasion, y, student)
+
+model = lmer(y ~ occasion + (1 + occasion |student), data=d)
+
+separate_lm = d %>% 
+  split(.$student) %>% 
+  map_df(~cbind(coef(lm(y ~ occasion, data=.)))) %>%  
+  do.call(rbind, .) %>% 
+  data.frame() 
+
+# lazerhawk::describeAll()
+
+gint4 = data_frame(Mixed=coef(model)$student[,1], Separate=separate_lm[,1]) %>% 
+  gather(key=Model, value=Intercept) %>% 
+  ggplot(aes(x=Intercept)) +
+  geom_density(aes(color=Model, fill=Model), alpha=.25, show.legend = F) +
+  scale_fill_manual(values=c(palettes$orange$orange, palettes$orange$complementary[2])) +
+  ggtitle('Intercepts', subtitle = 'Fewer observations per group') +
+  labs(x='', y='') +
+  xlim(c(1,4)) +
+  theme_trueMinimal() +
+  theme(
+    legend.key.size=unit(2, 'mm'),
+    legend.title=element_text(size=8),
+    legend.text=element_text(size=8),
+    legend.box.spacing=unit(0, 'in'),
+    legend.position=c(.75,.75),
+    title = element_text(size = 8))
+gslopes4 = data_frame(Mixed=coef(model)$student[,2], Separate=separate_lm[,2]) %>% 
+  gather(key=Model, value=Occasion) %>% 
+  ggplot(aes(x=Occasion)) +
+  geom_density(aes(color=Model, fill=Model), alpha=.25, show.legend=F) +
+  scale_fill_manual(values=c(palettes$orange$orange, palettes$orange$complementary[2])) +
+  ggtitle('Slopes for occasion', subtitle = 'Fewer observations per group') +
+  labs(x='', y='') +
+  xlim(c(-.6,.8)) +
+  theme_trueMinimal() +
+  theme(title = element_text(size = 8))
+
+
+# gridExtra::grid.arrange(gint4, gslopes4, ncol=2)
+```
+
+
+```{r all_together_now, echo=F, fig.align='left', out.width='100%', cache.rebuild=T}
+# cowplot::plot_grid(gint, gint2, gint3, gint4,
+#                    gslopes, gslopes2, gslopes3, gslopes4, 
+#                    nrow=2)
+gridExtra::grid.arrange(gint, gint2, gint3, gint4,
+                   gslopes, gslopes2, gslopes3, gslopes4, 
+                   nrow=2)
+```
 
 
 ## Visualization of effects
 
-Let's compare our results visually. First there is the linear regression fit. We assume the same trend for everyone.  If we add the conditional predictions that include the subject specific effects from the mixed model, we now can also make subject specific predictions, greatly enhancing the practical use of the model.  As the code to create this plot (using <span class="pack">plotly</span>) was very easy, I go ahead and show it.
+Let's compare our predictions visually. First there is the linear regression fit. We assume the same trend for everyone.  If we add the conditional predictions that include the subject specific effects from the mixed model, we now can also make subject specific predictions, greatly enhancing the practical use of the model.  As the code to create this plot (using <span class="pack">plotly</span>) was very easy, I go ahead and show it.
 
 ```{r visualize_mixed_fit, echo=-1, eval=-1}
 going_down_now = factor(rep(coef(gpa_mixed)$student[,'occasion']<0, e=6), labels=c('Up', 'Down'))
@@ -110,6 +289,8 @@ gpa %>%
   add_lines(x=~occasion, y=~mixed, opacity=.2, color=I('#03b3ff'), name='Mixed\nModel') %>%
   theme_plotly()
 ```
+
+<br>
 
 By contrast, the by-group approach is more noisy due to treating everyone independently.  Many more students are expected to have downward or flat trends relative to the mixed model. The mixed model meanwhile only had `r sum(coef(gpa_mixed)$student[,'occasion']<0)` trends estimated to be negative.
 
@@ -146,7 +327,7 @@ library(lme4)
 data("sleepstudy")
 ```
 
-In the following replace <span class="objclass">model</span> with the name of your model object. Run each line, inspecting the result of each as you go along. 
+In the following, replace <span class="objclass">model</span> with the name of your model object. Run each line, inspecting the result of each as you go along. 
 
 ```{r, eval=FALSE}
 re = ranef(model)$Subject
@@ -184,8 +365,6 @@ model_ints_only = lmer(y ~ x + (1|groups), data=d)
 model_with_slopes = lmer(y ~ x + (1|groups) + (0 + x|groups), data=d)
 summary(model_with_slopes)
 confint(model_with_slopes)
-
-
 
 library(ggplot2)
 ggplot(aes(x, y), data=d) +

@@ -141,12 +141,14 @@ DT::datatable(nurses,
 For the model we examine effects of the treatment as well as several other covariates, at least one at each of the nurse, ward, and hospital levels. Again, when it comes to the fixed effects portion, you can simply think about that part as you would any standard regression, we just add covariates as theory/exploration would suggest.  To incorporate this type of random effects structure is not too different from the cross-classified approach, but does have a slight change to the syntax.
 
 ```{r hierarchical, eval=1}
+nurses_hierarchical = lmer(stress ~ age + sex + experience 
+                           + treatment + wardtype + hospsize 
+                           + (1|hospital) + (1|hospital:wardid), 
+                           data = nurses)
 nurses_hierarchical = lmer(stress ~ age  + sex + experience 
                            + treatment + wardtype + hospsize 
-                           + (1|hospital) + (1|hospital:wardid), data = nurses)
-nurses_hierarchical = lmer(stress ~ age  + sex + experience 
-                           + treatment + wardtype + hospsize 
-                           + (1|hospital/wardid), data = nurses) # same thing!
+                           + (1|hospital/wardid), 
+                           data = nurses) # same thing!
 summary(nurses_hierarchical, correlation=F)
 ```
 
@@ -156,8 +158,11 @@ tidy(nurses_hierarchical, 'fixed', conf.int=T) %>%
   pander(justify='lrrrrr')
 ```
 
+<br>
+
 As far as the fixed effects go, about the only thing that doesn't have a statistical effect is ward type[^signflip].  
 
+<br>
 
 ```{r hierarchical_random, echo=FALSE}
 # note tidy doesn't work with multiple random effects and conf.int
@@ -285,7 +290,7 @@ tidy(VarCorr(gpa_vis_cov)) %>%
   pander()
 ```
 
-Remember that there are two sources of variance in this model, the residual observation variance and that pertaining to person. Combined they provide the total residual variance that we aren't capturing with our covariates.  In this case, it's about `r round(totvar, 2)`, the value displayed on our diagonal. The off-diagonal is the variance attributable to student, which we alternately interpreted as an intraclass correlation (dividing by the total variance converts it to the correlation metric).
+Remember that there are two sources of variance in this model, the residual observation level variance, and that pertaining to person. Combined they provide the total residual variance that we aren't already capturing with our covariates.  In this case, it's about `r round(totvar, 2)`, the value displayed on our diagonal. The off-diagonal is the variance attributable to student, which we alternately interpreted as an intraclass correlation (dividing by the total variance converts it to the correlation metric).
 
 More generically, and referring to previous notation for our estimated variances, we can see the covariance matrix (for a cluster) as follows.
 
@@ -299,7 +304,7 @@ $$\Sigma =
 
 This represents a covariance structure of <span class="emph">compound symmetry</span>. It is the default in most mixed model settings, and the same as what is shown visually above. Now let's start to think about other types of covariance structures. 
 
-Consider the following for an individual and three time points.
+Consider the following model for an individual and three time points.
 
 $$\boldsymbol{y} \sim \mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\Sigma})$$
 
@@ -396,7 +401,7 @@ cbind(rownames(vc), vc[,1:2]) %>%
 ```
 
 
-Now the not-so fun part.  For the values we're interested in for this example, i.e. the variances at each occasion, <span class="pack">nlme</span> does not make it easy on someone to understand initially, as the output regards the way things are for estimation, not for what one would usually have to report.  The variances are scaled relative to the first variance estimate, which is actually the reported residual variance in the random effects part. Additionally the values are also on the standard deviation rather than variance scale.  From the default output display, we can see that variance decreases over time in this case, but the actual values are not provided.
+At this point we're getting the same stuff we're used to. Now the not-so fun part.  For the values we're interested in for this example, i.e. the variances at each occasion, <span class="pack">nlme</span> does not make it easy on someone to understand initially, as the output regards the way things are for estimation, not for what one would usually have to report.  The variances are scaled relative to the first variance estimate, which is actually the reported residual variance in the random effects part. Additionally the values are also on the standard deviation rather than variance scale.  From the default output display, we can see that variance decreases over time in this case, but the actual values are not provided.
 
 ```{r heterovar_variances}
 summary(heterovar_res$modelStruct)
@@ -417,7 +422,7 @@ heterovar_res2 = glmmTMB(gpa ~ occasion + (1|student) + diag(0 + occas |student)
 summary(heterovar_res2)
 ```
 
-Note that the variances dispalyed for each time point are not conflated with the residual variance. To compare with <span class="pack">nlme</span>, just add the residual variance to the estimates.  As with every mixed model package (apparently), it still takes a bit to get the variances in a usable form from the <span class="func">VarCorr</span> object. The following shows how though, and compares to the <span class="pack">nlme</span> result.
+Note that the variances dispalyed for each time point are not conflated with the residual variance. To compare with <span class="pack">nlme</span>, just add the residual variance to those estimates.  As with every mixed model package (apparently), it still takes a bit to get the variances in a usable form from the <span class="func">VarCorr</span> object. The following shows how though, and compares to the <span class="pack">nlme</span> result.
 
 ```{r glmmTMB_hetero_compare_nlme, echo=1:2}
 vc_glmmtmb = VarCorr(heterovar_res2)
