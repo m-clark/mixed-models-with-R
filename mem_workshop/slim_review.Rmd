@@ -6,6 +6,8 @@ output:
     theme: sandstone
   html_document:
     df_print: paged
+editor_options: 
+  chunk_output_type: inline
 ---
 
 
