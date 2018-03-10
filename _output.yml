@@ -6,10 +6,10 @@ bookdown::gitbook:
  config:
    toc:
      before: |
-       <li><a href="https://m-clark.github.io/workshops/mixed_models_r/"><span style="font-size:125%; font-variant:small-caps; font-style:italic; color:#990024; font-family:Roboto">Mixed Models in R</span></a></li>
+       <li class='before'><a href="https://m-clark.github.io/workshops/mixed_models_r/">Mixed Models in R</a></li>
      after: |
-       <li><a href="https://m-clark.github.io/"><img src="img/mc.png" style="width:50%; padding:0px 0; display:block; margin: 0 auto;" alt="MC logo"></a></li>
-       <li><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="width:50%; border-width:0; display:block; margin: 0 auto;" src="img/ccbysa_test.png" /></a></li>
+       <li class='after'><a href="https://m-clark.github.io/"><img src="img/mc.png" style="width:50%; padding:0px 0; display:block; margin: 0 auto;" alt="MC logo"></a></li>
+       <li class='after'><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="width:50%; border-width:0; display:block; margin: 0 auto;" src="img/ccbysa_test.png" /></a></li>
 # <li><a href="https://m-clark.github.io" target="blank" style="font-size:150%; font-variant:small-caps; color:#1f65b7; margin: 0 auto;">Michael Clark</a></li><br><br>
    edit:
      link: https://github.com/m-clark/workshops/

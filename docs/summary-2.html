@@ -7,12 +7,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Mixed Models in R</title>
   <meta name="description" content="Introduction to Mixed Models in R">
-  <meta name="generator" content="bookdown 0.5 and GitBook 2.6.7">
+  <meta name="generator" content="bookdown 0.7 and GitBook 2.6.7">
 
   <meta property="og:title" content="Mixed Models in R" />
   <meta property="og:type" content="book" />
-  <meta property="og:url" content="https://m-clark.github.io/Workshops/" />
-  <meta property="og:image" content="https://m-clark.github.io/Workshops/img/nineteeneightyR.png" />
+  <meta property="og:url" content="https://m-clark.github.io/mixed-models-with-R/" />
+  <meta property="og:image" content="https://m-clark.github.io/mixed-models-with-R/img/nineteeneightyR.png" />
   <meta property="og:description" content="Introduction to Mixed Models in R" />
   <meta name="github-repo" content="m-clark/" />
 
@@ -20,11 +20,11 @@
   <meta name="twitter:title" content="Mixed Models in R" />
   
   <meta name="twitter:description" content="Introduction to Mixed Models in R" />
-  <meta name="twitter:image" content="https://m-clark.github.io/Workshops/img/nineteeneightyR.png" />
+  <meta name="twitter:image" content="https://m-clark.github.io/mixed-models-with-R/img/nineteeneightyR.png" />
 
 
 
-<meta name="date" content="2018-02-08">
+<meta name="date" content="2018-03-08">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -111,7 +111,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="https://m-clark.github.io/workshops/mixed_models_r/"><span style="font-size:125%; font-variant:small-caps; font-style:italic; color:#990024; font-family:Roboto">Mixed Models in R</span></a></li>
+<li class='before'><a href="https://m-clark.github.io/workshops/mixed_models_r/">Mixed Models in R</a></li>
 
 <li class="divider"></li>
 <li><a href="index.html#section"></a></li>
@@ -194,8 +194,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#reference-texts-and-other-stuff"><i class="fa fa-check"></i>Reference texts and other stuff</a></li>
 </ul></li>
 <li class="divider"></li>
-<li><a href="https://m-clark.github.io/"><img src="img/mc.png" style="width:50%; padding:0px 0; display:block; margin: 0 auto;" alt="MC logo"></a></li>
-<li><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="width:50%; border-width:0; display:block; margin: 0 auto;" src="img/ccbysa_test.png" /></a></li>
+<li class='after'><a href="https://m-clark.github.io/"><img src="img/mc.png" style="width:50%; padding:0px 0; display:block; margin: 0 auto;" alt="MC logo"></a></li>
+<li class='after'><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="width:50%; border-width:0; display:block; margin: 0 auto;" src="img/ccbysa_test.png" /></a></li>
 
 </ul>
 
@@ -218,7 +218,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h1>Summary</h1>
 <p>The odds of you eventually coming across dependency in your data is very high. Using standard methods while ignoring the situation can lead to problematic inference. More to the point however, you’re missing out on a much richer story to tell with the data. One can estimate a variety of cluster-specific effects, incorporate multiple types of clustering, all while still be able to talk about global effects as well. One can also extend such models to other types of ‘random effects’ as well.</p>
 <p>With the right tools, even complicated mixed models can be fit relatively easily and quickly for even moderately large data sets. It does take some getting used to, but in the end can be a highly satisfying modeling approach. Use them the next time you encounter some dependency in your data.</p>
-<p><br><br> <span style="font-size:200%; font-variant:small-caps">Best of luck with your research!</span></p>
+<p><br><br> <span style="font-size:200%; font-family:&#39;Alex Brush&#39;">Best of luck with your research!</span></p>
 
 </div>
             </section>
@@ -245,6 +245,7 @@ gitbook.start({
 "facebook": false,
 "twitter": false,
 "google": false,
+"linkedin": false,
 "weibo": false,
 "instapper": false,
 "vk": false,
@@ -273,9 +274,11 @@ gitbook.start({
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
-    if (location.protocol !== "file:" && /^https?:/.test(script.src))
-      script.src  = script.src.replace(/^https?:/, '');
+    var src = "";
+    if (src === "" || src === "true") src = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

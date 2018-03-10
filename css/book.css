@@ -8,12 +8,15 @@
   background-color: #fffff8;
 }
 
+
+
+
 .book .book-body .page-wrapper .page-inner section.normal {
     display: block;
     background-color: #fffff8;
     color: #585858;
     padding: 5px 15px;
-    font-family: Roboto;
+    font-family: Roboto, 'Helvetica Neue', sans-serif;
     word-wrap: break-word;
     overflow: hidden;
     line-height: 1.7;
@@ -24,11 +27,27 @@
 }
 
 
+/* link effects */
 .book .book-body .page-wrapper .page-inner section.normal a {
-    color: #3D68FF;  /*1B4D9E #4183c4; changed for contrast and complement*/
+    color: #3D68FF;
+    background-image: linear-gradient(180deg,transparent 90%, #FFD43D 0);
+    background-size: 0 100%;
+    background-repeat: no-repeat;
     text-decoration: none;
-    background: 0 0;
+    -webkit-transition: background-size .4s ease;
+    -moz-transition: background-size .4s ease;
+    -ms-transition: background-size .4s ease;
+    -o-transition: background-size .4s ease;
+    transition: background-size .4s ease;
+    border-bottom: 0px solid;
 }
+
+.book .book-body .page-wrapper .page-inner section.normal a:hover {
+  text-decoration: none;
+    background-size: 100% 100%;
+    cursor: pointer;
+}
+
 .body-inner {
     background-color: #fffff8;
 }
@@ -62,13 +81,23 @@
   background-color: #fffff8;
 }
 
+/* Rather than resize the header, just get rid of line */
+.book.with-summary .book-header.fixed {
+  background-color: #fffff8;
+  /*font-family: Stalemate Roboto Sans; ignored as all it is doing is taking from index title*/
+  border-bottom: 0 solid rgba(0,0,0,.07);  /*just remove it; this makes height in .book-header above moot*/
+  border-bottom-width: 0;
+  border-bottom-style: solid;
+  border-bottom-color: rgba(0, 0, 0, 0.07);
+}
+
 i {
   background-color: #fffff8;
 }
 
 .book .book-summary {
     position: absolute;
-    font-family: "Open Sans", Roboto, sans-serif;
+    font-family: "Open Sans", 'Helvetica Neue', Roboto, sans-serif;
     top: 0;
     left: -300px;
     bottom: 0;
@@ -83,6 +112,7 @@ i {
     transition: left 250ms ease;
 }
 
+
 /* nav/menu area */
 .book .book-summary ul.summary li a, .book .book-summary ul.summary li span {
     display: block;
@@ -95,8 +125,40 @@ i {
     white-space: nowrap;
     position: relative;
 }
+
 .book .book-summary ul.summary li a:hover, .book .book-summary ul.summary li.active>a {
-  color: #990024;  /*#6197D5*/
+  color: #fffff8;  /*#6197D5*/
+  background-color: #990024;
+}
+
+/* so that before and after aren't treated the same as the toc, because why would they? */
+.book .book-summary ul.summary li.before a {
+  color: #990024;
+  text-decoration: none;
+  font-size: 125%;
+  font-variant: small-caps;
+  font-family: 'Helvetica Neue', 'Open Sans', Roboto, sans-serif;
+  font-weight: 800;
+}
+
+
+.book .book-summary ul.summary li.before a:hover,
+.book .book-summary ul.summary li.before li.active>a {
+  color: #fffff8;  /*#6197D5*/
+  background-color: #990024;
+  text-decoration: none;
+}
+
+.book .book-summary ul.summary li.after a, .book .book-summary ul.summary li.after a:hover {
+  background-color: transparent;
+}
+
+/* divider line for the title before and other stuff  after toc */
+.book .book-summary ul.summary li.divider{
+    height:1px;
+    margin:7px 0;
+    overflow:hidden;
+    background:rgba(0,0,0,.07)
 }
 
 
