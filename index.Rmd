@@ -36,11 +36,11 @@ documentclass: book
 bibliography: refs.bib
 biblio-style: apalike
 link-citations: yes
-description: "Introduction to Mixed Models in R"
-cover-image: img/nineteeneightyR.png
+description: "This is an introduction to mixed models in R. It covers a many of the most common techniques employed in such models, and relies heavily on the lme4 package.  The basics of random intercepts and slopes models, crossed vs. nested models, etc. are covered. Discussion includes extensions into generalized mixed models and realms beyond. "
+cover-image: 'img/nineteeneightyR.png'
 favicon: 'img/R.ico'
 url: 'https\://m-clark.github.io/mixed-models-with-R/'  # evidently the \: is required or you'll get text in the title/toc area
-github-repo:  m-clark/
+github-repo:  'm-clark/mixed-models-with-R/'
 ---
 
 
