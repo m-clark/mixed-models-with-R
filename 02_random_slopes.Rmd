@@ -60,7 +60,7 @@ Yet another point of interest is the correlation of the intercepts and slopes. I
 ## Comparison to many regressions
 
 
-Let's compare these results to the ones we would have gotten had we run a separate regression for each student.  In what follows we see the distribution of of the estimated intercept and slope coefficients for all the students.
+Let's compare these results to the ones we would have gotten had we run a separate regression for each student.  In what follows we see the distribution of of the estimated intercept and slope coefficients for all the students.  Note that these are the same estimates one would have gotten with a fixed effects model with an occasion by student interaction[^fe_comparison].
 
 ```{r ranints_vs_separateints, echo=FALSE}
 gint = data_frame(Mixed=coef(gpa_mixed)$student[,1], Separate=gpa_lm_by_group[,1]) %>% 
@@ -274,6 +274,44 @@ gridExtra::grid.arrange(gint, gint2, gint3, gint4,
 ```
 
 
+
+
+```{r fe, echo=FALSE, eval=FALSE}
+gpa_fixed = lm(gpa ~ -1 + student*occasion, data=gpa)
+ints_fixed = coef(gpa_fixed)[1:200]
+gint = data_frame(Mixed=coef(gpa_mixed)$student[,1], Fixed=ints_fixed) %>% 
+  gather(key=Model, value=Intercept) %>% 
+  ggplot(aes(x=Intercept)) +
+  geom_density(aes(color=Model, fill=Model), alpha=.25) +
+  scale_fill_manual(values=c(palettes$orange$orange, palettes$orange$complementary[2])) +
+  ggtitle('Intercepts') +
+  labs(x='', y='') +
+  xlim(c(1.5,4)) +
+  theme_trueMinimal() +
+  theme(
+    legend.key.size=unit(2, 'mm'),
+    legend.title=element_text(size=8),
+    legend.text=element_text(size=8),
+    legend.box.spacing=unit(0, 'in'),
+    legend.position=c(.75,.75))
+slopes_fixed = coef(gpa_fixed)
+slopes_fixed = slopes_fixed[201:length(slopes_fixed)]
+slopes_fixed = c(slopes_fixed[1], slopes_fixed[1] + slopes_fixed[-1])
+gslopes = data_frame(Mixed=coef(gpa_mixed)$student[,2], Fixed=slopes_fixed) %>% 
+  gather(key=Model, value=Occasion) %>% 
+  ggplot(aes(x=Occasion)) +
+  geom_density(aes(color=Model, fill=Model), alpha=.25, show.legend=F) +
+  scale_fill_manual(values=c(palettes$orange$orange, palettes$orange$complementary[2])) +
+  ggtitle('Slopes for occasion') +
+  labs(x='', y='') +
+  xlim(c(-.2,.4)) +
+  theme_trueMinimal() 
+cor(gpa_lm_by_group, cbind(ints, slopes_fixed))
+
+gridExtra::grid.arrange(gint, gslopes, ncol=2)
+```
+
+
 ## Visualization of effects
 
 Let's compare our predictions visually. First there is the linear regression fit. We assume the same trend for everyone.  If we add the conditional predictions that include the subject specific effects from the mixed model, we now can also make subject specific predictions, greatly enhancing the practical use of the model.  As the code to create this plot (using <span class="pack">plotly</span>) was very easy, I go ahead and show it.
@@ -379,6 +417,35 @@ Compare model fit using the <span class="func">AIC</span> function, e.g. `AIC(mo
 [^sdslopes]: In case it's not clear, I'm using the fact that we assume a normal distribution for the random effect of occasion.  A quick rule of thumb for a normal distribution is that 95% falls between $\pm$ 2 standard deviations of the mean.
 
 [^nocorr]: I personally have not come across a situation where I'd do this in practice.  Even if the simpler model with no correlation was a slightly better fit, there isn't much to be gained by it.
+
+[^fe_comparison]: This is just one reason not to take a fixed effects approach. You would have to estimate 400 parameters, but without anything (inherently) to guard against overfitting.  The so-called 'fixed effects model' from the econometrics perspective gets around this by demeaning variables that vary within groups, i.e. subtracting the per group mean. This is equivalent to adding a dummy variable for the groups, though computationally more viable model is then fit.  But while it controls for group level effects, we still cannot estimate them. Traditional approaches to fixed effects models also do not have any way to incorporate random slopes.
+
+```{r plm, echo=FALSE, eval=FALSE}
+plm_model = plm::plm(gpa ~ occasion, model = 'within', data=gpa, index = c('student'), effect = "individual")
+wi = plm::fixef(plm_model) 
+
+# gpa_mixed = lmer(gpa ~ occasion + (1|student), data=gpa)
+
+# head(cbind(gpa_lm_by_group[,1], wi, coef(gpa_mixed)[[1]]))
+
+data_frame(`Mixed model`=coef(gpa_mixed)$student[,1], 
+           `Fixed effects model`=wi, 
+           `LM by group`=ints_fixed) %>% 
+  gather(key=Model, value=Intercept) %>% 
+  ggplot(aes(x=Intercept)) +
+  geom_density(aes(color=Model, fill=Model), alpha=.25) +
+  scale_fill_manual(values=c(palettes$orange$orange, palettes$orange$complementary[2], palettes$orange$tetradic[3])) +
+  ggtitle('Intercepts') +
+  labs(x='', y='') +
+  xlim(c(1.5,4)) +
+  theme_trueMinimal() +
+  theme(
+    legend.key.size=unit(2, 'mm'),
+    legend.title=element_text(size=8),
+    legend.text=element_text(size=8),
+    legend.box.spacing=unit(0, 'in'),
+    legend.position=c(.75,.75))
+```
 
 
 [^pool]: This phenomenon is also sometimes referred to as <span class="emph">partial pooling</span>.  This idea of pooling is as in 'pooling resources' or borrowing strength.  You have complete pooling, which would be the standard regression model case of ignoring the clusters, i.e. all cluster effects are assumed to be the same. With no pooling, we assumes the clusters have nothing in common, i.e. the separate regressions approach.  Partial pooling is seen in the mixed model scenario, where the similarity among the clusters is estimated in some fashion, and data for all observations informs the estimates for each cluster.  I've never really liked the 'pooling' terminology, as regularization/shrinkage is a more broad concept that applies beyond mixed models, and I'd prefer to stick to that.  In any case, see practically anything Andrew Gelman  and the pool-no-pool document [here](https://github.com/stan-dev/example-models/tree/master/knitr/pool-binary-trials).
