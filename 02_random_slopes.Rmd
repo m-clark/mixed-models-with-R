@@ -418,14 +418,20 @@ Compare model fit using the <span class="func">AIC</span> function, e.g. `AIC(mo
 
 [^nocorr]: I personally have not come across a situation where I'd do this in practice.  Even if the simpler model with no correlation was a slightly better fit, there isn't much to be gained by it.
 
-[^fe_comparison]: This is just one reason not to take a fixed effects approach. You would have to estimate 400 parameters, but without anything (inherently) to guard against overfitting.  The so-called 'fixed effects model' from the econometrics perspective gets around this by demeaning variables that vary within groups, i.e. subtracting the per group mean. This is equivalent to adding a dummy variable for the groups, though computationally more viable model is then fit.  But while it controls for group level effects, we still cannot estimate them. Traditional approaches to fixed effects models also do not have any way to incorporate random slopes.
+[^fe_comparison]: This is just one issue with a fixed effects approach. You would have to estimate 400 parameters, but without anything (inherently) to guard against overfitting.  The so-called 'fixed effects model' from the econometrics perspective gets around this by demeaning variables that vary within groups, i.e. subtracting the per group mean. This is also equivalent to a model adding a dummy variable for the groups, though it's a computationally more viable model to fit, as one no longer includes the grouping variable in the model (not really a concern with data FE models are actually applied to and it being what year it is).  But while it controls for group level effects, we still cannot estimate them. Traditional approaches to fixed effects models also do not have any way to incorporate group-specific slopes, except perhaps by way of an interaction of a covariate with the cluster, which brings you back to square one of having to estimate a lot of parameters.  For more about FE models and their issues, see my document on [clustered data approaches](https://m-clark.github.io/clustered-data/fixed-effects-models.html), and Bell et al. (2016). Fixed and Random effects: making an informed choice.
 
 ```{r plm, echo=FALSE, eval=FALSE}
-plm_model = plm::plm(gpa ~ occasion, model = 'within', data=gpa, index = c('student'), effect = "individual")
+plm_model = plm::plm(gpa ~ occasion, model = 'within', data=gpa)
+summary(plm_model)
 wi = plm::fixef(plm_model) 
 
+gpa = gpa %>% 
+  group_by(student) %>% 
+  mutate(gpa_demean=gpa-mean(gpa), 
+         occasion_demean=occasion-mean(occasion))
+summary(lm(gpa_demean ~ occasion_demean - 1, gpa))
+# summary(lm(gpa ~ 0 + occasion + student, gpa))
 # gpa_mixed = lmer(gpa ~ occasion + (1|student), data=gpa)
-
 # head(cbind(gpa_lm_by_group[,1], wi, coef(gpa_mixed)[[1]]))
 
 data_frame(`Mixed model`=coef(gpa_mixed)$student[,1], 
@@ -448,4 +454,4 @@ data_frame(`Mixed model`=coef(gpa_mixed)$student[,1],
 ```
 
 
-[^pool]: This phenomenon is also sometimes referred to as <span class="emph">partial pooling</span>.  This idea of pooling is as in 'pooling resources' or borrowing strength.  You have complete pooling, which would be the standard regression model case of ignoring the clusters, i.e. all cluster effects are assumed to be the same. With no pooling, we assumes the clusters have nothing in common, i.e. the separate regressions approach.  Partial pooling is seen in the mixed model scenario, where the similarity among the clusters is estimated in some fashion, and data for all observations informs the estimates for each cluster.  I've never really liked the 'pooling' terminology, as regularization/shrinkage is a more broad concept that applies beyond mixed models, and I'd prefer to stick to that.  In any case, see practically anything Andrew Gelman  and the pool-no-pool document [here](https://github.com/stan-dev/example-models/tree/master/knitr/pool-binary-trials).
+[^pool]: This phenomenon is also sometimes referred to as <span class="emph">partial pooling</span>.  This idea of pooling is as in 'pooling resources' or borrowing strength.  You have complete pooling, which would be the standard regression model case of ignoring the clusters, i.e. all cluster effects are assumed to be the same. With no pooling, we assumes the clusters have nothing in common, i.e. the separate regressions approach.  Partial pooling is seen in the mixed model scenario, where the similarity among the clusters is estimated in some fashion, and data for all observations informs the estimates for each cluster.  I've never really liked the 'pooling' terminology, as regularization/shrinkage is a more broad concept that applies beyond mixed models, and I'd prefer to stick to that.  In any case, if interested in more, see practically anything Andrew Gelman has written on it, and the pool-no-pool document [here](https://github.com/stan-dev/example-models/tree/master/knitr/pool-binary-trials).
