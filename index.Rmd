@@ -1,34 +1,14 @@
 ---
-title: <span style="font-size:200%; font-variant:small-caps; ">Mixed Models in R</span>
+title: Mixed Models in R
 author:  |
-  <div class="title"><span style="font-size:200%; font-variant:small-caps; ">Michael Clark</span><br><br>
-  <span class="" style="font-size:75%">https://m-clark.github.io/mixed-models-with-R/</span><br><br>
-  <img src="img/signature-acronym.png" style="width:30%; padding:10px 0;"> <br>
-  <img src="img/ARC-acronym-signature.png" style="width:21%; padding:10px 0;"> </div>
+  <span class="noem">Michael Clark</span> <br><br>
+  https://m-clark.github.io/mixed-models-with-R/<br><br>
+  <img src="img/signature-acronym.png" style="width:30%; padding:5px 0; margin:0" alt="University of Michigan: CSCAR"> <br>
+  <img src="img/ARC-acronym-signature.png" style="width:21%; padding:5px 0; margin:0" alt="University of Michigan: Advanced Research Computing"> 
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 output:
-  bookdown::gitbook:
-    css: [css/standard_html.css, css/book.css]
-    hightlight: pygments
-    number_sections: false
-    # split_by: section
-    config:
-      toc:
-        depth: 2
-        collapse: section
-        scroll_highlight: yes
-      edit : null
-      download: null
-      search: yes
-      sharing:
-        facebook: no
-        twitter: no
-        google: no
-        weibo: no
-        instapper: no
-        vk: no
-        all: [ 'twitter', 'facebook', 'google', 'weibo', 'instapaper']
+  bookdown::gitbook
 always_allow_html: yes
 font-import: http://fonts.googleapis.com/css?family=Roboto|Open+Sans|Stalemate|Alex+Brush
 font-family: 'Roboto'
@@ -53,17 +33,16 @@ knitr::opts_chunk$set(echo = T, message=F, warning=F, comment=NA, autodep=F,
 ```
 
 ```{r load_common_packages, echo=FALSE, cache=FALSE, eval=TRUE}
-library(lazerhawk); library(htmltools); library(forcats); library(lme4)
-library(broom); library(pander); library(tidyverse); library(plotly); library(haven)
+library(visibly); library(htmltools); library(forcats); library(lme4)
+library(broom); library(pander); library(plotly);  library(tidyverse);
+library(kableExtra)
 ```
 
 # 
-```{r cover_image, fig.align='center', echo=FALSE, include=identical(knitr:::pandoc_to(), 'html')}
-knitr::include_graphics('img/nineteeneightyR.png', dpi = NA)
+```{r rimg, fig.align='center',  out.width=200, echo=FALSE, cache=FALSE}
+knitr::include_graphics('img/198R.png', dpi = NA)
 ```
 
-
-```{r ccimg, fig.align='center',  out.width=0, fig.show='hide', echo=FALSE, include=identical(knitr:::pandoc_to(), 'html')}
-knitr::include_graphics('img/ccbysa_test.png', dpi = NA)
-knitr::include_graphics('img/mc.png', dpi = NA)
+```{r ccimg, fig.align='center', out.width=0, fig.show='hide', echo=FALSE}
+knitr::include_graphics('img/mc_logo.png', dpi = NA)
 ```

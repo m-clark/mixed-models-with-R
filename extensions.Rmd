@@ -111,6 +111,21 @@ Let's look at them visually using <span class="pack">merTools</span>.
 p = merTools::plotREsim(merTools::REsim(pupils_crossed)) +
   theme_trueMinimal()
 p
+
+# multiplots with patchwork still do non-transparent background
+# library(patchwork)
+# p1 = plot_coefficients(pupils_crossed, ranef=T, which_ranef='primary_school_id') +
+#   labs(x='Primary School') +
+#   lims(y = c(-1.5,1.5)) +
+#   theme(axis.ticks = element_blank(),
+#         axis.text.x = element_blank())
+# p2 = plot_coefficients(pupils_crossed, ranef=T, which_ranef='secondary_school_id') +
+#   labs(x='Secondary School', y='') +
+#   lims(y = c(-1.5,1.5)) +
+#   theme(axis.ticks = element_blank(),
+#         axis.text.x = element_blank(),
+#         axis.text.y = element_blank())
+# {p1 + p2} 
 ```
 
 

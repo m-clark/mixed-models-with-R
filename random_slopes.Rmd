@@ -40,7 +40,7 @@ gpa_mixed =  lmer(gpa ~ occasion + (1 + occasion|student), data=gpa)
 
 pander(tidy(gpa_mixed, 'fixed', conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=3))
 
-tidy(VarCorr(gpa_mixed)) %>% 
+data.frame(VarCorr(gpa_mixed)) %>% 
   slice(-3) %>%  
   select(-var2) %>% 
   rename(variance=vcov, sd=sdcor, re=var1) %>%  
@@ -54,7 +54,7 @@ As before, since we have 0 as our starting semester, the intercept tells us what
 
 The associated intercept variance tells us how much that starting GPA bounces around from student to student. The variance for the occasion effect might not look like much in comparison, but slopes are on a notably different scale than the intercept.  Note that the mean slope for the semester to semester effect, our fixed effect, is `r round(fixef(gpa_mixed)[2], 2)`, but from student to student it bounces around half that.  Thus we could expect most students to fall somewhere between a flat effect of zero to more than double the population average[^sdslopes]. 
 
-Yet another point of interest is the correlation of the intercepts and slopes. In this case it's `r tidy(VarCorr(gpa_mixed)) %>% slice(3) %>% select(sdcor) %>%  round(2)`. That's pretty small, but the interpretation is the same as with any correlation.  In this case specifically, it tells us that those with lower intercepts would be associated with increased time trajectories.   This makes intuitive sense in that people are improving in general, and those at the bottom would have more room to improve.  However, this is very slight, and practically speaking we might not put too much weight on it.
+Yet another point of interest is the correlation of the intercepts and slopes. In this case it's `r data.frame(VarCorr(gpa_mixed)) %>% slice(3) %>% select(sdcor) %>%  round(2)`. That's pretty small, but the interpretation is the same as with any correlation.  In this case specifically, it tells us that those with lower intercepts would be associated with increased time trajectories.   This makes intuitive sense in that people are improving in general, and those at the bottom would have more room to improve.  However, this is very slight, and practically speaking we might not put too much weight on it.
 
 
 ## Comparison to many regressions
