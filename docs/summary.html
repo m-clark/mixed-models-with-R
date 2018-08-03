@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   
   <link rel="shortcut icon" href="img/R.ico" type="image/x-icon">
-<link rel="prev" href="index.html">
-<link rel="next" href="random_intercepts.html">
+<link rel="prev" href="further.html">
+<link rel="next" href="appendix.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -262,58 +262,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="introduction" class="section level1">
-<h1>Introduction</h1>
-<div id="overview" class="section level2">
-<h2>Overview</h2>
-<p>Mixed models are an extremely useful modeling tool for situations in which there is some dependency among observations in the data, where the correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements for the units of observation, or in which the units of observation are otherwise grouped together (e.g. students within school, cities within geographic region). While there are different ways to approach such a situation, mixed models are a very common and powerful tool to do so. In addition, they have ties to other statistical approaches that further expand their applicability.</p>
-<div id="goals" class="section level3">
-<h3>Goals</h3>
-<p>This document serves as the basis for a workshop. The goal of the workshop is primarily to provide a sense of when one would use mixed models and a variety of standard techniques to implement them. Additionally, we’ll have exercises to practice.</p>
-</div>
-<div id="prerequisites" class="section level3">
-<h3>Prerequisites</h3>
-<p>The document is for the most part very applied in nature, and only assumes a basic understanding of standard regression models. Use of R for regression modeling is also assumed, though there will be some review. Demonstrations will be done almost entirely with the <span class="pack">lme4</span> package.</p>
-<p>Note the following color coding used in this document:</p>
-<ul>
-<li><span class="emph">emphasis</span></li>
-<li><span class="pack">package</span></li>
-<li><span class="func">function</span></li>
-<li><span class="objclass">object/class</span></li>
-<li><a href="">link</a></li>
-</ul>
-</div>
-</div>
-<div id="initial-steps" class="section level2">
-<h2>Initial Steps</h2>
-<ol start="0" style="list-style-type: decimal">
-<li>Download the zip file at <a href="https://github.com/m-clark/mixed-models-with-R/raw/master/mem_workshop.zip" class="uri">https://github.com/m-clark/mixed-models-with-R/raw/master/mem_workshop.zip</a>. Be mindful of where you put it.</li>
-<li>Unzip it. Be mindful of where you put the resulting folder.</li>
-<li>Open RStudio.</li>
-<li>File/Open Project and click on the blue icon (<code>mem_workshop.Rproj</code>) in the folder you just created.</li>
-<li>File/Open Click on the ReadMe file and do what it says.</li>
-</ol>
-</div>
-<div id="key-packages" class="section level2">
-<h2>Key packages</h2>
-<p>To run the code in this document you’ll really only need the following:</p>
-<ul>
-<li><span class="pack">lme4</span></li>
-<li><span class="pack">tidyverse</span> (for data processing)</li>
-<li><span class="pack">merTools</span> (optional)</li>
-<li><span class="pack">modelr</span> (optional)</li>
-<li><span class="pack">nlme</span> (part of base R, no need for install)</li>
-</ul>
+<div id="summary-2" class="section level1">
+<h1>Summary</h1>
+<p>The odds of you eventually coming across dependency in your data is very high. Using standard methods while ignoring the situation can lead to problematic inference. More to the point however, you’re missing out on a much richer story to tell with the data. One can estimate a variety of cluster-specific effects, incorporate multiple types of clustering, all while still be able to talk about global effects as well. One can also extend such models to other types of ‘random effects’ as well.</p>
+<p>With the right tools, even complicated mixed models can be fit relatively easily and quickly for even moderately large data sets. It does take some getting used to, but in the end can be a highly satisfying modeling approach. Use them the next time you encounter some dependency in your data.</p>
+<p><br><br>
+<span style="font-size:200%; font-family:&#39;Alex Brush&#39;">Best of luck with your research!</span></p>
 
-</div>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="random_intercepts.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="further.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="appendix.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

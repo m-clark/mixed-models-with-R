@@ -24,14 +24,14 @@
 
 
 
-<meta name="date" content="2018-04-11">
+<meta name="date" content="2018-08-02">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   
   <link rel="shortcut icon" href="img/R.ico" type="image/x-icon">
-<link rel="prev" href="summary-2.html">
+<link rel="prev" href="summary.html">
 
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -46,59 +46,89 @@
 
 
 
-<script src="libs/htmlwidgets-1.0/htmlwidgets.js"></script>
-<script src="libs/datatables-binding-0.2/datatables.js"></script>
-<link href="libs/dt-core-1.10.12/css/jquery.dataTables.min.css" rel="stylesheet" />
-<link href="libs/dt-core-1.10.12/css/jquery.dataTables.extra.css" rel="stylesheet" />
-<script src="libs/dt-core-1.10.12/js/jquery.dataTables.min.js"></script>
-<script src="libs/plotly-binding-4.7.1/plotly.js"></script>
-<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="libs/htmlwidgets-1.2/htmlwidgets.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.4/datatables.js"></script>
+<link href="libs/dt-core-1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.16/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.16/js/jquery.dataTables.min.js"></script>
 <link href="libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
-<link href="libs/plotlyjs-1.29.2/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="libs/plotlyjs-1.29.2/plotly-latest.min.js"></script>
+<script src="libs/plotly-binding-4.8.0/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.39.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.39.2/plotly-latest.min.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
 
 
 <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
-<link rel="stylesheet" href="css/standard_html.css" type="text/css" />
 <link rel="stylesheet" href="css/book.css" type="text/css" />
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" type="text/css" />
 </head>
 
 <body>
@@ -111,10 +141,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
       <nav role="navigation">
 
 <ul class="summary">
-<li class='before'><a href="https://m-clark.github.io/workshops/mixed_models_r/">Mixed Models in R</a></li>
+<li class='before'><a href="./">Mixed Models with R</a></li>
 
 <li class="divider"></li>
-<li><a href="index.html#section"></a></li>
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i>Introduction</a><ul>
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#overview"><i class="fa fa-check"></i>Overview</a><ul>
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#goals"><i class="fa fa-check"></i>Goals</a></li>
@@ -123,43 +152,43 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#initial-steps"><i class="fa fa-check"></i>Initial Steps</a></li>
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#key-packages"><i class="fa fa-check"></i>Key packages</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html"><i class="fa fa-check"></i>Mixed Models</a><ul>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#terminology"><i class="fa fa-check"></i>Terminology</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#kinds-of-clustering"><i class="fa fa-check"></i>Kinds of clustering</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#random-intercepts-model"><i class="fa fa-check"></i>Random Intercepts model</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#example-student-gpa"><i class="fa fa-check"></i>Example: student GPA</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#the-standard-regression-model"><i class="fa fa-check"></i>The standard regression model</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#the-mixed-model"><i class="fa fa-check"></i>The mixed model</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#application"><i class="fa fa-check"></i>Application</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#cluster-level-covariate"><i class="fa fa-check"></i>Cluster level covariate</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#summary"><i class="fa fa-check"></i>Summary</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#exercises"><i class="fa fa-check"></i>Exercises</a><ul>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#sleep"><i class="fa fa-check"></i>Sleep</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#cluster-level-covariate-1"><i class="fa fa-check"></i>Cluster level covariate</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#simulation"><i class="fa fa-check"></i>Simulation</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html"><i class="fa fa-check"></i>Mixed Models</a><ul>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#terminology"><i class="fa fa-check"></i>Terminology</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#kinds-of-clustering"><i class="fa fa-check"></i>Kinds of clustering</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#random-intercepts-model"><i class="fa fa-check"></i>Random Intercepts model</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#example-student-gpa"><i class="fa fa-check"></i>Example: student GPA</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#the-standard-regression-model"><i class="fa fa-check"></i>The standard regression model</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#the-mixed-model"><i class="fa fa-check"></i>The mixed model</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#application"><i class="fa fa-check"></i>Application</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#cluster-level-covariate"><i class="fa fa-check"></i>Cluster level covariate</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#summary"><i class="fa fa-check"></i>Summary</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#exercises"><i class="fa fa-check"></i>Exercises</a><ul>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#sleep"><i class="fa fa-check"></i>Sleep</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#cluster-level-covariate-1"><i class="fa fa-check"></i>Cluster level covariate</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#simulation"><i class="fa fa-check"></i>Simulation</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="more-random-effects.html"><a href="more-random-effects.html"><i class="fa fa-check"></i>More Random Effects</a><ul>
-<li class="chapter" data-level="" data-path="more-random-effects.html"><a href="more-random-effects.html#application-1"><i class="fa fa-check"></i>Application</a></li>
-<li class="chapter" data-level="" data-path="more-random-effects.html"><a href="more-random-effects.html#comparison-to-many-regressions"><i class="fa fa-check"></i>Comparison to many regressions</a></li>
-<li class="chapter" data-level="" data-path="more-random-effects.html"><a href="more-random-effects.html#visualization-of-effects"><i class="fa fa-check"></i>Visualization of effects</a></li>
-<li class="chapter" data-level="" data-path="more-random-effects.html"><a href="more-random-effects.html#summary-1"><i class="fa fa-check"></i>Summary</a></li>
-<li class="chapter" data-level="" data-path="more-random-effects.html"><a href="more-random-effects.html#exercises-1"><i class="fa fa-check"></i>Exercises</a></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html"><i class="fa fa-check"></i>More Random Effects</a><ul>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#application-1"><i class="fa fa-check"></i>Application</a></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#comparison-to-many-regressions"><i class="fa fa-check"></i>Comparison to many regressions</a></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#visualization-of-effects"><i class="fa fa-check"></i>Visualization of effects</a></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#summary-1"><i class="fa fa-check"></i>Summary</a></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#exercises-1"><i class="fa fa-check"></i>Exercises</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html"><i class="fa fa-check"></i>Common Extensions</a><ul>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#additional-grouping-structure"><i class="fa fa-check"></i>Additional Grouping Structure</a><ul>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#cross-classified-models"><i class="fa fa-check"></i>Cross-classified models</a></li>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#hierarchical-structure"><i class="fa fa-check"></i>Hierarchical Structure</a></li>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#crossed-vs.nested"><i class="fa fa-check"></i>Crossed vs. Nested</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html"><i class="fa fa-check"></i>Common Extensions</a><ul>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#additional-grouping-structure"><i class="fa fa-check"></i>Additional Grouping Structure</a><ul>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#cross-classified-models"><i class="fa fa-check"></i>Cross-classified models</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#hierarchical-structure"><i class="fa fa-check"></i>Hierarchical Structure</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#crossed-vs.nested"><i class="fa fa-check"></i>Crossed vs. Nested</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#residual-structure"><i class="fa fa-check"></i>Residual Structure</a><ul>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#heterogeneous-variance"><i class="fa fa-check"></i>Heterogeneous Variance</a></li>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#autocorrelation"><i class="fa fa-check"></i>Autocorrelation</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#residual-structure"><i class="fa fa-check"></i>Residual Structure</a><ul>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#heterogeneous-variance"><i class="fa fa-check"></i>Heterogeneous Variance</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#autocorrelation"><i class="fa fa-check"></i>Autocorrelation</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#generalized-linear-mixed-models"><i class="fa fa-check"></i>Generalized Linear Mixed Models</a></li>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#exercises-2"><i class="fa fa-check"></i>Exercises</a><ul>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#sociometric-data"><i class="fa fa-check"></i>Sociometric data</a></li>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#patents"><i class="fa fa-check"></i>Patents</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#generalized-linear-mixed-models"><i class="fa fa-check"></i>Generalized Linear Mixed Models</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#exercises-2"><i class="fa fa-check"></i>Exercises</a><ul>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#sociometric-data"><i class="fa fa-check"></i>Sociometric data</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#patents"><i class="fa fa-check"></i>Patents</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="issues.html"><a href="issues.html"><i class="fa fa-check"></i>Issues</a><ul>
@@ -176,13 +205,13 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#model-comparison"><i class="fa fa-check"></i>Model Comparison</a></li>
 <li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#convergence"><i class="fa fa-check"></i>Convergence</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="going-further.html"><a href="going-further.html"><i class="fa fa-check"></i>Going Further</a><ul>
-<li class="chapter" data-level="" data-path="going-further.html"><a href="going-further.html#other-distributions"><i class="fa fa-check"></i>Other distributions</a></li>
-<li class="chapter" data-level="" data-path="going-further.html"><a href="going-further.html#other-contexts"><i class="fa fa-check"></i>Other contexts</a></li>
-<li class="chapter" data-level="" data-path="going-further.html"><a href="going-further.html#nonlinear-mixed-effects"><i class="fa fa-check"></i>Nonlinear Mixed Effects</a></li>
-<li class="chapter" data-level="" data-path="going-further.html"><a href="going-further.html#connections"><i class="fa fa-check"></i>Connections</a></li>
+<li class="chapter" data-level="" data-path="further.html"><a href="further.html"><i class="fa fa-check"></i>Going Further</a><ul>
+<li class="chapter" data-level="" data-path="further.html"><a href="further.html#other-distributions"><i class="fa fa-check"></i>Other distributions</a></li>
+<li class="chapter" data-level="" data-path="further.html"><a href="further.html#other-contexts"><i class="fa fa-check"></i>Other contexts</a></li>
+<li class="chapter" data-level="" data-path="further.html"><a href="further.html#nonlinear-mixed-effects"><i class="fa fa-check"></i>Nonlinear Mixed Effects</a></li>
+<li class="chapter" data-level="" data-path="further.html"><a href="further.html#connections"><i class="fa fa-check"></i>Connections</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="summary-2.html"><a href="summary-2.html"><i class="fa fa-check"></i>Summary</a></li>
+<li class="chapter" data-level="" data-path="summary.html"><a href="summary.html"><i class="fa fa-check"></i>Summary</a></li>
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i>Appendix</a><ul>
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#data"><i class="fa fa-check"></i>Data</a></li>
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#programming-languages"><i class="fa fa-check"></i>Programming languages</a><ul>
@@ -194,8 +223,27 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#reference-texts-and-other-stuff"><i class="fa fa-check"></i>Reference texts and other stuff</a></li>
 </ul></li>
 <li class="divider"></li>
-<li class='after'><a href="https://m-clark.github.io/"><img src="img/mc.png" style="width:50%; padding:0px 0; display:block; margin: 0 auto;" alt="MC logo"></a></li>
-<li class='after'><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="width:50%; border-width:0; display:block; margin: 0 auto;" src="img/ccbysa_test.png" /></a></li>
+<li class='after'">
+   <a href="https://m-clark.github.io/">
+      <img src="img/mc_logo.png" style="width:25%; padding:0px 0; display:block; margin: 0 auto;" alt="MC logo">
+   </a>
+</li>
+<li class='after'">
+   <div style='text-align:center'>
+      <a href="https://github.com/m-clark/">
+         <i class="fab fa-github fa-2x" aria-hidden="true"></i>
+      </a>
+   </div>
+</li>
+<li class='after'">
+   <div style='text-align:center'>
+      <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+         <i class="fab fa-creative-commons fa-lg"></i>
+         <i class="fab fa-creative-commons-by fa-lg"></i>
+         <i class="fab fa-creative-commons-sa fa-lg"></i>
+      </a>
+   </div>
+</li>
 
 </ul>
 
@@ -206,7 +254,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./"><span style="font-size:200%; font-variant:small-caps; ">Mixed Models in R</span></a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Mixed Models in R</a>
           </h1>
         </div>
 
@@ -224,13 +272,16 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><p><span class="emph">pupils</span>: Assume that we have data from 1000 pupils who have attended 100 different primary schools, and subsequently went on to 30 secondary schools. Similar to the situation where we have pupils within schools and neighborhoods, we have a cross-classified structure. Pupils are nested within primary and within secondary schools, with primary and secondary schools crossed. In other words: pupils are nested within the cross-classification of primary and secondary schools. In our example, we have a response variable achievement which is measured in secondary school. We have two explanatory variables at the pupil level: pupil gender (0 = male, 1 = female) and a six-point scale for pupil socioeconomic status, pupil SES. We have at the school level a dichotomous variable that indicates if the school is public (denom = 0) or denominational (denom = 1). Since we have both primary and secondary schools, we have two such variables (named pdenom for the primary school and sdenom for the secondary school).</p></li>
 <li><p><span class="emph">nurses</span>: The data in this example are from a hypothetical study on stress in hospitals. The data are from nurses working in wards nested within hospitals. In each of 25 hospitals, four wards are selected and randomly assigned to an experimental and control condition. In the experimental condition, a training program is offered to all nurses to cope with job- related stress. After the program is completed, a sample of about 10 nurses from each ward is given a test that measures job-related stress. Additional variables are: nurse age (years), nurse experience (years), nurse gender (0 = male, 1 = female), type of ward (0 = general care, 1 = special care), and hospital size (0 = small, 1 = medium, 2 = large). This is an example of an experiment where the experimental intervention is carried out at the group level. In biomedical research this design is known as a cluster randomized trial. They are quite common also in educational and organizational research, where entire classes or schools are assigned to experimental and control conditions. Since the design variable Experimental versus Control group (ExpCon) is manipulated at the second (ward) level, we can study whether the experimental effect is different in different hospitals, by defining the regression coefficient for the ExpCon variable as random at the hospital level. In this example, the variable ExpCon is of main interest, and the other variables are covariates. Their function is to control for differences between the groups, which should be small given that randomization is used, and to explain variance in the outcome variable stress. To the extent that they are successful in explaining variance, the power of the test for the effect of ExpCon will be increased. Therefore, although logically we can test if explanatory variables at the first level have random coefficients at the second or third level, and if explanatory variables at the second level have random coefficients at the third level, these possibilities are not pursued. We do test a model with a random coefficient for ExpCon at the third level, where there turns out to be significant slope variation. This varying slope can be predicted by adding a cross-level interaction between the variables ExpCon and HospSize. In view of this interaction, the variables ExpCon and HospSize have been centered on their overall mean.</p></li>
 <li><p><span class="emph">sociometric</span>: The sociometric data are intended to demonstrate a data structure where the cross-classification is at the lowest level, with an added group structure because there are several groups. The story is that in small groups all members are asked to rate each other on a scale of 1-9, where higher numbers indicate a more positive view of the individual (i.e. how much they would like to share some activity with the rated person). Each record is defined by the sender–receiver pairs, with explanatory variables age and sex defined separately for the sender and the receiver. The group variable ‘group size’ is added to this file. There are 20 groups, with sizes ranging from 4 to 11.</p></li>
-<li><p><span class="emph">speed dating</span>: Data involve a speed dating experiment on a sample of a few hundred students in graduate and professional schools at Columbia University. In the speed dating events, the experiment randomly assigned each participant to ten short dates (four minutes) with participants of the opposite sex. For each date, each person rated six attributes (attractive, sincere, intelligent, fun, ambitious, shared interests) of the other person on a 10-point scale and wrote down whether he or she would like to see the other person again. The data have been filtered to remove constant responders, i.e. those who always or never wanted to see their partner again, those six attributes have scaled versions with mean 0 and standard deviation 1 (<code>_sc</code>), column names have been made useful, and only some of the variables have been kept for the demo. If you run the same model, you can get very similar estimates to that in the Fahrmeier et al. text, table 7.4 (though there is a typo for the Male effect).</p>
+<li><p><span class="emph">speed dating</span>: Data involve a speed dating experiment on a sample of a few hundred students in graduate and professional schools at Columbia University. In the speed dating events, the experiment randomly assigned each participant to ten short dates (four minutes) with participants of the opposite sex. For each date, each person rated six attributes (attractive, sincere, intelligent, fun, ambitious, shared interests) of the other person on a 10-point scale and wrote down whether he or she would like to see the other person again. The data have been filtered to remove constant responders, i.e. those who always or never wanted to see their partner again, those six attributes have scaled versions with mean 0 and standard deviation 1 (<code>_sc</code>), column names have been made useful, and only some of the variables have been kept for the demo. If you run the same model, you can get very similar estimates to that in the Fahrmeier et al. text, table 7.4 (though there is a typo for the Male effect).</p>
 <ul>
 <li>The data come from Gelman’s website but are based on <a href="http://faculty.chicagobooth.edu/emir.kamenica/documents/genderDifferences.pdf">this article</a>.</li>
 </ul></li>
-<li><p><span class="emph">patents</span>: The European Patent Office is able to protect a patent from competition for a certain period of time. The Patent Office has the task to examine inventions and to declare patent if certain prerequisites are fulfilled. The most important requirement is that the invention is something truly new. Even though the office examines each patent carefully, in about 80% of cases competitors raise an objection against already assigned patents. In the economic literature the analysis of patent opposition plays an important role as it allows one to (indirectly) investigate a number of economic questions. For instance, the frequency of patent opposition can be used as an indicator for the intensity of the competition in different market segments.</p>
+<li><p><span class="emph">patents</span>:
+The European Patent Office is able to protect a patent from competition for a certain period of time. The Patent Office has the task to examine inventions and to declare patent if certain prerequisites are fulfilled. The most important requirement is that the invention is something truly new. Even though the office examines each patent carefully, in about 80% of cases competitors raise an objection against already assigned patents. In the economic literature the analysis of patent opposition plays an important role as it allows one to (indirectly) investigate a number of economic questions. For instance, the frequency of patent opposition can be used as an indicator for the intensity of the competition in different
+market segments.</p>
 <ul>
-<li><p>The primary variables are: <code>opp</code>: Patent opposition (1=yes 0=no), <code>biopharm</code>: Patent from biotech/pharma sector, <code>ustwin</code>: US twin patent exists, <code>patus</code>: Patent holder from the USA, <code>patgsgr</code>: Patent holder from Germany, Switzerland, or Great Britain, <code>year</code>, <code>ncit</code>: Number of citations for the patent, <code>ncountry</code>: Number of designated states for the patent, and <code>nclaims</code>: Number of claims. Centered and other transformed variables are also present.</p></li>
+<li><p>The primary variables are: <code>opp</code>: Patent opposition (1=yes 0=no), <code>biopharm</code>: Patent from biotech/pharma sector, <code>ustwin</code>: US twin patent exists, <code>patus</code>: Patent holder from the USA, <code>patgsgr</code>: Patent holder from Germany, Switzerland, or Great Britain, <code>year</code>, <code>ncit</code>: Number of citations for the patent, <code>ncountry</code>: Number of designated states for the patent, and
+<code>nclaims</code>: Number of claims. Centered and other transformed variables are also present.</p></li>
 <li><p>In order to analyze objections against patents, a data set with 4,866 patents from the sectors biotechnology/pharmaceutics and semiconductor/computer was collected. The goal of one analysis is to model the probability of patent opposition, while using a variety of explanatory variables for the binary response variable patent opposition (yes/no). This corresponds to a regression problem with a binary response. In other cases you might wish to analyze the number of citations.</p></li>
 </ul></li>
 </ul>
@@ -253,12 +304,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="python" class="section level3">
 <h3>Python</h3>
 <p>In Python, the <a href="http://www.statsmodels.org/stable/mixed_linear.html">statsmodels</a> module has basic capabilities for mixed models but not too many frills (e.g. no crossed random effects). CSCAR directory Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series <a href="https://github.com/kshedden/Statsmodels-MixedLM">here</a>. The following provides an example.</p>
-<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">import</span> pandas <span class="im">as</span> pd
-<span class="im">import</span> statsmodels <span class="im">as</span> sm
-<span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf
-gpa <span class="op">=</span> pd.read_csv(<span class="st">&#39;data/gpa.csv&#39;</span>)
-gpa_py_mixed <span class="op">=</span> smf.mixedlm(<span class="st">&quot;gpa ~ occasion&quot;</span>, gpa, groups<span class="op">=</span>gpa[<span class="st">&quot;student&quot;</span>]).fit()
-<span class="bu">print</span>(gpa_py_mixed.summary())</code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb41-1" data-line-number="1"><span class="im">import</span> pandas <span class="im">as</span> pd</a>
+<a class="sourceLine" id="cb41-2" data-line-number="2"><span class="im">import</span> statsmodels <span class="im">as</span> sm</a>
+<a class="sourceLine" id="cb41-3" data-line-number="3"><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</a>
+<a class="sourceLine" id="cb41-4" data-line-number="4">gpa <span class="op">=</span> pd.read_csv(<span class="st">&#39;data/gpa.csv&#39;</span>)</a>
+<a class="sourceLine" id="cb41-5" data-line-number="5">gpa_py_mixed <span class="op">=</span> smf.mixedlm(<span class="st">&quot;gpa ~ occasion&quot;</span>, gpa, groups<span class="op">=</span>gpa[<span class="st">&quot;student&quot;</span>]).fit()</a>
+<a class="sourceLine" id="cb41-6" data-line-number="6"><span class="bu">print</span>(gpa_py_mixed.summary())</a></code></pre></div>
 <pre><code>         Mixed Linear Model Regression Results
 =======================================================
 Model:            MixedLM Dependent Variable: gpa      
@@ -272,7 +323,7 @@ Mean group size:  6.0
 -------------------------------------------------------
 Intercept    2.599    0.022 119.801 0.000  2.557  2.642
 occasion     0.106    0.004  26.096 0.000  0.098  0.114
-groups RE    0.064    0.033                            
+Group Var    0.064    0.033                            
 =======================================================</code></pre>
 </div>
 <div id="julia" class="section level3">
@@ -335,7 +386,7 @@ groups RE    0.064    0.033
           </div>
         </div>
       </div>
-<a href="summary-2.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="summary.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 
     </div>
   </div>
@@ -372,6 +423,7 @@ gitbook.start({
 "depth": 2,
 "scroll_highlight": true
 },
+"df_print": "kable",
 "highlight": "pygments",
 "search": true
 });
@@ -383,7 +435,7 @@ gitbook.start({
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    var src = "";
+    var src = "true";
     if (src === "" || src === "true") src = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
     if (location.protocol !== "file:" && /^https?:/.test(src))
       src = src.replace(/^https?:/, '');

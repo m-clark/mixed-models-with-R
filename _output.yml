@@ -1,19 +1,55 @@
+ bookdown::gitbook:
+    css: [css/book.css, 'https://use.fontawesome.com/releases/v5.0.13/css/all.css']
+    font-import: https://fonts.googleapis.com/css?family=Roboto|Open+Sans
+    font-family: 'Roboto'
+    number_sections: false
+    split_by: rmd
+    config:
+      df_print: kable
+      highlight: pygments
+      edit : null
+      download: null
+      search: yes
+      sharing:
+        facebook: no
+        twitter: no
+        google: no
+        weibo: no
+        instapper: no
+        vk: no
+        all: ['twitter', 'facebook', 'google', 'weibo', 'instapaper']
+      toc:
+        depth: 2
+        collapse: section
+        scroll_highlight: yes
+        before: |
+          <li class='before'><a href="./">Mixed Models with R</a></li>
+        after: |
+         <li class='after'">
+            <a href="https://m-clark.github.io/">
+               <img src="img/mc_logo.png" style="width:25%; padding:0px 0; display:block; margin: 0 auto;" alt="MC logo">
+            </a>
+         </li>
+         <li class='after'">
+            <div style='text-align:center'>
+               <a href="https://github.com/m-clark/">
+                  <i class="fab fa-github fa-2x" aria-hidden="true"></i>
+               </a>
+            </div>
+         </li>
+         <li class='after'">
+            <div style='text-align:center'>
+               <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+                  <i class="fab fa-creative-commons fa-lg"></i>
+                  <i class="fab fa-creative-commons-by fa-lg"></i>
+                  <i class="fab fa-creative-commons-sa fa-lg"></i>
+               </a>
+            </div>
+         </li>
+#      edit:
+#        link: https://github.com/m-clark/workshops/
+#      highlight: pygments
 
-bookdown::gitbook:
- css: [css/standard_html.css, css/book.css]
- font-import: https://fonts.googleapis.com/css?family=Roboto|Open+Sans
- font-family: 'Roboto'
- config:
-   toc:
-     before: |
-       <li class='before'><a href="https://m-clark.github.io/workshops/mixed_models_r/">Mixed Models in R</a></li>
-     after: |
-       <li class='after'><a href="https://m-clark.github.io/"><img src="img/mc.png" style="width:50%; padding:0px 0; display:block; margin: 0 auto;" alt="MC logo"></a></li>
-       <li class='after'><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="width:50%; border-width:0; display:block; margin: 0 auto;" src="img/ccbysa_test.png" /></a></li>
-# <li><a href="https://m-clark.github.io" target="blank" style="font-size:150%; font-variant:small-caps; color:#1f65b7; margin: 0 auto;">Michael Clark</a></li><br><br>
-   edit:
-     link: https://github.com/m-clark/workshops/
-   highlight: pygments
 # bookdown::pdf_book:
 #   includes:
 #     in_header: preamble.tex

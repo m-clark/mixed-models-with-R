@@ -24,7 +24,7 @@
 
 
 
-<meta name="date" content="2018-04-11">
+<meta name="date" content="2018-08-02">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -32,7 +32,7 @@
   
   <link rel="shortcut icon" href="img/R.ico" type="image/x-icon">
 <link rel="prev" href="issues.html">
-<link rel="next" href="summary-2.html">
+<link rel="next" href="summary.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -46,59 +46,89 @@
 
 
 
-<script src="libs/htmlwidgets-1.0/htmlwidgets.js"></script>
-<script src="libs/datatables-binding-0.2/datatables.js"></script>
-<link href="libs/dt-core-1.10.12/css/jquery.dataTables.min.css" rel="stylesheet" />
-<link href="libs/dt-core-1.10.12/css/jquery.dataTables.extra.css" rel="stylesheet" />
-<script src="libs/dt-core-1.10.12/js/jquery.dataTables.min.js"></script>
-<script src="libs/plotly-binding-4.7.1/plotly.js"></script>
-<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="libs/htmlwidgets-1.2/htmlwidgets.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.4/datatables.js"></script>
+<link href="libs/dt-core-1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.16/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.16/js/jquery.dataTables.min.js"></script>
 <link href="libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
-<link href="libs/plotlyjs-1.29.2/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="libs/plotlyjs-1.29.2/plotly-latest.min.js"></script>
+<script src="libs/plotly-binding-4.8.0/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.39.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.39.2/plotly-latest.min.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
 
 
 <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
-<link rel="stylesheet" href="css/standard_html.css" type="text/css" />
 <link rel="stylesheet" href="css/book.css" type="text/css" />
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" type="text/css" />
 </head>
 
 <body>
@@ -111,10 +141,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
       <nav role="navigation">
 
 <ul class="summary">
-<li class='before'><a href="https://m-clark.github.io/workshops/mixed_models_r/">Mixed Models in R</a></li>
+<li class='before'><a href="./">Mixed Models with R</a></li>
 
 <li class="divider"></li>
-<li><a href="index.html#section"></a></li>
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i>Introduction</a><ul>
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#overview"><i class="fa fa-check"></i>Overview</a><ul>
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#goals"><i class="fa fa-check"></i>Goals</a></li>
@@ -123,43 +152,43 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#initial-steps"><i class="fa fa-check"></i>Initial Steps</a></li>
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#key-packages"><i class="fa fa-check"></i>Key packages</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html"><i class="fa fa-check"></i>Mixed Models</a><ul>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#terminology"><i class="fa fa-check"></i>Terminology</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#kinds-of-clustering"><i class="fa fa-check"></i>Kinds of clustering</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#random-intercepts-model"><i class="fa fa-check"></i>Random Intercepts model</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#example-student-gpa"><i class="fa fa-check"></i>Example: student GPA</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#the-standard-regression-model"><i class="fa fa-check"></i>The standard regression model</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#the-mixed-model"><i class="fa fa-check"></i>The mixed model</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#application"><i class="fa fa-check"></i>Application</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#cluster-level-covariate"><i class="fa fa-check"></i>Cluster level covariate</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#summary"><i class="fa fa-check"></i>Summary</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#exercises"><i class="fa fa-check"></i>Exercises</a><ul>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#sleep"><i class="fa fa-check"></i>Sleep</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#cluster-level-covariate-1"><i class="fa fa-check"></i>Cluster level covariate</a></li>
-<li class="chapter" data-level="" data-path="mixed-models.html"><a href="mixed-models.html#simulation"><i class="fa fa-check"></i>Simulation</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html"><i class="fa fa-check"></i>Mixed Models</a><ul>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#terminology"><i class="fa fa-check"></i>Terminology</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#kinds-of-clustering"><i class="fa fa-check"></i>Kinds of clustering</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#random-intercepts-model"><i class="fa fa-check"></i>Random Intercepts model</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#example-student-gpa"><i class="fa fa-check"></i>Example: student GPA</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#the-standard-regression-model"><i class="fa fa-check"></i>The standard regression model</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#the-mixed-model"><i class="fa fa-check"></i>The mixed model</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#application"><i class="fa fa-check"></i>Application</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#cluster-level-covariate"><i class="fa fa-check"></i>Cluster level covariate</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#summary"><i class="fa fa-check"></i>Summary</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#exercises"><i class="fa fa-check"></i>Exercises</a><ul>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#sleep"><i class="fa fa-check"></i>Sleep</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#cluster-level-covariate-1"><i class="fa fa-check"></i>Cluster level covariate</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#simulation"><i class="fa fa-check"></i>Simulation</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="more-random-effects.html"><a href="more-random-effects.html"><i class="fa fa-check"></i>More Random Effects</a><ul>
-<li class="chapter" data-level="" data-path="more-random-effects.html"><a href="more-random-effects.html#application-1"><i class="fa fa-check"></i>Application</a></li>
-<li class="chapter" data-level="" data-path="more-random-effects.html"><a href="more-random-effects.html#comparison-to-many-regressions"><i class="fa fa-check"></i>Comparison to many regressions</a></li>
-<li class="chapter" data-level="" data-path="more-random-effects.html"><a href="more-random-effects.html#visualization-of-effects"><i class="fa fa-check"></i>Visualization of effects</a></li>
-<li class="chapter" data-level="" data-path="more-random-effects.html"><a href="more-random-effects.html#summary-1"><i class="fa fa-check"></i>Summary</a></li>
-<li class="chapter" data-level="" data-path="more-random-effects.html"><a href="more-random-effects.html#exercises-1"><i class="fa fa-check"></i>Exercises</a></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html"><i class="fa fa-check"></i>More Random Effects</a><ul>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#application-1"><i class="fa fa-check"></i>Application</a></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#comparison-to-many-regressions"><i class="fa fa-check"></i>Comparison to many regressions</a></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#visualization-of-effects"><i class="fa fa-check"></i>Visualization of effects</a></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#summary-1"><i class="fa fa-check"></i>Summary</a></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#exercises-1"><i class="fa fa-check"></i>Exercises</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html"><i class="fa fa-check"></i>Common Extensions</a><ul>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#additional-grouping-structure"><i class="fa fa-check"></i>Additional Grouping Structure</a><ul>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#cross-classified-models"><i class="fa fa-check"></i>Cross-classified models</a></li>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#hierarchical-structure"><i class="fa fa-check"></i>Hierarchical Structure</a></li>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#crossed-vs.nested"><i class="fa fa-check"></i>Crossed vs. Nested</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html"><i class="fa fa-check"></i>Common Extensions</a><ul>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#additional-grouping-structure"><i class="fa fa-check"></i>Additional Grouping Structure</a><ul>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#cross-classified-models"><i class="fa fa-check"></i>Cross-classified models</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#hierarchical-structure"><i class="fa fa-check"></i>Hierarchical Structure</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#crossed-vs.nested"><i class="fa fa-check"></i>Crossed vs. Nested</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#residual-structure"><i class="fa fa-check"></i>Residual Structure</a><ul>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#heterogeneous-variance"><i class="fa fa-check"></i>Heterogeneous Variance</a></li>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#autocorrelation"><i class="fa fa-check"></i>Autocorrelation</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#residual-structure"><i class="fa fa-check"></i>Residual Structure</a><ul>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#heterogeneous-variance"><i class="fa fa-check"></i>Heterogeneous Variance</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#autocorrelation"><i class="fa fa-check"></i>Autocorrelation</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#generalized-linear-mixed-models"><i class="fa fa-check"></i>Generalized Linear Mixed Models</a></li>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#exercises-2"><i class="fa fa-check"></i>Exercises</a><ul>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#sociometric-data"><i class="fa fa-check"></i>Sociometric data</a></li>
-<li class="chapter" data-level="" data-path="common-extensions.html"><a href="common-extensions.html#patents"><i class="fa fa-check"></i>Patents</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#generalized-linear-mixed-models"><i class="fa fa-check"></i>Generalized Linear Mixed Models</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#exercises-2"><i class="fa fa-check"></i>Exercises</a><ul>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#sociometric-data"><i class="fa fa-check"></i>Sociometric data</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#patents"><i class="fa fa-check"></i>Patents</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="issues.html"><a href="issues.html"><i class="fa fa-check"></i>Issues</a><ul>
@@ -176,13 +205,13 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#model-comparison"><i class="fa fa-check"></i>Model Comparison</a></li>
 <li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#convergence"><i class="fa fa-check"></i>Convergence</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="going-further.html"><a href="going-further.html"><i class="fa fa-check"></i>Going Further</a><ul>
-<li class="chapter" data-level="" data-path="going-further.html"><a href="going-further.html#other-distributions"><i class="fa fa-check"></i>Other distributions</a></li>
-<li class="chapter" data-level="" data-path="going-further.html"><a href="going-further.html#other-contexts"><i class="fa fa-check"></i>Other contexts</a></li>
-<li class="chapter" data-level="" data-path="going-further.html"><a href="going-further.html#nonlinear-mixed-effects"><i class="fa fa-check"></i>Nonlinear Mixed Effects</a></li>
-<li class="chapter" data-level="" data-path="going-further.html"><a href="going-further.html#connections"><i class="fa fa-check"></i>Connections</a></li>
+<li class="chapter" data-level="" data-path="further.html"><a href="further.html"><i class="fa fa-check"></i>Going Further</a><ul>
+<li class="chapter" data-level="" data-path="further.html"><a href="further.html#other-distributions"><i class="fa fa-check"></i>Other distributions</a></li>
+<li class="chapter" data-level="" data-path="further.html"><a href="further.html#other-contexts"><i class="fa fa-check"></i>Other contexts</a></li>
+<li class="chapter" data-level="" data-path="further.html"><a href="further.html#nonlinear-mixed-effects"><i class="fa fa-check"></i>Nonlinear Mixed Effects</a></li>
+<li class="chapter" data-level="" data-path="further.html"><a href="further.html#connections"><i class="fa fa-check"></i>Connections</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="summary-2.html"><a href="summary-2.html"><i class="fa fa-check"></i>Summary</a></li>
+<li class="chapter" data-level="" data-path="summary.html"><a href="summary.html"><i class="fa fa-check"></i>Summary</a></li>
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i>Appendix</a><ul>
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#data"><i class="fa fa-check"></i>Data</a></li>
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#programming-languages"><i class="fa fa-check"></i>Programming languages</a><ul>
@@ -194,8 +223,27 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#reference-texts-and-other-stuff"><i class="fa fa-check"></i>Reference texts and other stuff</a></li>
 </ul></li>
 <li class="divider"></li>
-<li class='after'><a href="https://m-clark.github.io/"><img src="img/mc.png" style="width:50%; padding:0px 0; display:block; margin: 0 auto;" alt="MC logo"></a></li>
-<li class='after'><a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="width:50%; border-width:0; display:block; margin: 0 auto;" src="img/ccbysa_test.png" /></a></li>
+<li class='after'">
+   <a href="https://m-clark.github.io/">
+      <img src="img/mc_logo.png" style="width:25%; padding:0px 0; display:block; margin: 0 auto;" alt="MC logo">
+   </a>
+</li>
+<li class='after'">
+   <div style='text-align:center'>
+      <a href="https://github.com/m-clark/">
+         <i class="fab fa-github fa-2x" aria-hidden="true"></i>
+      </a>
+   </div>
+</li>
+<li class='after'">
+   <div style='text-align:center'>
+      <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+         <i class="fab fa-creative-commons fa-lg"></i>
+         <i class="fab fa-creative-commons-by fa-lg"></i>
+         <i class="fab fa-creative-commons-sa fa-lg"></i>
+      </a>
+   </div>
+</li>
 
 </ul>
 
@@ -206,7 +254,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./"><span style="font-size:200%; font-variant:small-caps; ">Mixed Models in R</span></a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Mixed Models in R</a>
           </h1>
         </div>
 
@@ -257,8 +305,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h5>Bayesian</h5>
 <p>With mixed models we’ve been thinking of coefficients as coming from a distribution (normal). While we have what we are calling ‘fixed’ effects, the distinguishing feature of the mixed model is the addition of this random component. Now consider a standard regression model, i.e. no clustering. You can do the same thing, i.e. assume the coefficients are not fixed, but random. In this sense, the goal is to understand that distribution, and focus on it, rather than just the summary of it, e.g. the mean. However, the mean (or other central tendency) of that distribution can be treated like you’ve been doing the fixed effects in your standard models.</p>
 <p>Thus you can use how you’ve been thinking about the random effects in mixed models as a segue to the Bayesian approach, where all parameters are random. Using Bayesian versions of your favorite models takes no more syntactical effort than your standard models. The following is a standard linear regression and a mixed model in the <span class="pack">brms</span> package.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(gpa <span class="op">~</span><span class="st"> </span>occasion, <span class="dt">data=</span>gpa)
-<span class="kw">brm</span>(Reaction <span class="op">~</span><span class="st"> </span>Days <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Days<span class="op">|</span>Subject), <span class="dt">data=</span>sleepstudy)</code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" data-line-number="1"><span class="kw">brm</span>(gpa <span class="op">~</span><span class="st"> </span>occasion, <span class="dt">data=</span>gpa)</a>
+<a class="sourceLine" id="cb40-2" data-line-number="2"><span class="kw">brm</span>(Reaction <span class="op">~</span><span class="st"> </span>Days <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Days<span class="op">|</span>Subject), <span class="dt">data=</span>sleepstudy)</a></code></pre></div>
 <p>So running the Bayesian models is not only as easy, the syntax is identical! Furthermore, just like mixed models allowed you to understand your data more deeply, the Bayesian models have the potential to do the same. Even the probabilities and intervals make more sense. With <span class="pack">rstanarm</span> and especially <span class="pack">brms</span>, you can do fairly complex models, taking you further than the standard mixed model packages, all without learning how to code the models explicitly in Stan. However, when you get to that point, the modeling possibilities are only limited by your imagination.</p>
 <p>You will have to learn a new inferential framework, as well as some of the nuances of the Markov Chain Monte Carlo (MCMC) approach. But you may be surprised to find that the basics come more easily than you would anticipate. Using tools like brms and related make it easier than ever to dive into Bayesian data analysis, and you’ve already been in a similar mindset with mixed models, so try it out some time. I have an <a href="https://m-clark.github.io/bayesian-basics/">introduction to Baysian analysis with Stan</a>, and a bit more on the Bayesian approach and mixed models in this <a href="https://m-clark.github.io/docs/mixedModels/mixedModels.html#mixed_model_7:_bayesian_mixed_model">document</a>.</p>
 </div>
@@ -268,7 +316,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="post-hoc-comparisons-and-multiple-testing" class="section level5">
 <h5>Post-hoc comparisons and multiple testing</h5>
-<p>This is not an issue I’m personally all that concerned with, but a lot of folks seem to be. The ‘problem’ is that one has a lot of p-values for some model or across a set of models, and is worried about spurious claims of significance. If one were truly worried about it, they’d be doing different models that would incorporate some sort of regularization, rather than attempting some p-value hack afterwards. Didn’t we talk about <a href="more-random-effects.html#comparison-to-many-regressions">regularization</a> somewhere? Yep, you can use a mixed model approach instead. See <a href="http://www.stat.columbia.edu/~gelman/research/published/multiple2f.pdf">Gelman</a> for details.</p>
+<p>This is not an issue I’m personally all that concerned with, but a lot of folks seem to be. The ‘problem’ is that one has a lot of p-values for some model or across a set of models, and is worried about spurious claims of significance. If one were truly worried about it, they’d be doing different models that would incorporate some sort of regularization, rather than attempting some p-value hack afterwards. Didn’t we talk about <a href="random_slopes.html#comparison-to-many-regressions">regularization</a> somewhere? Yep, you can use a mixed model approach instead. See <a href="http://www.stat.columbia.edu/~gelman/research/published/multiple2f.pdf">Gelman</a> for details.</p>
 </div>
 <div id="growth-mixture-models" class="section level5">
 <h5>Growth mixture models</h5>
@@ -277,7 +325,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="nonlinear-mixed-effects" class="section level2">
 <h2>Nonlinear Mixed Effects</h2>
-<p>Earlier we used the <span class="pack">nlme</span> package. The acronym stands for <strong>nonlinear</strong> mixed effects models. In this case, we are assuming a specific functional form for a predictor. A common example is a logistic growth curve<a href="#fn27" class="footnoteRef" id="fnref27"><sup>27</sup></a>, and one could use a function like <span class="func">SSlogis</span>.</p>
+<p>Earlier we used the <span class="pack">nlme</span> package. The acronym stands for <strong>nonlinear</strong> mixed effects models. In this case, we are assuming a specific functional form for a predictor. A common example is a logistic growth curve<a href="#fn27" class="footnote-ref" id="fnref27"><sup>27</sup></a>, and one could use a function like <span class="func">SSlogis</span>.</p>
 <p>In other cases we do not specify the functional form, and take a more non-parametric approach. Here’s where the powerful <span class="pack">mgcv</span> package comes in, and there are few if any that have its capabilities for <span class="emph">generalized additive models</span> combined with standard random effects approaches. Depending on the approach you take, you can even get <span class="pack">nlme</span> or <span class="pack">lme4</span> output along with the GAM results. Highly recommended.</p>
 </div>
 <div id="connections" class="section level2">
@@ -290,7 +338,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div class="footnotes">
 <hr />
 <ol start="27">
-<li id="fn27"><p>Not to be confused with latent growth curve models or logistic regression.<a href="going-further.html#fnref27">↩</a></p></li>
+<li id="fn27"><p>Not to be confused with latent growth curve models or logistic regression.<a href="further.html#fnref27" class="footnote-back">↩</a></p></li>
 </ol>
 </div>
             </section>
@@ -299,7 +347,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
         </div>
       </div>
 <a href="issues.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="summary-2.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="summary.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -335,6 +383,7 @@ gitbook.start({
 "depth": 2,
 "scroll_highlight": true
 },
+"df_print": "kable",
 "highlight": "pygments",
 "search": true
 });
@@ -346,7 +395,7 @@ gitbook.start({
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    var src = "";
+    var src = "true";
     if (src === "" || src === "true") src = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
     if (location.protocol !== "file:" && /^https?:/.test(src))
       src = src.replace(/^https?:/, '');

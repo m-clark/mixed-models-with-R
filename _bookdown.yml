@@ -1,6 +1,23 @@
-book_filename: "mixed_models"
+book_filename: 'mixed_models'
 language:
   ui:
-    chapter_name: "Chapter "
-output_dir: "docs"
+    chapter_name: 'Chapter '
+output_dir: 'docs'
 delete_merged_file: true
+
+rmd_files: [
+  'index.Rmd',
+  'introduction.Rmd',
+
+  # Part I
+  'random_intercepts.Rmd',
+  'random_slopes.Rmd',
+
+
+  # Part II
+  'extensions.Rmd',
+  'issues.Rmd',
+  'further.Rmd',
+  'summary.Rmd',
+  'appendix.Rmd'
+]
