@@ -1,10 +1,10 @@
 ---
 title: Mixed Models in R
 author:  |
-  <span class="noem">Michael Clark</span> <br><br>
-  https://m-clark.github.io/mixed-models-with-R/<br><br>
-  <img src="img/signature-acronym.png" style="width:30%; padding:5px 0; margin:0" alt="University of Michigan: CSCAR"> <br>
-  <img src="img/ARC-acronym-signature.png" style="width:21%; padding:5px 0; margin:0" alt="University of Michigan: Advanced Research Computing"> 
+  <span class="noem">Michael Clark</span> 
+  https://m-clark.github.io/
+  <img class='arc' src="img/signature-acronym.png" alt="University of Michigan: CSCAR">
+  <img class='cscar' src="img/ARC-acronym-signature.png" alt="University of Michigan: Advanced Research Computing"> 
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 output:
@@ -34,11 +34,13 @@ knitr::opts_chunk$set(echo = T, message=F, warning=F, comment=NA, autodep=F,
 
 ```{r load_common_packages, echo=FALSE, cache=FALSE, eval=TRUE}
 library(visibly); library(htmltools); library(forcats); library(lme4)
-library(broom); library(pander); library(plotly);  library(tidyverse);
-library(kableExtra)
+library(broom); library(plotly); library(tidyverse); library(kableExtra)
+
+kable_styling = function(..., full_width = FALSE) kableExtra::kable_styling(..., full_width = full_width)
 ```
 
-# 
+####
+
 ```{r rimg, fig.align='center',  out.width=200, echo=FALSE, cache=FALSE}
 knitr::include_graphics('img/198R.png', dpi = NA)
 ```

@@ -38,16 +38,19 @@ Pretty easy huh? Within the parenthesis, to the left of that bar `|` we are simp
 ```{r random_slope_summary, echo=FALSE}
 gpa_mixed =  lmer(gpa ~ occasion + (1 + occasion|student), data=gpa)
 
-pander(tidy(gpa_mixed, 'fixed', conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=3))
+gpa_mixed %>% 
+  tidy('fixed', conf.int=T) %>% 
+  kable(digits = 3) %>% 
+  kable_styling()
 
 data.frame(VarCorr(gpa_mixed)) %>% 
   slice(-3) %>%  
   select(-var2) %>% 
   rename(variance=vcov, sd=sdcor, re=var1) %>%  
-  mutate_if(is.numeric, arm::fround, digits=3) %>% 
   mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
   data.frame %>% 
-  pander()
+  kable(digits = 3) %>% 
+  kable_styling()
 ```
 
 As before, since we have 0 as our starting semester, the intercept tells us what the average GPA is in the first semester.  The coefficient for occasion still reflects a one semester change in GPA.  As we have not changed the fixed effect portion of the model, the values are the same as before.

@@ -80,21 +80,24 @@ summary(pupils_crossed, correlation=F)
 
 
 ```{r cross_classified_fixed, echo=FALSE}
-pander(tidy(pupils_crossed, 'fixed', conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=2))
+pupils_crossed %>% 
+  tidy('fixed', conf.int=T) %>% 
+  kable(digits=3) %>% 
+  kable_styling()
 ```
 
 The fixed effects tell us there is a positive effect of being female on achievement, and in general, relative to lowest SES category, being in the upper categories of SES also has a positive effect.
 
 ```{r  cross_classified_random, echo=FALSE}
 # note tidy doesn't work with multiple random effects and conf.int
-crossed_var_cor = tidy(VarCorr(pupils_crossed)) %>% 
+crossed_var_cor = data.frame(VarCorr(pupils_crossed)) %>% 
   select(-var2) %>% 
   rename(variance=vcov, sd=sdcor)
-crossed_var_cor %>%  
-  mutate_if(is.numeric, arm::fround, digits=2) %>% 
-  mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
-  pander()
 
+crossed_var_cor %>%  
+  mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
+  kable(digits=2) %>% 
+  kable_styling()
 ```
 
 When we look at the variance components we see that primary and secondary school contributes about `r round(sum(crossed_var_cor$variance[1:2])/sum(crossed_var_cor$variance)*100)`% of the total variance.  Most of the variance attributable to school comes from the primary school.
@@ -168,9 +171,10 @@ summary(nurses_hierarchical, correlation=F)
 ```
 
 ```{r hierarchical_fixed, echo=FALSE}
-tidy(nurses_hierarchical, 'fixed', conf.int=T) %>% 
-         mutate_if(is.numeric, arm::fround, digits=2) %>% 
-  pander(justify='lrrrrr')
+nurses_hierarchical %>% 
+  tidy('fixed', conf.int=T) %>% 
+  kable(align='lrrrrr', digits=2) %>% 
+  kable_styling()
 ```
 
 <br>
@@ -181,13 +185,14 @@ As far as the fixed effects go, about the only thing that doesn't have a statist
 
 ```{r hierarchical_random, echo=FALSE}
 # note tidy doesn't work with multiple random effects and conf.int
-hierarch_var_cor = tidy(VarCorr(nurses_hierarchical)) %>% 
+hierarch_var_cor = data.frame(VarCorr(nurses_hierarchical)) %>% 
   select(-var2) %>% 
   rename(variance=vcov, sd=sdcor)
+
 hierarch_var_cor %>%  
-  mutate_if(is.numeric, arm::fround, digits=3) %>% 
   mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
-  pander(justify='lcrr')
+  kable(align='lcrr', digits=3) %>% 
+  kable_styling()
 ```
 
 Concerning the random effects, there appears to be quite a bit of variability from ward to ward especially, but also hospital.  Recall that stress is a 7 point scale, so from ward to ward we can expect scores to bounce around about half a  point on average, which is quite dramatic in my opinion. Again we inspect it visually.
@@ -210,18 +215,20 @@ nurses_hierarchical = lmer(stress ~ age  + sex + experience
 nurses_crossed = lmer(stress ~ age  + sex + experience 
                            + treatment + wardtype + hospsize 
                            + (1|hospital) + (1|wardid), data = nurses)
-hierarch_var_cor %>%  
-  mutate_if(is.numeric, arm::fround, digits=3) %>% 
-  mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
-  pander(justify='lcrr')
 
-crossed_var_cor = tidy(VarCorr(nurses_crossed)) %>% 
+hierarch_var_cor %>%  
+  mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
+  kable(align='lcrr', digits = 3) %>% 
+  kable_styling()
+
+crossed_var_cor = data.frame(VarCorr(nurses_crossed)) %>% 
   select(-var2) %>%
   rename(variance=vcov, sd=sdcor)
+
 crossed_var_cor %>%  
-  mutate_if(is.numeric, arm::fround, digits=3) %>% 
   mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
-  pander(justify='lcrr')
+  kable(align='lcrr', digits = 3) %>% 
+  kable_styling()
 ```
 
 
@@ -296,13 +303,13 @@ rc1[1:30, 1:30] %>%
 Each block represents the covariance matrix pertaining to observations within an individual. Within the person there are variances on the diagonal and covariances on the off-diagonal.  When considering the whole data, we can see that observations from one person have no covariance with another person (gray). Furthermore, the covariance within a person is a constant value, the variance is also a constant value.  Where did those values come from?
 
 ```{r residual_varcov2, echo=F}
-vc = tidy(VarCorr(gpa_vis_cov))
+vc = data.frame(VarCorr(gpa_vis_cov))
 totvar = sum(vc$vcov)
-tidy(VarCorr(gpa_vis_cov)) %>% 
+data.frame(VarCorr(gpa_vis_cov)) %>% 
   select(-var1, -var2) %>% 
   rename(variance=vcov, sd=sdcor) %>%  
-  mutate_if(is.numeric, arm::fround, digits=3) %>% 
-  pander()
+  kable(digits=3) %>% 
+  kable_styling()
 ```
 
 Remember that there are two sources of variance in this model, the residual observation level variance, and that pertaining to person. Combined they provide the total residual variance that we aren't already capturing with our covariates.  In this case, it's about `r round(totvar, 2)`, the value displayed on our diagonal. The off-diagonal is the variance attributable to student, which we alternately interpreted as an intraclass correlation (dividing by the total variance converts it to the correlation metric).
@@ -405,14 +412,18 @@ heterovar_res = lme(gpa ~ occasion,
                     random = ~1|student, 
                     weights = varIdent(form = ~1|occasion))
 summary(heterovar_res)
-pander(heterovar_res, round=3)
+heterovar_res %>% 
+  tidy('fixed') %>% 
+  kable(digits = 3) %>% 
+  kable_styling()
 
 vc = VarCorr(heterovar_res) # christ lme objects are the worst
 cbind(rownames(vc), vc[,1:2]) %>% 
-  data.frame(stringsAsFactors=F) %>% 
-  mutate_at(vars(Variance, StdDev), function(x) round(as.numeric(x), 3)) %>% 
+  as_data_frame() %>% 
   rename(' ' = V1) %>% 
-  pander
+  mutate_at(-1, as.numeric) %>% 
+  kable(digits = 3) %>% 
+  kable_styling()
 ```
 
 
@@ -442,13 +453,16 @@ Note that the variances dispalyed for each time point are not conflated with the
 ```{r glmmTMB_hetero_compare_nlme, echo=1:2}
 vc_glmmtmb = VarCorr(heterovar_res2)
 vc_glmmtmb = attr(vc_glmmtmb$cond$student.1, 'stddev')^2 + sigma(heterovar_res2)^2
-vc_nlme = (c(1.0000000, coef(heterovar_res$modelStruct$varStruct, unconstrained=F))*heterovar_res$sigma)^2
-vc_compare = rbind(glmmTMB=vc_glmmtmb, nlme=vc_nlme) %>% 
-  round(4)
-colnames(vc_compare) = expand.grid('year', 1:3, 'sem', 1:2) %>% unite(col = year_sem, everything()) %>% pull()
+vc_nlme = lazerhawk::extract_nlme_variances(heterovar_res)
+vc_compare = rbind(glmmTMB=vc_glmmtmb, nlme=vc_nlme) 
+colnames(vc_compare) = str_sub(colnames(vc_compare), start = 6) %>% 
+  str_replace_all(., 'semester', 'sem')
 
 vc_compare %>% 
-  pander(split.tables=Inf)
+  as_data_frame() %>%  
+  select(sort(colnames(.))) %>% 
+  kable() %>% 
+  kable_styling()
 ```
 
 
@@ -465,14 +479,19 @@ corr_res = lme(gpa ~ occasion,
                random = ~1|student, 
                correlation = corAR1(form = ~occasion))
 summary(corr_res)
-pander(corr_res, round=3)
+
+corr_res %>% 
+  tidy('fixed') %>% 
+  kable(digits = 3) %>% 
+  kable_styling()
 
 vc = VarCorr(corr_res) # christ lme objects are the worst
 cbind(rownames(vc), vc[,1:2]) %>% 
-  data.frame(stringsAsFactors=F) %>% 
-  mutate_at(vars(Variance, StdDev), function(x) round(as.numeric(x), 3)) %>% 
+  as_data_frame() %>% 
   rename(' ' = V1) %>% 
-  pander
+  mutate_at(-1, as.numeric) %>% 
+  kable(digits = 3) %>% 
+  kable_styling()
 ```
 <br>
 
@@ -581,9 +600,7 @@ summary(sd_model, correlation=F)
 glmm_var_cor = tidy(VarCorr(sd_model)) %>%   # because for some reason knitr can't find an object it just used in the previous chunk.
   select(-var2) %>% 
   rename(variance=vcov, sd=sdcor) %>%  
-  mutate_if(is.numeric, arm::fround, digits=2) #%>% 
-  # mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
-  # pander()
+  mutate_if(is.numeric, arm::fround, digits=2) 
 save(sd_model, glmm_var_cor, file='data/speed_dating_model.RData')
 ```
 
@@ -598,7 +615,10 @@ summary(sd_model, correlation=F)
 
 ```{r glmm_fixed, echo=FALSE}
 load('data/speed_dating_model.RData')
-pander(tidy(sd_model, 'fixed', conf.int=T) %>% mutate_if(is.numeric, arm::fround, digits=2), justify='lrrrrrr')
+sd_model %>% 
+  tidy('fixed', conf.int=T) %>% 
+  kable(align='lrrrrrr', digits=2) %>% 
+  kable_styling()
 ```
 <br>
 
@@ -607,7 +627,7 @@ The fixed effects results are as expected for the attributes, with attractivenes
 <br>
 
 ```{r glmm_random, echo=FALSE, eval=TRUE}
-pander(glmm_var_cor)
+kable(glmm_var_cor) %>% kable_styling()
 ```
 
 <br>
