@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono|Roboto+Condensed|Lato|Lora|Fira+Sans");
+@import url("https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono|Roboto+Condensed|Lato|Lora|Fira+Sans|Yellotail");
 
 /* title page */
 .book .book-body .page-wrapper .page-inner section.normal h1.title {
@@ -391,4 +391,18 @@ table {
 div.datatables {
     margin-left: auto;     /* to center them when full is not necessary. */
     margin-right: auto;
+}
+
+.book .book-body .page-wrapper .page-inner section.normal .outro {
+  text-align: center;
+  line-height: 500px; /* <-- this is what you must define */
+  vertical-align: bottom;
+  font-size: 100%; 
+  color: hotpink;
+  font-family: yellowtail;
+  height: 200px;
+  background-image: url('../img/mc_sunset_2.png');
+  background-size: 50%;
+  background-repeat: no-repeat;
+  background-position: center; 
 }

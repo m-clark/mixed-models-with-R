@@ -5,4 +5,5 @@ The odds of you eventually coming across dependency in your data is very high.  
 With the right tools, even complicated mixed models can be fit relatively easily and quickly for even moderately large data sets.  It does take some getting used to, but in the end can be a highly satisfying modeling approach.  Use them the next time you encounter some dependency in your data.
 
 <br><br>
-<span class="" style="font-size:200%; font-family:'Alex Brush'">Best of luck with your research!</span>
+
+<div class="outro"><span class="" style="line-height: 70px; vertical-align: top;">Best of luck with your research!</span></div>

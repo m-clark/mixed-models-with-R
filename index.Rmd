@@ -34,7 +34,7 @@ knitr::opts_chunk$set(echo = T, message=F, warning=F, comment=NA, autodep=F,
 
 ```{r load_common_packages, echo=FALSE, cache=FALSE, eval=TRUE}
 library(visibly); library(htmltools); library(forcats); library(lme4)
-library(broom); library(plotly); library(tidyverse); library(kableExtra)
+library(broom); library(plotly); library(tidyverse); library(kableExtra); library(patchwork)
 
 kable_styling = function(..., full_width = FALSE) kableExtra::kable_styling(..., full_width = full_width)
 ```
