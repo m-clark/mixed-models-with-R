@@ -11,16 +11,32 @@ Returning to the GPA data, recall the visualization from before.
 ```{r spaghetti2, echo=FALSE}
 set.seed(1234)
 gpa_lm = lm(gpa ~ occasion, data=gpa)
-sample_students = gpa %>% filter(student %in% sample(1:200, 10))
-occasion_sample = gpa$occasion[gpa$student %in% sample_students$student]
-gpa_sample = gpa$gpa[gpa$student %in% sample_students$student]
-gpa %>% 
+
+init = gpa %>% 
   modelr::add_predictions(gpa_lm, var='all') %>% 
-  mutate(select = factor(student %in% sample(1:200, 10))) %>% 
-  group_by(student, select) %>% 
+  mutate(select = factor(student %in% sample(1:200, 10)),
+         sz = c(.5, 1)[select]) %>% 
+  group_by(student, select) 
+
+init %>% 
   plot_ly %>% 
-  add_lines(x=~occasion, y=~gpa, opacity=.35, color=~select, colors=scico::scico(2, begin = .25), showlegend=F) %>%
-  add_lines(x=~occasion, y=~all, color=I(palettes$stan_red$stan_red), opacity=.70) %>% 
+  add_lines(x=~occasion, y=~gpa, size=I(.5), 
+            opacity=.35, 
+            color=~select, 
+            size= ~sz, 
+            colors=scico::scico(2, begin = .25), 
+            showlegend=F) %>%
+  add_lines(x=~occasion, y=~gpa, 
+            opacity=.35, 
+            color=~select, 
+            size = I(2),
+            colors=scico::scico(2, begin = .25), 
+            data = filter(init, select==TRUE),
+            showlegend=F) %>%
+  add_lines(x=~occasion, 
+            y=~all, 
+            color=I(palettes$stan_red$stan_red), 
+            opacity=.70) %>% 
   theme_plotly()
 ```
 
