@@ -24,7 +24,7 @@
 
 
 
-<meta name="date" content="2018-08-14">
+<meta name="date" content="2018-08-26">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -317,9 +317,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Data is as data does. It is not unlikely that you will have issues in conducting mixed models, such as lack of convergence, estimates of zero for the random effects variance, warnings about scaling variables etc. These are not easy models to estimate (at least outside of the Bayesian context), so don’t be surprised if all doesn’t go smoothly.</p>
 <p>A few common issues<a href="#fn26" class="footnote-ref" id="fnref26"><sup>26</sup></a> I see are:</p>
 <ul>
-<li><p>Lack of centering/standardizing will often result in scaling warnings for <span class="pack">lme4</span>. It makes sense to do it anyway, so the same goes for mixed models as any other.</p></li>
+<li><p>Lack of centering/standardizing will often result in scaling warnings for <span class="pack">lme4</span>. It makes sense to do it anyway, so the same goes for mixed models as any other. A very common convergence problem in my experience results from time-based variables, such as incorporating a yearly trend. At the very least, it’s useful to have a meaningful zero value, for example, by starting the time at zero, rather than say, year 2008. You may need to standardize the trend variable also to get the model to converge, but can revert back to raw form for interpretation.</p></li>
+<li><p>The default optimizer options may need to be tweaked, for example, to allow for more iterations. If possible, you may need to change to a different optimizer.</p></li>
 <li><p>Zero estimates for the random effect variance, or <span class="math inline">\(\pm 1\)</span> estimates for correlation of intercepts and slopes, often can be attributed to not having enough data, not having enough clusters, or an overlooked data issue, along with possible scaling. You won’t have this issue in the Bayesian context, but in others, you may have to deal with the dependency in some other fashion (e.g. cluster-robust standard errors/GEE).</p></li>
-<li><p>Any complicated GLMM or similar model is likely to have problems, so be prepared. If you want to go beyond glm, you’ll have fewer tools and likely more issues. There are packages like <span class="pack">ordinal</span>, <span class="pack">mgcv</span>, <span class="pack">glmmTMB</span>, and others that can <em>potentially</em> handle alternate distributions and other complexities, however I think one might be better off with a Bayesian approach (e.g. <span class="pack">brms</span>/<span class="pack">rstan</span>). In practice, I’ve found others to be prohibitively slow, unable to converge, or too limited in post-estimation options.</p></li>
+<li><p>Any complicated GLMM or similar model is likely to have problems, so be prepared. If you want to go beyond GLM, you’ll have fewer tools and likely more issues. There are packages like <span class="pack">ordinal</span>, <span class="pack">mgcv</span>, <span class="pack">glmmTMB</span>, and others that can <em>potentially</em> handle alternate distributions and other complexities, however I think one might be better off with a Bayesian approach (e.g. <span class="pack">brms</span>/<span class="pack">rstan</span>). In practice, I’ve found others to be prohibitively slow, unable to converge, or too limited in post-estimation options.</p></li>
+</ul>
+<p>If you’re using <span class="pack">lme4</span> you have a couple resources and tools at your disposal.</p>
+<ul>
+<li>Start with <code>?convergence</code>. This comes up so often that there is a help file just for convergence issues.</li>
+<li>Use the (currently) undocumented <span class="func">allFit</span> function. How to do so is noted in the convergence help file. If the results are very similar you can feel better about them.</li>
+<li>Consult the troubleshooting section of the <a href="https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#troubleshooting">FAQ</a>.</li>
 </ul>
 <p>The main point is that you’ll need to acknowledge the warnings and messages that the packages provide, and be prepared to take necessary steps to deal with these issues when they arise.</p>
 

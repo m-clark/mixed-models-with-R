@@ -66,11 +66,19 @@ Data is as data does.  It is not unlikely that you will have issues in conductin
 
 A few common issues[^richparam] I see are:
 
-- Lack of centering/standardizing will often result in scaling warnings for <span class="pack">lme4</span>.  It makes sense to do it anyway, so the same goes for mixed models as any other.
+- Lack of centering/standardizing will often result in scaling warnings for <span class="pack">lme4</span>.  It makes sense to do it anyway, so the same goes for mixed models as any other.  A very common convergence problem in my experience results from time-based variables, such as incorporating a yearly trend.  At the very least, it's useful to have a meaningful zero value, for example, by starting the time at  zero, rather than say, year 2008.  You may need to standardize the trend variable also to get the model to converge, but can revert back to raw form for interpretation.
+
+- The default optimizer options may need to be tweaked, for example, to allow for more iterations. If possible, you may need to change to a different optimizer.
 
 - Zero estimates for the random effect variance, or $\pm 1$ estimates for correlation of intercepts and slopes, often can be attributed to not having enough data, not having enough clusters, or an overlooked data issue, along with possible scaling.  You won't have this issue in the Bayesian context, but in others, you may have to deal with the dependency in some other fashion (e.g. cluster-robust standard errors/GEE).
 
-- Any complicated GLMM or similar model is likely to have problems, so be prepared. If you want to go beyond glm, you'll have fewer tools and likely more issues.  There are packages like <span class="pack">ordinal</span>, <span class="pack">mgcv</span>, <span class="pack">glmmTMB</span>, and others that can *potentially* handle alternate distributions and other complexities, however I think one might be better off with a Bayesian approach (e.g. <span class="pack">brms</span>/<span class="pack">rstan</span>).  In practice, I've found others to be prohibitively slow, unable to converge, or too limited in post-estimation options.
+- Any complicated GLMM or similar model is likely to have problems, so be prepared. If you want to go beyond GLM, you'll have fewer tools and likely more issues.  There are packages like <span class="pack">ordinal</span>, <span class="pack">mgcv</span>, <span class="pack">glmmTMB</span>, and others that can *potentially* handle alternate distributions and other complexities, however I think one might be better off with a Bayesian approach (e.g. <span class="pack">brms</span>/<span class="pack">rstan</span>).  In practice, I've found others to be prohibitively slow, unable to converge, or too limited in post-estimation options.
+
+If you're using <span class="pack">lme4</span> you have a couple resources and tools at your disposal.
+
+- Start with `?convergence`.  This comes up so often that there is a help file just for convergence issues.
+- Use the (currently) undocumented <span class="func">allFit</span> function. How to do so is noted in the convergence help file.  If the results are very similar you can feel better about them.
+- Consult the troubleshooting section of the [FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#troubleshooting).
 
 The main point is that you'll need to acknowledge the warnings and messages that the packages provide, and be prepared to take necessary steps to deal with these issues when they arise.
 
