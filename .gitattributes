@@ -43,6 +43,7 @@ _book/*.pdf
 *.css linguist-vendored
 
 
+*.Rmd linguist-language=R
 *.stan linguist-language=Stan
 *.inp linguist-language=Mplus
 *.out linguist-generated=true
