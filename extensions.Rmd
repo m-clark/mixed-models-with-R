@@ -161,11 +161,11 @@ For the model we examine effects of the treatment as well as several other covar
 ```{r hierarchical, eval=1}
 nurses_hierarchical = lmer(stress ~ age + sex + experience 
                            + treatment + wardtype + hospsize 
-                           + (1|hospital) + (1|hospital:wardid), 
+                           + (1|hospital) + (1|hospital:ward), 
                            data = nurses)
 nurses_hierarchical = lmer(stress ~ age  + sex + experience 
                            + treatment + wardtype + hospsize 
-                           + (1|hospital/wardid), 
+                           + (1|hospital/ward), 
                            data = nurses) # same thing!
 summary(nurses_hierarchical, correlation=F)
 ```
@@ -206,12 +206,13 @@ p
 
 ### Crossed vs. Nested
 
-The following shows the difference in the results from treating ward as nested vs. crossed. What do you notice is different?
+The following shows the difference in the results from treating ward as a nested (within hospital) vs. crossed random effect. What do you notice is different?
 
-```{r crossed_vs_nested, echo=1:2}
+```{r crossed_vs_nested, echo=1:3}
 nurses_hierarchical = lmer(stress ~ age  + sex + experience 
                            + treatment + wardtype + hospsize 
                            + (1|hospital) + (1|hospital:wardid), data = nurses)
+
 nurses_crossed = lmer(stress ~ age  + sex + experience 
                            + treatment + wardtype + hospsize 
                            + (1|hospital) + (1|wardid), data = nurses)
@@ -248,6 +249,22 @@ nothing special done for models with random effects for nested factors*. When
 random effects are associated with multiple factors, exactly the same
 computational methods are used whether the factors form a nested sequence or are
 partially crossed or are completely crossed.
+
+You might have noticed that we were using `wardid` rather than the `ward` grouping variable as in our first example. Even though every ward is unique, the `ward` column labels them with an arbitrary sequence starting with 1.  While this might seem natural, ward 1 in hospital 1 is not the same as ward 1 in hospital 2, so it's probably not a good idea to give them the same label. The `wardid` column properly distinguishes the wards with unique values (e.g. 11, 12).
+
+What would have happened had we used that variable as a crossed random effect?
+
+```{r bad_cross, echo=1}
+nurses_crossed_bad_data = lmer(stress ~ age  + sex + experience 
+                               + treatment + wardtype + hospsize 
+                               + (1|hospital) + (1|ward), data = nurses)
+
+data.frame(VarCorr(nurses_crossed_bad_data)) %>% 
+  select(-var2) %>%
+  rename(variance=vcov, sd=sdcor)
+```
+
+This is certainly not the result we want. The variance in `ward` is already captured by treatment and type. However, as demonstrated, this can be avoided with the proper syntax, or proper labeling in the data to allow unique clusters to have unique identifiers.
 
 See this [discussion also](https://stats.stackexchange.com/questions/228800/crossed-vs-nested-random-effects-how-do-they-differ-and-how-are-they-specified), as well as [this from the FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#nested-or-crossed) from one of the <span class="pack">lme4</span> developers. Josh Errickson at CSCAR also has a nice [write-up with visual depiction](http://errickson.net/stats-notes/vizrandomeffects.html) of the underlying matrices of interest, which served as inspiration for some of the visualization in the next section.
 

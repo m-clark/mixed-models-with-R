@@ -304,12 +304,12 @@ market segments.</p>
 <div id="python" class="section level3">
 <h3>Python</h3>
 <p>In Python, the <a href="http://www.statsmodels.org/stable/mixed_linear.html">statsmodels</a> module has basic capabilities for mixed models but not too many frills (e.g. no crossed random effects). CSCAR directory Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series <a href="https://github.com/kshedden/Statsmodels-MixedLM">here</a>. The following provides an example.</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb40-1" data-line-number="1"><span class="im">import</span> pandas <span class="im">as</span> pd</a>
-<a class="sourceLine" id="cb40-2" data-line-number="2"><span class="im">import</span> statsmodels <span class="im">as</span> sm</a>
-<a class="sourceLine" id="cb40-3" data-line-number="3"><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</a>
-<a class="sourceLine" id="cb40-4" data-line-number="4">gpa <span class="op">=</span> pd.read_csv(<span class="st">&#39;data/gpa.csv&#39;</span>)</a>
-<a class="sourceLine" id="cb40-5" data-line-number="5">gpa_py_mixed <span class="op">=</span> smf.mixedlm(<span class="st">&quot;gpa ~ occasion&quot;</span>, gpa, groups<span class="op">=</span>gpa[<span class="st">&quot;student&quot;</span>]).fit()</a>
-<a class="sourceLine" id="cb40-6" data-line-number="6"><span class="bu">print</span>(gpa_py_mixed.summary())</a></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb42-1" data-line-number="1"><span class="im">import</span> pandas <span class="im">as</span> pd</a>
+<a class="sourceLine" id="cb42-2" data-line-number="2"><span class="im">import</span> statsmodels <span class="im">as</span> sm</a>
+<a class="sourceLine" id="cb42-3" data-line-number="3"><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</a>
+<a class="sourceLine" id="cb42-4" data-line-number="4">gpa <span class="op">=</span> pd.read_csv(<span class="st">&#39;data/gpa.csv&#39;</span>)</a>
+<a class="sourceLine" id="cb42-5" data-line-number="5">gpa_py_mixed <span class="op">=</span> smf.mixedlm(<span class="st">&quot;gpa ~ occasion&quot;</span>, gpa, groups<span class="op">=</span>gpa[<span class="st">&quot;student&quot;</span>]).fit()</a>
+<a class="sourceLine" id="cb42-6" data-line-number="6"><span class="bu">print</span>(gpa_py_mixed.summary())</a></code></pre></div>
 <pre><code>         Mixed Linear Model Regression Results
 =======================================================
 Model:            MixedLM Dependent Variable: gpa      

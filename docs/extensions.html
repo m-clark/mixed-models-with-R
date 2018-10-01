@@ -543,11 +543,11 @@ Residual
 <p>For the model we examine effects of the treatment as well as several other covariates, at least one at each of the nurse, ward, and hospital levels. Again, when it comes to the fixed effects portion, you can simply think about that part as you would any standard regression, we just add covariates as theory/exploration would suggest. To incorporate this type of random effects structure is not too different from the cross-classified approach, but does have a slight change to the syntax.</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">nurses_hierarchical =<span class="st"> </span><span class="kw">lmer</span>(stress <span class="op">~</span><span class="st"> </span>age <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>experience </a>
 <a class="sourceLine" id="cb25-2" data-line-number="2">                           <span class="op">+</span><span class="st"> </span>treatment <span class="op">+</span><span class="st"> </span>wardtype <span class="op">+</span><span class="st"> </span>hospsize </a>
-<a class="sourceLine" id="cb25-3" data-line-number="3">                           <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>hospital) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>hospital<span class="op">:</span>wardid), </a>
+<a class="sourceLine" id="cb25-3" data-line-number="3">                           <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>hospital) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>hospital<span class="op">:</span>ward), </a>
 <a class="sourceLine" id="cb25-4" data-line-number="4">                           <span class="dt">data =</span> nurses)</a>
 <a class="sourceLine" id="cb25-5" data-line-number="5">## nurses_hierarchical = lmer(stress ~ age  + sex + experience </a>
 <a class="sourceLine" id="cb25-6" data-line-number="6">##                            + treatment + wardtype + hospsize </a>
-<a class="sourceLine" id="cb25-7" data-line-number="7">##                            + (1|hospital/wardid), </a>
+<a class="sourceLine" id="cb25-7" data-line-number="7">##                            + (1|hospital/ward), </a>
 <a class="sourceLine" id="cb25-8" data-line-number="8">##                            data = nurses) # same thing!</a>
 <a class="sourceLine" id="cb25-9" data-line-number="9">## summary(nurses_hierarchical, correlation=F)</a></code></pre></div>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
@@ -806,13 +806,14 @@ Residual
 </div>
 <div id="crossed-vs.nested" class="section level3">
 <h3>Crossed vs. Nested</h3>
-<p>The following shows the difference in the results from treating ward as nested vs. crossed. What do you notice is different?</p>
+<p>The following shows the difference in the results from treating ward as a nested (within hospital) vs. crossed random effect. What do you notice is different?</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1">nurses_hierarchical =<span class="st"> </span><span class="kw">lmer</span>(stress <span class="op">~</span><span class="st"> </span>age  <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>experience </a>
 <a class="sourceLine" id="cb26-2" data-line-number="2">                           <span class="op">+</span><span class="st"> </span>treatment <span class="op">+</span><span class="st"> </span>wardtype <span class="op">+</span><span class="st"> </span>hospsize </a>
 <a class="sourceLine" id="cb26-3" data-line-number="3">                           <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>hospital) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>hospital<span class="op">:</span>wardid), <span class="dt">data =</span> nurses)</a>
-<a class="sourceLine" id="cb26-4" data-line-number="4">nurses_crossed =<span class="st"> </span><span class="kw">lmer</span>(stress <span class="op">~</span><span class="st"> </span>age  <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>experience </a>
-<a class="sourceLine" id="cb26-5" data-line-number="5">                           <span class="op">+</span><span class="st"> </span>treatment <span class="op">+</span><span class="st"> </span>wardtype <span class="op">+</span><span class="st"> </span>hospsize </a>
-<a class="sourceLine" id="cb26-6" data-line-number="6">                           <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>hospital) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>wardid), <span class="dt">data =</span> nurses)</a></code></pre></div>
+<a class="sourceLine" id="cb26-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb26-5" data-line-number="5">nurses_crossed =<span class="st"> </span><span class="kw">lmer</span>(stress <span class="op">~</span><span class="st"> </span>age  <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>experience </a>
+<a class="sourceLine" id="cb26-6" data-line-number="6">                           <span class="op">+</span><span class="st"> </span>treatment <span class="op">+</span><span class="st"> </span>wardtype <span class="op">+</span><span class="st"> </span>hospsize </a>
+<a class="sourceLine" id="cb26-7" data-line-number="7">                           <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>hospital) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>wardid), <span class="dt">data =</span> nurses)</a></code></pre></div>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -951,6 +952,16 @@ random effects are associated with multiple factors, exactly the same
 computational methods are used whether the factors form a nested sequence or are
 partially crossed or are completely crossed.</p>
 </blockquote>
+<p>You might have noticed that we were using <code>wardid</code> rather than the <code>ward</code> grouping variable as in our first example. Even though every ward is unique, the <code>ward</code> column labels them with an arbitrary sequence starting with 1. While this might seem natural, ward 1 in hospital 1 is not the same as ward 1 in hospital 2, so it’s probably not a good idea to give them the same label. The <code>wardid</code> column properly distinguishes the wards with unique values (e.g. 11, 12).</p>
+<p>What would have happened had we used that variable as a crossed random effect?</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">nurses_crossed_bad_data =<span class="st"> </span><span class="kw">lmer</span>(stress <span class="op">~</span><span class="st"> </span>age  <span class="op">+</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>experience </a>
+<a class="sourceLine" id="cb27-2" data-line-number="2">                               <span class="op">+</span><span class="st"> </span>treatment <span class="op">+</span><span class="st"> </span>wardtype <span class="op">+</span><span class="st"> </span>hospsize </a>
+<a class="sourceLine" id="cb27-3" data-line-number="3">                               <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>hospital) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>ward), <span class="dt">data =</span> nurses)</a></code></pre></div>
+<pre><code>       grp        var1  variance        sd
+1 hospital (Intercept) 0.1955013 0.4421553
+2     ward (Intercept) 0.0000000 0.0000000
+3 Residual        &lt;NA&gt; 0.4633610 0.6807062</code></pre>
+<p>This is certainly not the result we want. The variance in <code>ward</code> is already captured by treatment and type. However, as demonstrated, this can be avoided with the proper syntax, or proper labeling in the data to allow unique clusters to have unique identifiers.</p>
 <p>See this <a href="https://stats.stackexchange.com/questions/228800/crossed-vs-nested-random-effects-how-do-they-differ-and-how-are-they-specified">discussion also</a>, as well as <a href="https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#nested-or-crossed">this from the FAQ</a> from one of the <span class="pack">lme4</span> developers. Josh Errickson at CSCAR also has a nice <a href="http://errickson.net/stats-notes/vizrandomeffects.html">write-up with visual depiction</a> of the underlying matrices of interest, which served as inspiration for some of the visualization in the next section.</p>
 <p>So there you have it. When it comes to <span class="pack">lme4</span>, or mixed models more generally, crossed vs. nested is simply a state of mind (data)<a href="#fn19" class="footnote-ref" id="fnref19"><sup>19</sup></a>.</p>
 </div>
@@ -1065,12 +1076,12 @@ Residual
 <h3>Heterogeneous Variance</h3>
 <p>Unfortunately, <span class="pack">lme4</span> does not provide the ability to model the residual covariance structure, at least <a href="https://bbolker.github.io/mixedmodels-misc/notes/corr_braindump.html">not in a straightforward fashion</a>, though many other mixed model packages do<a href="#fn21" class="footnote-ref" id="fnref21"><sup>21</sup></a>. In fact, two packages that come with the basic R installation do so, <span class="pack">mgcv</span> and <span class="pack">nlme</span>. We’ll demonstrate with the latter.</p>
 <p>The <span class="pack">nlme</span> package will have a different random effect specification, though not <em>too</em> different. In addition, to estimate heterogeneous variances, we’ll need to use an additional <code>weights</code> argument. The following will allow each time point of occasion to have a unique estimate.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="kw">library</span>(nlme)</a>
-<a class="sourceLine" id="cb27-2" data-line-number="2">heterovar_res =<span class="st"> </span><span class="kw">lme</span>(gpa <span class="op">~</span><span class="st"> </span>occasion, </a>
-<a class="sourceLine" id="cb27-3" data-line-number="3">                    <span class="dt">data =</span> gpa,</a>
-<a class="sourceLine" id="cb27-4" data-line-number="4">                    <span class="dt">random =</span> <span class="op">~</span><span class="dv">1</span><span class="op">|</span>student, </a>
-<a class="sourceLine" id="cb27-5" data-line-number="5">                    <span class="dt">weights =</span> <span class="kw">varIdent</span>(<span class="dt">form =</span> <span class="op">~</span><span class="dv">1</span><span class="op">|</span>occasion))</a>
-<a class="sourceLine" id="cb27-6" data-line-number="6">## summary(heterovar_res)</a></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="kw">library</span>(nlme)</a>
+<a class="sourceLine" id="cb29-2" data-line-number="2">heterovar_res =<span class="st"> </span><span class="kw">lme</span>(gpa <span class="op">~</span><span class="st"> </span>occasion, </a>
+<a class="sourceLine" id="cb29-3" data-line-number="3">                    <span class="dt">data =</span> gpa,</a>
+<a class="sourceLine" id="cb29-4" data-line-number="4">                    <span class="dt">random =</span> <span class="op">~</span><span class="dv">1</span><span class="op">|</span>student, </a>
+<a class="sourceLine" id="cb29-5" data-line-number="5">                    <span class="dt">weights =</span> <span class="kw">varIdent</span>(<span class="dt">form =</span> <span class="op">~</span><span class="dv">1</span><span class="op">|</span>occasion))</a>
+<a class="sourceLine" id="cb29-6" data-line-number="6">## summary(heterovar_res)</a></code></pre></div>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -1167,7 +1178,7 @@ Residual
 </tbody>
 </table>
 <p>At this point we’re getting the same stuff we’re used to. Now the not-so fun part. For the values we’re interested in for this example, i.e. the variances at each occasion, <span class="pack">nlme</span> does not make it easy on someone to understand initially, as the output regards the way things are for estimation, not for what one would usually have to report. The variances are scaled relative to the first variance estimate, which is actually the reported residual variance in the random effects part. Additionally the values are also on the standard deviation rather than variance scale. From the default output display, we can see that variance decreases over time in this case, but the actual values are not provided.</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="kw">summary</span>(heterovar_res<span class="op">$</span>modelStruct)</a></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="kw">summary</span>(heterovar_res<span class="op">$</span>modelStruct)</a></code></pre></div>
 <pre><code>Random effects:
  Formula: ~1 | student
         (Intercept) Residual
@@ -1180,14 +1191,14 @@ Variance function:
         0         1         2         3         4         5 
 1.0000000 0.8261186 0.6272415 0.4311126 0.3484013 0.4324628 </code></pre>
 <p>Relative values are fine, I guess, but what we’d want are the actual estimates. Here’s how you can get them using the residual standard deviation to scale those values, then square them to get on the variance scale.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1">(<span class="kw">c</span>(<span class="fl">1.0000000</span>, <span class="kw">coef</span>(heterovar_res<span class="op">$</span>modelStruct<span class="op">$</span>varStruct, <span class="dt">unconstrained=</span>F))<span class="op">*</span>heterovar_res<span class="op">$</span>sigma)<span class="op">^</span><span class="dv">2</span></a></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1">(<span class="kw">c</span>(<span class="fl">1.0000000</span>, <span class="kw">coef</span>(heterovar_res<span class="op">$</span>modelStruct<span class="op">$</span>varStruct, <span class="dt">unconstrained=</span>F))<span class="op">*</span>heterovar_res<span class="op">$</span>sigma)<span class="op">^</span><span class="dv">2</span></a></code></pre></div>
 <pre><code>                    1          2          3          4          5 
 0.13815037 0.09428374 0.05435276 0.02567636 0.01676917 0.02583744 </code></pre>
 <p>Yeah. You’ll have to look this up every time you want to do it, or just make your own function that takes the model input. A newer alternative to keep in mind is <span class="pack">glmmTMB</span>. It would allow one to stay more in the <span class="pack">lme4</span> style and output.</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1"><span class="kw">library</span>(glmmTMB)</a>
-<a class="sourceLine" id="cb32-2" data-line-number="2">heterovar_res2 =<span class="st"> </span><span class="kw">glmmTMB</span>(gpa <span class="op">~</span><span class="st"> </span>occasion <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>student) <span class="op">+</span><span class="st"> </span><span class="kw">diag</span>(<span class="dv">0</span> <span class="op">+</span><span class="st"> </span>occas <span class="op">|</span>student), </a>
-<a class="sourceLine" id="cb32-3" data-line-number="3">                         <span class="dt">data =</span> gpa)</a>
-<a class="sourceLine" id="cb32-4" data-line-number="4"><span class="kw">summary</span>(heterovar_res2)</a></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1"><span class="kw">library</span>(glmmTMB)</a>
+<a class="sourceLine" id="cb34-2" data-line-number="2">heterovar_res2 =<span class="st"> </span><span class="kw">glmmTMB</span>(gpa <span class="op">~</span><span class="st"> </span>occasion <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>student) <span class="op">+</span><span class="st"> </span><span class="kw">diag</span>(<span class="dv">0</span> <span class="op">+</span><span class="st"> </span>occas <span class="op">|</span>student), </a>
+<a class="sourceLine" id="cb34-3" data-line-number="3">                         <span class="dt">data =</span> gpa)</a>
+<a class="sourceLine" id="cb34-4" data-line-number="4"><span class="kw">summary</span>(heterovar_res2)</a></code></pre></div>
 <pre><code> Family: gaussian  ( identity )
 Formula:          gpa ~ occasion + (1 | student) + diag(0 + occas | student)
 Data: gpa
@@ -1218,8 +1229,8 @@ occasion    0.106141   0.004034   26.31   &lt;2e-16 ***
 ---
 Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>Note that the variances dispalyed for each time point are not conflated with the residual variance. To compare with <span class="pack">nlme</span>, just add the residual variance to those estimates. As with every mixed model package (apparently), it still takes a bit to get the variances in a usable form from the <span class="func">VarCorr</span> object. The following shows how though, and compares to the <span class="pack">nlme</span> result.</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1">vc_glmmtmb =<span class="st"> </span><span class="kw">VarCorr</span>(heterovar_res2)</a>
-<a class="sourceLine" id="cb34-2" data-line-number="2">vc_glmmtmb =<span class="st"> </span><span class="kw">attr</span>(vc_glmmtmb<span class="op">$</span>cond<span class="op">$</span>student<span class="fl">.1</span>, <span class="st">&#39;stddev&#39;</span>)<span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span><span class="kw">sigma</span>(heterovar_res2)<span class="op">^</span><span class="dv">2</span></a></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" data-line-number="1">vc_glmmtmb =<span class="st"> </span><span class="kw">VarCorr</span>(heterovar_res2)</a>
+<a class="sourceLine" id="cb36-2" data-line-number="2">vc_glmmtmb =<span class="st"> </span><span class="kw">attr</span>(vc_glmmtmb<span class="op">$</span>cond<span class="op">$</span>student<span class="fl">.1</span>, <span class="st">&#39;stddev&#39;</span>)<span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span><span class="kw">sigma</span>(heterovar_res2)<span class="op">^</span><span class="dv">2</span></a></code></pre></div>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -1290,12 +1301,12 @@ year 3 sem 2
 <div id="autocorrelation" class="section level3">
 <h3>Autocorrelation</h3>
 <p>The following example shows the same basic model, but with the autocorrelation structure we described previously. In <span class="pack">nlme</span> we use the built-in <span class="func">corAR1</span> function and <code>correlation</code> argument similar to how we did with the weights argument.</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1"><span class="kw">library</span>(nlme)</a>
-<a class="sourceLine" id="cb35-2" data-line-number="2">corr_res =<span class="st"> </span><span class="kw">lme</span>(gpa <span class="op">~</span><span class="st"> </span>occasion, </a>
-<a class="sourceLine" id="cb35-3" data-line-number="3">               <span class="dt">data =</span> gpa,</a>
-<a class="sourceLine" id="cb35-4" data-line-number="4">               <span class="dt">random =</span> <span class="op">~</span><span class="dv">1</span><span class="op">|</span>student, </a>
-<a class="sourceLine" id="cb35-5" data-line-number="5">               <span class="dt">correlation =</span> <span class="kw">corAR1</span>(<span class="dt">form =</span> <span class="op">~</span>occasion))</a>
-<a class="sourceLine" id="cb35-6" data-line-number="6">## summary(corr_res)</a></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" data-line-number="1"><span class="kw">library</span>(nlme)</a>
+<a class="sourceLine" id="cb37-2" data-line-number="2">corr_res =<span class="st"> </span><span class="kw">lme</span>(gpa <span class="op">~</span><span class="st"> </span>occasion, </a>
+<a class="sourceLine" id="cb37-3" data-line-number="3">               <span class="dt">data =</span> gpa,</a>
+<a class="sourceLine" id="cb37-4" data-line-number="4">               <span class="dt">random =</span> <span class="op">~</span><span class="dv">1</span><span class="op">|</span>student, </a>
+<a class="sourceLine" id="cb37-5" data-line-number="5">               <span class="dt">correlation =</span> <span class="kw">corAR1</span>(<span class="dt">form =</span> <span class="op">~</span>occasion))</a>
+<a class="sourceLine" id="cb37-6" data-line-number="6">## summary(corr_res)</a></code></pre></div>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -1400,11 +1411,11 @@ Residual
 <p>Just as generalized linear models extend the standard linear model, we can generalize (linear) mixed models to <span class="emph">generalized linear mixed models</span>. Furthermore, there is nothing restricting us to only the exponential family, as other packages would potentially allow for many other response distributions.</p>
 <p>For this example we’ll do a logistic regression in the mixed model setting. In this case, we’ll use the speed dating data set. In the speed dating events, the experiment randomly assigned each participant to ten short dates (four minutes) with other participants. For each date, each person rated six attributes (attractive, sincere, intelligent, fun, ambitious, shared interests) of the other person on a 10-point scale and wrote down whether he or she would like to see the other person again.</p>
 <p>Our target variable is whether the participant would be willing to date the person again (<code>decision</code>). To keep things simple, the predictors will be limited to the sex of the participant (<code>sex</code>), whether the partner was of the same race (<code>samerace</code>), and three of the attribute ratings the participant gave of their partner- attractiveness (<code>attractive</code>), sincerity (<code>sincere</code>), and intelligence (<code>intelligent</code>). The latter have been scaled to have zero mean and standard deviation of .5, which puts them on a more even footing with the binary covariates (<code>_sc</code>)<a href="#fn22" class="footnote-ref" id="fnref22"><sup>22</sup></a>.</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" data-line-number="1"><span class="kw">load</span>(<span class="st">&#39;data/speed_dating.RData&#39;</span>)</a>
-<a class="sourceLine" id="cb36-2" data-line-number="2">sd_model =<span class="st"> </span><span class="kw">glmer</span>(decision <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>samerace <span class="op">+</span><span class="st"> </span>attractive_sc <span class="op">+</span><span class="st"> </span>sincere_sc</a>
-<a class="sourceLine" id="cb36-3" data-line-number="3">                 <span class="op">+</span><span class="st"> </span>intelligent_sc </a>
-<a class="sourceLine" id="cb36-4" data-line-number="4">                 <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>iid), <span class="dt">data=</span>speed_dating, <span class="dt">family=</span>binomial)</a>
-<a class="sourceLine" id="cb36-5" data-line-number="5"><span class="kw">summary</span>(sd_model, <span class="dt">correlation=</span>F)</a></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" data-line-number="1"><span class="kw">load</span>(<span class="st">&#39;data/speed_dating.RData&#39;</span>)</a>
+<a class="sourceLine" id="cb38-2" data-line-number="2">sd_model =<span class="st"> </span><span class="kw">glmer</span>(decision <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>samerace <span class="op">+</span><span class="st"> </span>attractive_sc <span class="op">+</span><span class="st"> </span>sincere_sc</a>
+<a class="sourceLine" id="cb38-3" data-line-number="3">                 <span class="op">+</span><span class="st"> </span>intelligent_sc </a>
+<a class="sourceLine" id="cb38-4" data-line-number="4">                 <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>iid), <span class="dt">data=</span>speed_dating, <span class="dt">family=</span>binomial)</a>
+<a class="sourceLine" id="cb38-5" data-line-number="5"><span class="kw">summary</span>(sd_model, <span class="dt">correlation=</span>F)</a></code></pre></div>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -1631,12 +1642,12 @@ iid
 <li>Model 4: In order to examine sex matching effects, add an interaction of the sex variables to the model <code>sexsend:sexrec</code>.</li>
 <li>Compare models with AIC (see the note about <a href="issues.html#model-comparison">model comparison</a>), e.g. <code>AIC(model1)</code>. A lower value would indicate the model is preferred.</li>
 </ul>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" data-line-number="1"><span class="kw">load</span>(<span class="st">&#39;data/sociometric.RData&#39;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1"><span class="kw">load</span>(<span class="st">&#39;data/sociometric.RData&#39;</span>)</a></code></pre></div>
 </div>
 <div id="patents" class="section level3">
 <h3>Patents</h3>
 <p>Do a Poisson mixed effect model using the <a href="appendix.html#data">patent data</a>. Predict the number of citations (<code>ncit</code>) based on whether there was opposition (<code>opposition</code>) and if it was for the biotechnology/pharmaceutical industry (<code>biopharm</code>). Use year as a random effect to account for unspecified economic conditions.</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" data-line-number="1"><span class="kw">load</span>(<span class="st">&#39;data/patents.RData&#39;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb40-1" data-line-number="1"><span class="kw">load</span>(<span class="st">&#39;data/patents.RData&#39;</span>)</a></code></pre></div>
 <p>Interestingly, one can model overdispersion in a Poisson model by specifying an random intercept for each observation (<code>subject</code> in the data). In other words, no clustering or grouped structure is necessary.</p>
 
 </div>
