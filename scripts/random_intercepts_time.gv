@@ -1,0 +1,72 @@
+digraph growth {
+           # specifying label position is impossible as long as Diagrammer ignores several label attributes inherent in graphviz
+           # Intialization of graph attributes
+           graph [overlap=false ordering=out outputorder = edgesfirst splines=false bgcolor=transparent]    # order out keeps observed nodes in order; splines will keep straight after specifying headport
+           
+           # Node statements
+           node [shape=circle style=filled fillcolor=lightblue color=gray75 fontcolor=gray50 fontsize='14px'];
+           
+           subgraph{
+            rankdir = LR;
+             rank = same;
+
+             # using plotly palette with alpha
+             Intercept [label='Inter', fontname=Roboto, fontcolor=white, fixedsize=true, width=1, height=1, fillcolor='#1f77b480' color='#1f77b4'];  
+             
+           }
+
+           node [width=.66, height=.66, fixedsize=true, shape=square, style='']
+           subgraph {
+             rankdir = TB;
+             rank=same;
+             node [fontcolor=gray50]
+             node [color='#9467bd']
+             
+             V1 [label='Y@_{T1}'];
+             V2 [label='Y@_{T2}']; 
+             V3 [label='Y@_{T3}']; 
+             V4 [label='Y@_{T4}']; 
+           }
+           
+           subgraph {
+             rank=same;
+             node [fontcolor=gray50]
+             node [color='#9467bd']
+             
+             T1 ;
+             T2 ; 
+             T3 ; 
+             T4 ; 
+           }
+
+
+           # Initialization of edge attributes
+           edge [color = gray50 overlap=false arrowsize=.5]
+           
+           # Edge statements
+           
+           edge [ fontcolor=gray25 dir=both fontsize='8px']  # labeleangle, labeldistance etc. attributes ignored
+           
+           
+           edge [dir=forward headport='c' minlen=1]
+           edge [label='1'  color='#1f77b4' fontcolor='#1f77b4']
+           Intercept -> V1; 
+           edge [label='1'   color='#1f77b4' fontcolor='#1f77b4']
+           Intercept -> V2;
+           edge [label='1'  color='#1f77b4' fontcolor='#1f77b4']
+           Intercept -> V3;
+           edge [label='1'  color='#1f77b4' fontcolor='#1f77b4']
+           Intercept -> V4;
+           
+           edge [dir=back headport='c' minlen=1]
+           edge [label='0'  color='#1f77b4' fontcolor='#1f77b4']
+           V1 -> T1; 
+           edge [label='1'   color='#1f77b4' fontcolor='#1f77b4']
+           V2 -> T2;
+           edge [label='2'  color='#1f77b4' fontcolor='#1f77b4']
+           V3 -> T3;
+           edge [label='3'  color='#1f77b4' fontcolor='#1f77b4']
+           V4 -> T4;
+           
+   
+} 
