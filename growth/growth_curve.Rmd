@@ -3,6 +3,9 @@ title: ""
 output: 
   html_document:
     css: ../css/book.css
+    toc: true
+    toc_float: true
+    toc_depth: 4
 ---
 
 ```{r chunk_setup, include=FALSE, eval=TRUE}
@@ -120,7 +123,7 @@ We'll use <span class="pack">lavaan</span> for our excursion into LGC. The synta
 lgc_init_model = '
 
   intercept =~ 1*gpa_0 + 1*gpa_1 + 1*gpa_2 + 1*gpa_3 + 1*gpa_4 + 1*gpa_5
-  slope     =~ 0*gpa_0 + 1*gpa_1 + 2*gpa_2 + 3*gpa_3 + 4*gpa_4 + 5*gpa_5
+  occasion  =~ 0*gpa_0 + 1*gpa_1 + 2*gpa_2 + 3*gpa_3 + 4*gpa_4 + 5*gpa_5
   
 '
 ```
@@ -135,7 +138,7 @@ summary(lgc_init)
 ```
 
 
-
+#### Fixed Effects
 
 Most of the output is blank, which is needless clutter, but we do get the same five parameter values we are interested in though.
 
@@ -143,21 +146,21 @@ Start with the 'intercepts':
 
 ```
 Intercepts:
-                   Estimate  Std.Err  Z-value  P(>|z|)
+                   Estimate  Std.Err  z-value  P(>|z|)
 
     intercept         2.598    0.018  141.956    0.000
-    slope             0.106    0.005   20.338    0.000
+    occasion          0.106    0.005   20.338    0.000
 ```
 
-It might be odd to call your fixed effects 'intercepts', but it makes sense if we are thinking of it as a multilevel model as depicted previously, where we actually broke out the random effects as a separate model. The estimates here are pretty much spot on with our mixed model estimates.
+It might be odd to call your fixed effects 'intercepts', but it makes sense if we are thinking of it as a multilevel model as depicted previously, where we actually broke out the random effects as a separate model. These are the population average of the random intercepts and slopes for occasion.  The estimates here are pretty much spot on with our mixed model estimates.
 
 ```{r fixefs}
 library(lme4)
 gpa_mixed = lmer(gpa ~ occasion + (1 + occasion | student), data=gpa)
-summary(gpa_mixed)
-
-# fixef(gpa_mixed)
+summary(gpa_mixed, cor=F)
 ```
+
+#### Random Effects
 
 Now let's look at the variance estimates.  The estimation of residual variance for each time point in the LGC distinguishes the two approaches, but not necessarily so.  We could fix them to be identical here, or conversely allow them to be estimated in the mixed model framework.  Just know that's why the results are not identical (to go along with their respective estimation approaches, which are also different by default).  
 
@@ -165,51 +168,27 @@ Now let's look at the variance estimates.  The estimation of residual variance f
 Covariances:
                    Estimate  Std.Err  z-value  P(>|z|)
   intercept ~~                                        
-    slope             0.002    0.002    1.629    0.103
+    occasion          0.002    0.002    1.629    0.103
     
 Variances:
                    Estimate  Std.Err  z-value  P(>|z|)
-   .gpa_0        0.080    0.010    8.136    0.000
-   .gpa_1        0.071    0.008    8.799    0.000
-   .gpa_2        0.054    0.006    9.039    0.000
-   .gpa_3        0.029    0.003    8.523    0.000
-   .gpa_4        0.015    0.002    5.986    0.000
-   .gpa_5        0.016    0.003    4.617    0.000
+   .gpa_0             0.080    0.010    8.136    0.000
+   .gpa_1             0.071    0.008    8.799    0.000
+   .gpa_2             0.054    0.006    9.039    0.000
+   .gpa_3             0.029    0.003    8.523    0.000
+   .gpa_4             0.015    0.002    5.986    0.000
+   .gpa_5             0.016    0.003    4.617    0.000
     intercept         0.035    0.007    4.947    0.000
-    slope             0.003    0.001    5.645    0.000
+    occasion          0.003    0.001    5.645    0.000
 ```
 
-```{r ranefVAr}
-VarCorr(gpa_mixed)
+```{r gpa_mixed_var_comp}
+print(VarCorr(gpa_mixed), comp='Var')  # use print to show variance only
 ```
 
 
 The differences provide some insight.  LGC by default assumes heterogeneous variance for each time point. Mixed models by default assume the same variance for each time point, but can allow them to be estimated separately in most modeling packages.
 
-As an example, if we fix the variances to be equal, the models are now identical.
-
-```{r compareMixedLGC, results='hold'}
-model = "
-  intercept =~ 1*gpa_0 + 1*gpa_1 + 1*gpa_2 + 1*gpa_3 + 1*gpa_4 + 1*gpa_5
-  slope =~ 0*gpa_0 + 1*gpa_1 + 2*gpa_2 + 3*gpa_3 + 4*gpa_4 + 5*gpa_5
-  
-  gpa_0 ~~ residual*gpa_0
-  gpa_1 ~~ residual*gpa_1
-  gpa_2 ~~ residual*gpa_2
-  gpa_3 ~~ residual*gpa_3
-  gpa_4 ~~ residual*gpa_4
-  gpa_5 ~~ residual*gpa_5
-"
-
-growthCurveModel = growth(model, data=gpa_wide)
-summary(growthCurveModel)
-```
-
-Compare to the <span class="pack">lme4</span> output.
-
-```{r compareVar, echo=F}
-print(VarCorr(gpa_mixed), comp='Var')
-```
 
 
 ### Random Intercepts with Homogeneous Variance
@@ -258,13 +237,13 @@ summary(lgc_ran_int, nd=4)  # increase the number of digits shown
 
 Compare it to the corresponding mixed model.
 
-```{r mixed_ran_int, eval=-2, echo=-(3:4)}
+```{r mixed_ran_int, echo=-(3:4)}
 mixed_ran_int = lmer(gpa ~ occasion + (1|student), data=gpa)
-summary(mixed_ran_int)
-
-mixed_ran_int %>% 
-  broom.mixed::tidy() %>% 
-  kable_df()
+summary(mixed_ran_int, cor=F)
+# 
+# mixed_ran_int %>% 
+#   broom.mixed::tidy(comp='var') %>% 
+#   kable_df()
 ```
 
 
@@ -300,20 +279,21 @@ lgc_ran_int_ran_slope = growth(lgc_ran_int_ran_slope_model, data = gpa_wide)
 summary(lgc_ran_int_ran_slope, nd=4)  # increase the number of digits shown
 ```
 
+Again, we compare the mixed model to show idential output.
 
 ```{r mixed_ran_int_ran_slope_constant_var}
 mixed_ran_int_ran_slope = lmer(gpa ~ occasion + (1 + occasion|student), data=gpa)
 summary(mixed_ran_int_ran_slope)
 ```
 
-In addition, the random coefficients estimates from the mixed model perfectly correlate with those of the latent variables.
+In addition, the estimated random coefficients estimates from the mixed model perfectly correlate with those of the latent variables.
 
 ```{r compare_random_effects, echo=FALSE}
 ranefLatent = data.frame(coef(mixed_ran_int_ran_slope)[[1]], lavPredict(lgc_ran_int_ran_slope)) %>%
-  rename(Int_mix = X.Intercept.,
-         Slope_mix = occasion,
-         Int_lgc = intercept,
-         Slope_lgc = slope)
+  rename(Int_mixed = X.Intercept.,
+         Slope_mixed = occasion,
+         Int_LGC = intercept,
+         Slope_LGC = slope)
 ranefLatent %>%   round(2) %>% head() %>% kable_df()
 # ranefLatent %>% cor %>% round(2)
 ```
@@ -332,7 +312,7 @@ The `std.all` is what we typically will look at.
 
 ### Other covariates
 
-Within these models we can have cluster level covariates or those that vary over time.
+Within these models we can have cluster level covariates or those that vary over time.  We will examine each in turn.
 
 #### Cluster level
 
@@ -342,45 +322,49 @@ To add a <span class="emph">cluster-level covariate</span>, for a mixed model, i
 
 *standard random intercept*
 
-$$y = b_{0c} + b_1*\mathrm{time} + e $$
+$$y = b_{0c} + b_{occ}*\mathrm{time} + e $$
 
 $$b_{0c} = b_0 + u_{intercept}$$   
 
 Plugging in becomes:
 
-$$y = b_0 + b_1*\mathrm{occasion} + u_{intercept} + e $$
+$$y = b_0 + b_{occ}*\mathrm{occasion} + u_{intercept} + e $$
 
 *subject level covariate added*
 
-$$b_{0c} = b_0 + c_1*\mathrm{sex} + u_{intercept}$$ 
+$$b_{0c} = b_0 + b_{sex}*\mathrm{sex} + u_{intercept}$$ 
 
 But if we plug that into our level 1 model, it just becomes:
 
-$$y = b_0 + c_1*\mathrm{sex} + b_1*\mathrm{occasion} + u_{intercept} + e$$
+$$y = b_0 + b_{occ}*\mathrm{occasion} + b_{sex}*\mathrm{sex} + u_{intercept} + e$$
 
 In our previous modeling syntax it would look like this:
 
 ```{r mixed_clusterLevelVar, eval=F}
-gpa_mixed = lmer(gpa ~ sex + occasion + (occasion|student), data = gpa)
+gpa_mixed = lmer(gpa ~ sex + occasion + (1|student), data = gpa)
 ```
 
 We'd have a fixed effect for sex and interpret it just like in the standard setting. 
 
 ##### LGC
 
-With LGC, there is a tendency to interpret the model as an SEM, and certainly one can.  But adding additional covariates typically causes confusion for those not familiar with mixed models.  We literally do have to regress the intercept and slope latent variables on cluster level covariates as follows.  
+With LGC, there is a tendency to interpret the model as an SEM, with the language of effects on latent variables, and certainly one can.  But adding additional covariates typically causes confusion for those not familiar with mixed models.  We literally do have to regress the intercept and slope latent variables on cluster level covariates as follows.  
 
 Furthermore, people automatically put in an effect for the cluster level covariate on the slope as well as the intercept factor.  In the mixed model this would result in the following:
 
 *subject level covariate added added for slopes*
 
-$$b_{1c} = b_1 + d_1*\mathrm{sex} + u_{slope}$$ 
+$$y = b_{0c} + b_{occ_c}*\mathrm{time} + e $$
+
+$$b_{0c} = b_0 + b_{sex}*\mathrm{sex} + u_{intercept}$$ 
+
+$$b_{occ_c} = b_{occ} + \gamma*\mathrm{sex} + u_{slope}$$ 
 
 And after plugging in:
 
-$$y = b_0 + c_1*\mathrm{sex} + b_{1c}*\mathrm{occasion} + d_1*\mathrm{sex}*\mathrm{occasion}  + u_{intercept}  + u_{slope} + e$$
+$$y = \color{#b2001d}{b_0 + b_{sex}*\mathrm{sex} + b_{occ}*\mathrm{occasion} + \mathbf{\gamma*\mathrm{sex}*\mathrm{occasion}}}  + \color{#001eb2}{u_{intercept}  + u_{slope}*\mathrm{occasion}} + e$$
 
-So we can see that this warrants an interaction between sex and occasion.  This is not required, but one should add it if they actually are interested in the interaction.
+The fixed effects are in red, while the random effects are in blue. Focussing on the fixed effects, we can see that this warrants an interaction between sex and occasion.  This is *not required*, but one should add it if they actually are interested in the interaction.  Our graphical model looks like the following using the above notation.
 
 
 ```{r growth_graph_cluster_level_covariate, echo=FALSE}
@@ -390,17 +374,18 @@ tags$div(style="width:50%; margin:auto auto; font-size:50%",
 )
 ```
 
+We are now ready to run the LGC for comparison.
+
 ```{r lgc_cluterLevelVar}
 lgc_cluster_level_model <- '
 
   intercept =~ 1*gpa_0 + 1*gpa_1 + 1*gpa_2 + 1*gpa_3 + 1*gpa_4 + 1*gpa_5
-  slope =~ 0*gpa_0 + 1*gpa_1 + 2*gpa_2 + 3*gpa_3 + 4*gpa_4 + 5*gpa_5
+  occasion  =~ 0*gpa_0 + 1*gpa_1 + 2*gpa_2 + 3*gpa_3 + 4*gpa_4 + 5*gpa_5
   
   # regressions
   intercept ~ sex
-  slope ~ sex 
-
-
+  occasion  ~ sex 
+  
   gpa_0 ~~ resid*gpa_0    # same residual variance for each time point
   gpa_1 ~~ resid*gpa_1
   gpa_2 ~~ resid*gpa_2
@@ -409,7 +394,7 @@ lgc_cluster_level_model <- '
   gpa_5 ~~ resid*gpa_5  
 '
 
-lgc_cluster_level = growth(lgc_cluster_level_model, data = gpa_wide)
+lgc_cluster_level = growth(lgc_cluster_level_model, data = gpa_wide, estimator='ML')
 summary(lgc_cluster_level)
 ```
 
@@ -417,12 +402,10 @@ summary(lgc_cluster_level)
 
 Applied researchers commonly have difficulty interpreting the model due to past experience with SEM.  While these are latent variables, they aren't *just* latent variables or underlying constructs.  It doesn't help that the output can be confusing, because now one has an 'intercept for your intercepts' and an 'intercept for your slopes'. In the multilevel context it makes sense, but there you know 'intercept' is just 'fixed effect'.  
 
+This is the corresponding mixed model
 
-Furthermore, the interaction is with time **as a categorical factor**, rather than a numeric/continuous effect.  So the corresponding mixed model would look something like this:
-
-```{r mixed_as_lgc}
-gpa = gpa %>% mutate(occasion_f = factor(occasion))
-mixed_up_mixed = lmer(gpa ~ sex*occasion_f + (occasion|student), data = gpa)
+```{r mixed_cluterLevelVar2}
+mixed_up_mixed = lmer(gpa ~ sex + occasion + sex:occasion + (1 + occasion|student), data = gpa)
 summary(mixed_up_mixed, cor=F)
 ```
 
@@ -433,20 +416,20 @@ summary(mixed_up_mixed, cor=F)
 
 ##### Mixed Model
 
-Similarly, if we had a time-varying covariate, say socioeconomic status, it'd look like the following:
+Similarly, if we had a time-varying covariate, average weekly hours spent in the library, it'd look like the following:
 
 ```{r timevaryingVar, eval=F}
-gpa_mixed = lmer(gpa ~ occasion + ses + (1 + occasion|student), data = gpa)
+gpa_mixed = lmer(gpa ~ occasion + lib_hours + (1 + occasion|student), data = gpa)
 ```
 
-Though we could have a random slope for SES if we wanted.  You get the picture. Most of the model is still standard regression interpretation.
+Though we could have a random slope for hours if we wanted.  You get the picture. Most of the model is still standard regression interpretation.
 
 ##### LGC
 
 
 With <span class="emph">time varying covariates</span>, i.e. those that can have a different value at each time point, the syntax starts to get tedious.  Here we add just one such covariate, $c$.
 
-```{r lgcTimeVar, eval=F}
+```{r lgc_timeVar, eval=F}
 model.syntax <- '
   # intercept and slope with fixed coefficients
     i =~ 1*y1 + 1*y2 + 1*y3 + 1*y4
@@ -457,16 +440,50 @@ model.syntax <- '
     s ~ x1 + x2
 
   # time-varying covariates
-    y1 ~ c1
-    y2 ~ c2
-    y3 ~ c3
-    y4 ~ c4
+    y1 ~ tvc1
+    y2 ~ tvc2
+    y3 ~ tvc3
+    y4 ~ tvc4
 '
 fit <- growth(model.syntax, data=Demo.growth)
 summary(fit)
 ```
 
+Note the problem here is similar to that with the residual variances.  Unless we fix the coefficient to be constant, this is akin to having an interaction of the time-varying covariate with a *categorical form of time*.  So in the same model we flip from considering time as a numeric and linear effect on the outcome, to one that is categorical.  This is rarely done in standard regression models, though for some reason standard for the LGC setting.
+
 Now imagine having just a few of those kinds of variables as would be common in most longitudinal settings. In the mixed model framework one would add them in as any covariate in a regression model, and each covariate would be associated with a single fixed effect. In the LGC framework, one has to regress each time point for the target variable on its corresponding predictor time point.  It might take a few paragraphs to explain the coefficients for just a handful of covariates. If you fix them to a single value, you would duplicate the mixed model, but the syntax requires even more tedium.
+
+### Random Effects with Heterogenous Variances
+
+We have demonstrated heterogenous variances [previously][Heterogeneous Variance].  But to revisit here, <span class="pack">lme4</span> does not provide an easy way to have separate variance at each time point, sacrificing various model complexities for computational advantages.  However, <span class="pack">nlme</span> provides an easy, though not straightforward way to get at these estimates.  See the previous section for details.
+
+```{r mixed_heterogenous, echo=1:5}
+library(nlme)
+
+mixed_ran_int_ran_slope_hetero_var = lme(gpa ~ occasion,
+                                         random = ~ 1 + occasion | student,
+                                         data = gpa,
+                                         weights = varIdent(form = ~1|occasion))
+
+summary(mixed_ran_int_ran_slope_hetero_var)
+
+res_var = lazerhawk::extract_nlme_variances(mixed_ran_int_ran_slope_hetero_var)
+data_frame(` ` = res_var) %>% 
+  kable_df(caption='Residual variance at each time point')
+```
+
+Compare to the LGC (our <span class="objclass">lgc_init model</span>).
+
+```
+Variances:
+                   Estimate  Std.Err  z-value  P(>|z|)
+   .gpa_0             0.080    0.010    8.136    0.000
+   .gpa_1             0.071    0.008    8.799    0.000
+   .gpa_2             0.054    0.006    9.039    0.000
+   .gpa_3             0.029    0.003    8.523    0.000
+   .gpa_4             0.015    0.002    5.986    0.000
+   .gpa_5             0.016    0.003    4.617    0.000
+```
 
 
 

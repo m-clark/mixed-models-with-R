@@ -12,7 +12,7 @@ digraph growth {
 
              # using plotly palette with alpha
              Intercept [label='Inter', fontname=Roboto, fontcolor=white, fixedsize=true, width=1, height=1, fillcolor='#1f77b480' color='#1f77b4'];  
-             Slope [fontname=Roboto, fontcolor=white, fixedsize=true, width=1, height=1, fillcolor='#ff7f0e80' color='#ff7f0e'];
+             Occasion [fontname=Roboto, fontcolor=white, fixedsize=true, width=1, height=1, fillcolor='#ff7f0e80' color='#ff7f0e'];
            }
            
            
@@ -38,7 +38,7 @@ digraph growth {
            # Edge statements
            
            edge [ fontcolor=gray25 dir=both fontsize='8px']  # labeleangle, labeldistance etc. attributes ignored
-           Intercept -> Slope[label='  &rho;\n' minlen=2];
+           Intercept -> Occasion[label='  &rho;\n' minlen=2];
            
            edge [dir=forward headport='c' minlen=1]
            edge [label='1'  color='#1f77b4' fontcolor='#1f77b4']
@@ -52,15 +52,15 @@ digraph growth {
            
            edge [dir=forward headport='n' minlen=1]
            edge [label='0'  color='#ff7f0e' fontcolor='#ff7f0e' labelposition=3]
-           Slope -> V1; 
+           Occasion -> V1; 
            edge [label='1'  color='#ff7f0e' fontcolor='#ff7f0e']
-           Slope -> V2;
+           Occasion -> V2;
            edge [label='2'  color='#ff7f0e' fontcolor='#ff7f0e']
-           Slope -> V3;
+           Occasion -> V3;
            edge [label='3'  color='#ff7f0e' fontcolor='#ff7f0e']
-           Slope -> V4;
+           Occasion -> V4;
            
            edge [dir=forward headport='n' minlen=1]
-           sex -> Intercept [label = 'c'];
-           sex -> Slope [label = 'd'];
+           sex -> Intercept [label = 'b@_{sex}'];
+           sex -> Occasion [label = 'γ'];
 } 
