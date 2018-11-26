@@ -85,17 +85,17 @@ digraph growth {
            
            
            edge [dir=back headport='c' minlen=1]
-           edge [label='*'  color='#1f77b4' fontcolor='#1f77b4']
+           edge [label=' *'  color='#1f77b4' fontcolor='#1f77b4']
            V1 -> LH_sem_1; 
-           edge [label='*'   color='#1f77b4' fontcolor='#1f77b4']
+           edge [label=' *'   color='#1f77b4' fontcolor='#1f77b4']
            V2 -> LH_sem_2;
-           edge [label='*'  color='#1f77b4' fontcolor='#1f77b4']
+           edge [label=' *'  color='#1f77b4' fontcolor='#1f77b4']
            V3 -> LH_sem_3;
-           edge [label='*'  color='#1f77b4' fontcolor='#1f77b4']
+           edge [label=' *'  color='#1f77b4' fontcolor='#1f77b4']
            V4 -> LH_sem_4;
-           edge [label='*'  color='#1f77b4' fontcolor='#1f77b4']
+           edge [label=' *'  color='#1f77b4' fontcolor='#1f77b4']
            V5 -> LH_sem_5;
-           edge [label='*'  color='#1f77b4' fontcolor='#1f77b4']
+           edge [label=' *'  color='#1f77b4' fontcolor='#1f77b4']
            V6 -> LH_sem_6;
            
 

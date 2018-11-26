@@ -98,7 +98,7 @@ $$F \sim \mathcal{N}(0, \tau)$$
 
 $$\epsilon \sim \mathcal{N}(0, \sigma)$$
 
-In the above, $Y$ is our observed variable, $b_{intercept}$ is the intercept as in a standard linear regression model, $\lambda$ is the coefficient (<span class="emph">loading</span> in factor analysis/SEM terminology) regarding the effect ot the latent variable, represented as $F$. The latent variable is assumed normally distributed, with zero mean, and some estimated variance, just like the random effects in mixed models.  
+In the above, $Y$ is our observed variable, $b_{intercept}$ is the intercept as in a standard linear regression model, $\lambda$ is the coefficient (<span class="emph">loading</span> in factor analysis/SEM terminology) regarding the effect of the latent variable, represented as $F$. The latent variable is assumed normally distributed, with zero mean, and some estimated variance, just like the random effects in mixed models.  
 
 Note that if $\lambda = 1$, we then have the right hand side as $b_{intercept} + F$, and this is indistinguishable from the random intercept portion of the mixed model ($b_{\mathrm{intercept}} + \mathrm{re}_{\mathrm{intercept}}$).  Through this that we can maybe start to get a sense of random effects as latent variables (or vice versa).  Indeed, mixed models have ties to many other kinds of models (e.g. spatial, additive), because those models also add a 'random' component to the model in some fashion.
 
@@ -129,7 +129,8 @@ Given the above visualization, for the LGC our data needs to be in *wide* format
 gpa_wide = gpa %>% 
   select(student, sex, highgpa, occasion, gpa) %>% 
   spread(key = occasion, value = gpa) %>% 
-  rename_at(vars(`0`,`1`,`2`,`3`,`4`,`5`), function(x) glue::glue('gpa_{x}'))
+  rename_at(vars(`0`,`1`,`2`,`3`,`4`,`5`), function(x) glue::glue('gpa_{x}')) %>% 
+  mutate(female = as.numeric(sex)-1)   # convert to binary 0 = male 1 = female to be used later
 
 gpa_wide %>% DT::datatable(rownames = F, options=list(dom='ltipr'))
 ```
@@ -208,7 +209,7 @@ print(VarCorr(gpa_mixed), comp='Var')  # using print to show variance only
 
 ### Random Intercepts
 
-How can we put these models on the same footing? Let's take a step back and do a model with only random intercepts. In this case, time is an observed measure, and has no person-specific variability.  Our graphical model now looks like the following.  Time, or time point (i.e. semester in our example), is now respresented with a square to denote it is no longer affiliated with a latent variable.
+How can we put these models on the same footing? Let's take a step back and do a model with only random intercepts. In this case, time is an observed measure, and has no person-specific variability.  Our graphical model now looks like the following.  Time, or time point (i.e. semester in our example), is now represented with a square to denote it is no longer affiliated with a latent variable.
 
 ```{r growth_graph_int_only, echo=FALSE}
 ## note to self Diagrammer is difficult at best for multifactor loading situations, mostly because there is no control over label placement
@@ -364,7 +365,7 @@ Variances:
 
 ### Other covariates
 
-Within these models we can have cluster level covariates or those that vary over time.  We will examine each in turn.
+Within these models we can have cluster level covariates which are constant over time, or covariates that vary over time.  We will examine each in turn.
 
 #### Cluster level covariates
 
@@ -374,21 +375,21 @@ To add a <span class="emph">cluster-level covariate</span>, for a mixed model, i
 
 *standard random intercept*
 
-$$\mathcal{GPA} = b_{\mathrm{int\_student}} + b_{occ}*\mathrm{time} + \epsilon $$
+$$\mathcal{GPA} = b_{\mathrm{int\_student}} + b_{occ}\cdot\mathrm{time} + \epsilon $$
 
 $$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + \mathrm{re}_{\mathrm{intercept}}$$   
 
 Plugging in becomes:
 
-$$\mathcal{GPA} = b_{\mathrm{intercept}} + b_{occ}*\mathrm{occasion} +  \mathrm{re}_{\mathrm{intercept}} + \epsilon $$
+$$\mathcal{GPA} = b_{\mathrm{intercept}} + b_{occ}\cdot\mathrm{occasion} +  \mathrm{re}_{\mathrm{intercept}} + \epsilon $$
 
 *subject level covariate added*
 
-$$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + b_{sex}*\mathrm{sex} + \mathrm{re}_{\mathrm{intercept}}$$ 
+$$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + b_{sex}\cdot\mathrm{sex} + \mathrm{re}_{\mathrm{intercept}}$$ 
 
 But if we plug that into our level 1 model, it just becomes:
 
-$$\mathcal{GPA} = b_{\mathrm{intercept}} + b_{sex}*\mathrm{sex} + b_{occ}*\mathrm{occasion} +  \mathrm{re}_{\mathrm{intercept}} + \epsilon $$
+$$\mathcal{GPA} = b_{\mathrm{intercept}} + b_{sex}\cdot\mathrm{sex} + b_{occ}\cdot\mathrm{occasion} +  \mathrm{re}_{\mathrm{intercept}} + \epsilon $$
 
 
 In our previous modeling syntax it would look like this:
@@ -397,24 +398,28 @@ In our previous modeling syntax it would look like this:
 gpa_mixed = lmer(gpa ~ sex + occasion + (1|student), data = gpa)
 ```
 
-We'd have a fixed effect for sex and interpret it just like in the standard setting. 
+We'd have a fixed effect for sex and interpret it just like in the standard regression setting. 
 
 ##### LGC
 
-With LGC, there is a tendency to interpret the model as an SEM, with the language of effects on latent variables, and certainly one can.  But adding additional covariates typically causes confusion for those not familiar with mixed models.  We literally do have to regress the intercept and slope latent variables on cluster level covariates as follows.  
+With LGC, there is a tendency to interpret the model as an SEM, with the language of effects on latent variables, and certainly one can.  For example, we can talk about the (implicitly causal) effect of sex on the intercepts factor, which represents GPA at the first semester.  However, adding additional covariates typically causes confusion for those not familiar with mixed models.  We literally do have to regress the intercept and slope latent variables on cluster level covariates as follows.  
 
-Furthermore, people automatically put in an effect for the cluster level covariate on the slope as well as the intercept factor.  In the mixed model this would result in the following:
+
+
+
+
+$$\mathcal{GPA} = b_{\mathrm{int\_student}} + b_{\mathrm{occ\_student}}\cdot \mathrm{occasion} + \epsilon$$
+$$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + b_{sex}\cdot\mathrm{sex} + \mathrm{re}_{\mathrm{intercept}}$$ 
+Furthermore, people almost automatically put in an effect for the cluster level covariate on the slope factor also.  In the mixed model this would result in the following:
 
 *subject level covariate added added for slopes*
 
-$$\mathcal{GPA} = b_{\mathrm{int\_student}} + b_{\mathrm{occ\_student}}\cdot \mathrm{occasion} + \epsilon$$
-$$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + b_{sex}*\mathrm{sex} + \mathrm{re}_{\mathrm{intercept}}$$ 
-$$b_{\mathrm{occ\_student}} = b_{\mathrm{occ}} + \gamma*\mathrm{sex} + \mathrm{re}_{\mathrm{occasion}}$$
+$$b_{\mathrm{occ\_student}} = b_{\mathrm{occ}} + \gamma\cdot\mathrm{sex} + \mathrm{re}_{\mathrm{occasion}}$$
 
 
 And after plugging in:
 
-$$\mathcal{GPA} = \color{#b2001d}{b_{\mathrm{intercept}} + b_{sex}*\mathrm{sex} + b_{occ}*\mathrm{occasion} + \mathbf{\gamma*\mathrm{sex}*\mathrm{occasion}}}  + \color{#001eb2}{\mathrm{re}_{\mathrm{intercept}} + \mathrm{re}_{\mathrm{occasion}}*\mathrm{occasion}} + e$$
+$$\mathcal{GPA} = \color{#b2001d}{b_{\mathrm{intercept}} + b_{sex}\cdot\mathrm{sex} + b_{occ}\cdot\mathrm{occasion} + \mathbf{\gamma\cdot\mathrm{sex}\cdot\mathrm{occasion}}}  + \color{#001eb2}{\mathrm{re}_{\mathrm{intercept}} + \mathrm{re}_{\mathrm{occasion}}\cdot\mathrm{occasion}} + e$$
 
 The fixed effects are in red, while the random effects are in blue. Focusing on the fixed effects, we can see that this warrants an interaction between sex and occasion.  This is *not required*, but one should add it if they actually are interested in the interaction.  Our graphical model looks like the following using the above notation.
 
@@ -435,8 +440,8 @@ lgc_cluster_level_model <- '
   occasion  =~ 0*gpa_0 + 1*gpa_1 + 2*gpa_2 + 3*gpa_3 + 4*gpa_4 + 5*gpa_5
   
   # regressions
-  intercept ~ sex
-  occasion  ~ sex 
+  intercept ~ female
+  occasion  ~ female 
   
   gpa_0 ~~ resid*gpa_0    # same residual variance for each time point
   gpa_1 ~~ resid*gpa_1
@@ -453,9 +458,9 @@ summary(lgc_cluster_level, std=T)
 
 
 
-Applied researchers commonly have difficulty interpreting the model due to past experience with SEM.  While these are latent variables, they aren't *just* latent variables or underlying constructs.  It doesn't help that the output can be confusing, because now one has an 'intercept for your intercepts' and an 'intercept for your slopes'. In the multilevel context it makes sense, but there you know 'intercept' is just 'fixed effect'.  
+Applied researchers commonly have difficulty interpreting the model due to past experience with SEM.  While these are latent variables, they aren't typical latent variables that represent underlying theoretical constructs.  It doesn't help that the output can be confusing, because now one has an 'intercept for your intercepts' and an 'intercept for your slopes'. In the multilevel context it makes sense, but there you know 'intercept' is just 'fixed effect'.  
 
-This is the corresponding mixed model:
+This is the corresponding mixed model for comparison:
 
 ```{r mixed_cluterLevelVar2}
 mixed_cluster_level_cov = lmer(gpa ~ sex + occasion + sex:occasion + (1 + occasion|student), data = gpa)
@@ -469,7 +474,7 @@ summary(mixed_cluster_level_cov, cor=F)
 
 ##### Mixed Model
 
-Similarly, if we had a <span class="emph">time varying covariate</span>, average weekly hours spent in the library, it'd look like the following.  The gpa data doesn't really come with a useful time-varying covariate, so I've added one for this demo.
+If we had a <span class="emph">time varying covariate</span>, it'd look like the following.  The `gpa` data doesn't really come with a useful time-varying covariate, so I've added one for demonstration, *average weekly hours spent in the library* (`lib_hours`).
 
 ```{r timevaryingVar, echo=-(1:4), eval=T}
 set.seed(1234)
@@ -482,12 +487,12 @@ gpa_mixed_tvc = lmer(gpa ~ occasion + lib_hours + (1 + occasion|student), data =
 summary(gpa_mixed_tvc, cor=F)
 ```
 
-Though we could have a random slope for hours if we wanted.  You get the picture. Most of the model is still standard regression interpretation.
+Note that we could have a random slope for library hours if we wanted.  The fixed effect for the covariate is still as it would be for standard regression interpretation.
 
 ##### LGC
 
 
-With time varying covariates, i.e. those that can have a different value at each time point, the syntax starts to get tedious.  Here we add `lib_hours`, but we need to convert it to wide format and add it to our previous data.
+With time varying covariates, the syntax starts to get tedious for the LGC.  Here we add `lib_hours` to the model, but we need to convert it to wide format and add it to our previous data. Thus `lib_hours_*` represent the average weekly hours spent in the library for each each student at each semester.
 
 ```{r gpa_wide_add_timeVar, echo=-1}
 gpa_wide = gpa %>%
@@ -500,6 +505,7 @@ gpa_wide = gpa %>%
 
 ```{r lgc_timeVar, echo=-1}
 lgc_tvc_model <- '
+
   intercept =~ 1*gpa_0 + 1*gpa_1 + 1*gpa_2 + 1*gpa_3 + 1*gpa_4 + 1*gpa_5
   occasion  =~ 0*gpa_0 + 1*gpa_1 + 2*gpa_2 + 3*gpa_3 + 4*gpa_4 + 5*gpa_5
   
@@ -517,13 +523,14 @@ lgc_tvc_model <- '
   gpa_3 ~~ resid*gpa_3
   gpa_4 ~~ resid*gpa_4
   gpa_5 ~~ resid*gpa_5  
+  
 '
 
 lgc_tvc <- growth(lgc_tvc_model, data=gpa_wide)
 summary(lgc_tvc)
 ```
 
-Note the problem here is similar to that with the residual variances. Here is the corresponding graphical model.
+However, this result is not the same as our mixed model. Here is the corresponding graphical model. The `*` represents a coefficient that is freely estimated.
 
 
 ```{r growth_graph_tvc, echo=FALSE}
@@ -533,10 +540,11 @@ tags$div(style="width:50%; margin:auto auto; font-size:50%",
 )
 ```
 
-Unless we fix the coefficient to be constant, this is akin to having an interaction of the time-varying covariate with a *categorical form of time*.  So in the same model we flip from considering time as a numeric and linear effect on the outcome, to one that is categorical.  This is rarely done in typical mixed or other regression models, though for some reason is the standard for the LGC setting.  The following will get us back to the comparable mixed model.
+The problem here is similar to that seen with the residual variances. Unless we fix the coefficient to be constant, this is akin to having an interaction of the time-varying covariate with a *categorical form of time*.  So in the same model we flip from considering time as a numeric and linear effect on the outcome, to one that is categorical.  This is rarely done in typical mixed or other regression models, though for some reason is the standard for the LGC setting.  The following will get us back to the comparable mixed model.
 
 ```{r lgc_timeVar2}
 lgc_tvc_model <- '
+
   intercept =~ 1*gpa_0 + 1*gpa_1 + 1*gpa_2 + 1*gpa_3 + 1*gpa_4 + 1*gpa_5
   occasion  =~ 0*gpa_0 + 1*gpa_1 + 2*gpa_2 + 3*gpa_3 + 4*gpa_4 + 5*gpa_5
   
@@ -554,6 +562,7 @@ lgc_tvc_model <- '
   gpa_3 ~~ resid*gpa_3
   gpa_4 ~~ resid*gpa_4
   gpa_5 ~~ resid*gpa_5  
+  
 '
 
 lgc_tvc <- growth(lgc_tvc_model, data=gpa_wide)
@@ -568,29 +577,28 @@ summary(gpa_mixed_tvc, cor=F)
 
 
 
-Now imagine having just a few of those kinds of variables as would be common in most longitudinal settings. In the mixed model framework one would add them in as any covariate in a regression model, and each covariate would be associated with a single fixed effect. In the LGC framework, one has to regress each time point for the target variable on its corresponding predictor time point.  It might take a few paragraphs to explain the coefficients for just a handful of covariates. If you fix them to a single value, you would duplicate the mixed model, but the syntax requires even more tedium.
+Now imagine having just a few of those kinds of variables as would be common in most longitudinal settings. In the mixed model framework one would add them in as any covariate in a regression model, and each covariate would be associated with a single fixed effect. In the LGC framework, one has to regress each time point for the target variable on its corresponding predictor time point.  It might take a few paragraphs to explain the coefficients for just a handful of covariates. If you fix them to a single value, you would duplicate the mixed model, but the syntax requires even more tedium[^mplusshortcut].
 
 
 
 
 ### Some Differences between Mixed Models and Growth Curves
 
+#### Wide vs. long
+
+The SEM framework is inherently multivariate, i.e. assuming multiple outcomes, so your data will need to be in wide format.  In the R world, this is 'untidy' data, and makes other data processing and visualization more tedious.
 
 #### Random slopes
 
 One difference seen in comparing LGC models vs. mixed models is that in the former, random slopes are always assumed, whereas in the latter, one would typically see if it's worth adding random slopes in the first place, or simply not assume them.
 
-#### Other random effects structure
+#### Other random effects
 
-Just about any LGC you come across in the wild has only one clustering level of interest.  <span class="pack">Mplus</span>, the most common SEM tool for LGC, doesn't even provide an example in its user guide of any other situation (and it provides 18 different growth models in version 8.1).  However, it's very common to have multiple random effects structure.  In our example, these might include school, district, or other complicated structure.  Tools like <span class="pack">lme4</span> handle complicated random effects structure easily.  SEM tools do not, if at all, without resorting to the multilevel (long-format) approach, which more or less defeats the purpose of using them, as they merely mimic the standard mixed model approach, albeit with yet another and different type of syntax[^multisyntax].  However, if you have other latent variables or complicated indirect effects, this may be the way to go. 
-
-#### Wide vs. long
-
-The SEM framework is inherently multivariate, i.e. assuming multiple outcomes, so your data will need to be in wide format.  In the R world, this is 'untidy' data, and makes other data processing and visualization more tedious.
+Just about any LGC you come across in the wild has only one clustering level of interest.  However, it's very common to have multiple random effects structure or additional random effects beyond the time covariate.  In our example, these might include school, district, or other complicated structure, or the library hours from the time-varying covariate example.  Tools like <span class="pack">lme4</span> handle random effects and complicated structure easily.  SEM tools do not do this easily, and resort to the multilevel (long-format) approach, which more or less defeats the purpose of using them, as they merely mimic the standard mixed model approach, albeit with yet another and different type of syntax[^multisyntax].  However, if you have other latent variables or complicated indirect effects, this may be the way to go. 
 
 #### Sample size
 
-As we have noted before, SEM is inherently a large sample technique.  The growth curve model does not require as much for standard approaches, but may require a lot more depending on the model one tries to estimate.  In [my own simulations](https://m-clark.github.io/docs/gpa_mixeds/growth_vs_mixed_sim.html), I haven't seen too much difference compared to mixed models even for notably small sample sizes, but those were for very simple models.
+SEM is inherently a large sample technique.  The growth curve model does not require as much for standard approaches, but may require a lot more depending on the model one tries to estimate.  In [my own simulations](https://m-clark.github.io/docs/gpa_mixeds/growth_vs_mixed_sim.html), I haven't seen too much difference compared to mixed models even for notably small sample sizes, but those were for very simple models.
 
 #### Number of time points
 
@@ -617,7 +625,7 @@ Between <span class="pack">lme4</span> and <span class="pack">nlme</span>, you c
 - Mediation: <span class="pack">mediation</span>, <span class="pack">brms</span>
 - Growth Mixture Models: <span class="pack">flexmix</span>
 
-In short, you'd need a very complicated growth model to require moving from the mixed model framework to SEM-specific software or beyond R, one that combines potentially already complex modeling situations. Note also, unless you are incorporating latent variables, e.g. from scale measurements, there is little need to use something like <span class="pack">lavaan</span> or <span class="pack">Mplus</span> for standard mixed/multilevel modeling (i.e. in the long data framework), though they have such functionality.  The <span class="pack">Mplus</span> manual also lumps survival and standard time series in the chapter on longitudinal and related models.  However, I personally can't see a scenario where I would use <span class="pack">Mplus</span> for survival or time series given the multitude of easier to use, more flexible, and more powerful options in R.
+In short, you'd need a very complicated growth model to require moving from the mixed model framework to SEM-specific software or beyond R, in other words, one that combines potentially already complex modeling situations. Note also, unless you are incorporating latent variables, e.g. from scale measurements, there is little need to use something like <span class="pack">lavaan</span> or <span class="pack">Mplus</span> for standard mixed/multilevel modeling (i.e. in the long data framework), though they have such functionality.  The <span class="pack">Mplus</span> manual also lumps survival and standard time series in the chapter on longitudinal and related models.  However, I personally can't see a scenario where I would use <span class="pack">Mplus</span> for survival or time series given the multitude of easier to use, more flexible, and more powerful options in R.
 
 
 
@@ -625,10 +633,11 @@ In short, you'd need a very complicated growth model to require moving from the 
 
 ### Summary
 
-Growth curve modeling is an alternative way to do what is very commonly accomplished through mixed models, and allow for more complex models than typically seen for standard mixed models.  One's default should probably be to use the more common, and probably more flexible (in most situations), mixed modeling tools, where there are packages in R that could handle nonlinear effects, mediation and multivariate outcomes for mixed models. I have other documents regarding mixed models on my [website](https://m-clark.github.io/documents) and code at [GitHub](https://github.com/m-clark/Miscellaneous-R-Code), including a document that does [more comparison to growth curve models](http://m-clark.github.io/mixed-growth-comparison/). However, the latent variable approach may provide what you need, and at the very least gives you a fresh take on the standard mixed model perspective.
+Latent Growth Curve modeling is an alternative way to do what is very commonly accomplished through mixed models, and allow for more complex models than typically seen for standard mixed models.  One's default should probably be to use the more commonly used, and probably more flexible (in most situations), mixed modeling tools, where there are packages in R that could handle nonlinear effects, mediation and multivariate outcomes for mixed models. I have other documents regarding mixed models on my [website](https://m-clark.github.io/documents) and code at [GitHub](https://github.com/m-clark/Miscellaneous-R-Code), including a document that does [more comparison to growth curve models](http://m-clark.github.io/mixed-growth-comparison/). However, the latent variable approach may provide what you need, and at the very least gives you a fresh take on the standard mixed model perspective.
 
 
 
-[^subscript]: I'm ommiting the observation level subscript, so this can work for the single observation or entire data set.
-[^multisyntax]: Honestly, for the same types of models I find the multilevel syntax of Mplus ridiculously complex relative to R packages.
+[^subscript]: I'm omitting the observation level subscript, so this can work for the single observation or entire data set.
+[^multisyntax]: Honestly, for the same types of models I find the multilevel syntax of <span class="pack">Mplus</span> ridiculously complex relative to R packages.
 [^mutlivarre]: Usually we would draw both random effects from a multivariate normal distribution with some covariance.
+[^mplusshortcut]: To be fair, <span class="pack">Mplus</span> (and presumably <span class="pack">lavaan</span> at some point in the future) has shortcuts to make the syntax easier, but it also can make for more esoteric and less understandable syntax.
