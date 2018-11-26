@@ -53,9 +53,16 @@ R has more mixed modeling capabilities [than anything else out there](https://ww
 
 In Python, the [statsmodels](http://www.statsmodels.org/stable/mixed_linear.html) module has basic capabilities for mixed models but not too many frills (e.g. no crossed random effects).  CSCAR directory Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series [here](https://github.com/kshedden/Statsmodels-MixedLM).  The following provides an example.
 
-```{python gpa_py, engine.path="/Users/micl/anaconda3/bin/python"}
+```{r pycheck, echo=FALSE, cache=FALSE}
+pycheck = ifelse(grepl('Windows', sessionInfo()$running), 
+                 'C:/ProgramData/Anaconda3', 
+                 '/Users/micl/anaconda3/bin/python')
+```
+
+
+```{python gpa_py, engine.path=pycheck}
 import pandas as pd
-import statsmodels as sm
+import statsmodels.api as sm
 import statsmodels.formula.api as smf
 
 gpa = pd.read_csv('data/gpa.csv')

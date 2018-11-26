@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Mixed Models in R</title>
+  <meta name="description" content="This is an introduction to mixed models in R. It covers a many of the most common techniques employed in such models, and relies heavily on the lme4 package. The basics of random intercepts and slopes models, crossed vs. nested models, etc. are covered. Discussion includes extensions into generalized mixed models and realms beyond.">
+  <meta name="generator" content="bookdown 0.7 and GitBook 2.6.7">
+
+  <meta property="og:title" content="Mixed Models in R" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://m-clark.github.io/mixed-models-with-R/" />
+  <meta property="og:image" content="https://m-clark.github.io/mixed-models-with-R/img/nineteeneightyR.png" />
+  <meta property="og:description" content="This is an introduction to mixed models in R. It covers a many of the most common techniques employed in such models, and relies heavily on the lme4 package. The basics of random intercepts and slopes models, crossed vs. nested models, etc. are covered. Discussion includes extensions into generalized mixed models and realms beyond." />
+  <meta name="github-repo" content="m-clark/mixed-models-with-R/" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Mixed Models in R" />
+  
+  <meta name="twitter:description" content="This is an introduction to mixed models in R. It covers a many of the most common techniques employed in such models, and relies heavily on the lme4 package. The basics of random intercepts and slopes models, crossed vs. nested models, etc. are covered. Discussion includes extensions into generalized mixed models and realms beyond." />
+  <meta name="twitter:image" content="https://m-clark.github.io/mixed-models-with-R/img/nineteeneightyR.png" />
+
+
+
+<meta name="date" content="2018-11-26">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  <link rel="shortcut icon" href="img/R.ico" type="image/x-icon">
+<link rel="prev" href="summary.html">
+<link rel="next" href="appendix.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+<script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.5/datatables.js"></script>
+<link href="libs/dt-core-1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.16/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.16/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
+<script src="libs/plotly-binding-4.8.0/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.39.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.39.2/plotly-latest.min.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<script src="libs/viz-0.3/viz.js"></script>
+<link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
+<script src="libs/grViz-binding-1.0.0/grViz.js"></script>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="css\book.css" type="text/css" />
+<link rel="stylesheet" href="https:\\use.fontawesome.com\releases\v5.0.13\css\all.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class='before'><a href="./">Mixed Models with R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i>Introduction</a><ul>
+<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#overview"><i class="fa fa-check"></i>Overview</a><ul>
+<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#goals"><i class="fa fa-check"></i>Goals</a></li>
+<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#prerequisites"><i class="fa fa-check"></i>Prerequisites</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#initial-steps"><i class="fa fa-check"></i>Initial Steps</a></li>
+<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#key-packages"><i class="fa fa-check"></i>Key packages</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html"><i class="fa fa-check"></i>Mixed Models</a><ul>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#terminology"><i class="fa fa-check"></i>Terminology</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#kinds-of-clustering"><i class="fa fa-check"></i>Kinds of clustering</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#random-intercepts-model"><i class="fa fa-check"></i>Random Intercepts model</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#example-student-gpa"><i class="fa fa-check"></i>Example: student GPA</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#the-standard-regression-model"><i class="fa fa-check"></i>The standard regression model</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#the-mixed-model"><i class="fa fa-check"></i>The mixed model</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#application"><i class="fa fa-check"></i>Application</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#cluster-level-covariate"><i class="fa fa-check"></i>Cluster level covariate</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#summary"><i class="fa fa-check"></i>Summary</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#exercises"><i class="fa fa-check"></i>Exercises</a><ul>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#sleep"><i class="fa fa-check"></i>Sleep</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#cluster-level-covariate-1"><i class="fa fa-check"></i>Cluster level covariate</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#simulation"><i class="fa fa-check"></i>Simulation</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html"><i class="fa fa-check"></i>More Random Effects</a><ul>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#application-1"><i class="fa fa-check"></i>Application</a></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#comparison-to-many-regressions"><i class="fa fa-check"></i>Comparison to many regressions</a></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#visualization-of-effects"><i class="fa fa-check"></i>Visualization of effects</a></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#summary-1"><i class="fa fa-check"></i>Summary</a></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#exercises-1"><i class="fa fa-check"></i>Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html"><i class="fa fa-check"></i>Common Extensions</a><ul>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#additional-grouping-structure"><i class="fa fa-check"></i>Additional Grouping Structure</a><ul>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#cross-classified-models"><i class="fa fa-check"></i>Cross-classified models</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#hierarchical-structure"><i class="fa fa-check"></i>Hierarchical Structure</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#crossed-vs.nested"><i class="fa fa-check"></i>Crossed vs. Nested</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#residual-structure"><i class="fa fa-check"></i>Residual Structure</a><ul>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#heterogeneous-variance"><i class="fa fa-check"></i>Heterogeneous Variance</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#autocorrelation"><i class="fa fa-check"></i>Autocorrelation</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#generalized-linear-mixed-models"><i class="fa fa-check"></i>Generalized Linear Mixed Models</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#exercises-2"><i class="fa fa-check"></i>Exercises</a><ul>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#sociometric-data"><i class="fa fa-check"></i>Sociometric data</a></li>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#patents"><i class="fa fa-check"></i>Patents</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html"><i class="fa fa-check"></i>Issues</a><ul>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#variance-accounted-for"><i class="fa fa-check"></i>Variance accounted for</a></li>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#alternative-approaches-to-mixed-models"><i class="fa fa-check"></i>Alternative approaches to mixed models</a><ul>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#growth-curve-models"><i class="fa fa-check"></i>Growth curve models</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#sample-sizes"><i class="fa fa-check"></i>Sample sizes</a><ul>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#small-number-of-clusters"><i class="fa fa-check"></i>Small number of clusters</a></li>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#small-n-within-cluster"><i class="fa fa-check"></i>Small N within cluster</a></li>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#balancedmissing-values"><i class="fa fa-check"></i>Balanced/Missing values</a></li>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#big-data"><i class="fa fa-check"></i>Big Data</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#model-comparison"><i class="fa fa-check"></i>Model Comparison</a></li>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#convergence"><i class="fa fa-check"></i>Convergence</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="further.html"><a href="further.html"><i class="fa fa-check"></i>Going Further</a><ul>
+<li class="chapter" data-level="" data-path="further.html"><a href="further.html#other-distributions"><i class="fa fa-check"></i>Other distributions</a></li>
+<li class="chapter" data-level="" data-path="further.html"><a href="further.html#other-contexts"><i class="fa fa-check"></i>Other contexts</a></li>
+<li class="chapter" data-level="" data-path="further.html"><a href="further.html#nonlinear-mixed-effects"><i class="fa fa-check"></i>Nonlinear Mixed Effects</a></li>
+<li class="chapter" data-level="" data-path="further.html"><a href="further.html#connections"><i class="fa fa-check"></i>Connections</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="summary.html"><a href="summary.html"><i class="fa fa-check"></i>Summary</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html"><i class="fa fa-check"></i>Supplemental</a><ul>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#a-comparison-to-latent-growth-curve-models"><i class="fa fa-check"></i>A Comparison to Latent Growth Curve Models</a><ul>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#random-effects-as-latent-variables"><i class="fa fa-check"></i>Random Effects as Latent Variables</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#random-effects-in-sem"><i class="fa fa-check"></i>Random Effects in SEM</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#running-a-growth-curve-model"><i class="fa fa-check"></i>Running a Growth Curve Model</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#random-intercepts"><i class="fa fa-check"></i>Random Intercepts</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#random-intercepts-and-slopes"><i class="fa fa-check"></i>Random Intercepts and Slopes</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#random-effects-with-heterogeneous-variances"><i class="fa fa-check"></i>Random Effects with Heterogeneous Variances</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#other-covariates"><i class="fa fa-check"></i>Other covariates</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#some-differences-between-mixed-models-and-growth-curves"><i class="fa fa-check"></i>Some Differences between Mixed Models and Growth Curves</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#recommended-packages-that-can-do-lgc-models"><i class="fa fa-check"></i>Recommended Packages that can do LGC models</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#summary-3"><i class="fa fa-check"></i>Summary</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i>Appendix</a><ul>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#data"><i class="fa fa-check"></i>Data</a></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#programming-languages"><i class="fa fa-check"></i>Programming languages</a><ul>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#r"><i class="fa fa-check"></i>R</a></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#python"><i class="fa fa-check"></i>Python</a></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#julia"><i class="fa fa-check"></i>Julia</a></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#proprietary"><i class="fa fa-check"></i>Proprietary</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#reference-texts-and-other-stuff"><i class="fa fa-check"></i>Reference texts and other stuff</a></li>
+</ul></li>
+<li class="divider"></li>
+<li class='after'">
+   <a href="https://m-clark.github.io/">
+      <img src="img/mc_logo.png" style="width:25%; padding:0px 0; display:block; margin: 0 auto;" alt="MC logo">
+   </a>
+</li>
+<li class='after'">
+   <div style='text-align:center'>
+      <a href="https://github.com/m-clark/">
+         <i class="fab fa-github fa-2x" aria-hidden="true"></i>
+      </a>
+   </div>
+</li>
+<li class='after'">
+   <div style='text-align:center'>
+      <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+         <i class="fab fa-creative-commons fa-lg"></i>
+         <i class="fab fa-creative-commons-by fa-lg"></i>
+         <i class="fab fa-creative-commons-sa fa-lg"></i>
+      </a>
+   </div>
+</li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Mixed Models in R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="supplemental" class="section level1">
+<h1>Supplemental</h1>
+<div id="a-comparison-to-latent-growth-curve-models" class="section level2">
+<h2>A Comparison to Latent Growth Curve Models</h2>
+<p>It is common in <span class="emph">Structural Equation Modeling</span> (SEM) to deal with longitudinal data via a <span class="emph">Latent Growth Curve (LGC)</span> model. It turns out that LGC are in a sense, just a different form of the very commonly used <span class="emph">mixed model</span> framework. In some ways they are more flexible, mostly in the standard structural equation modeling framework that allows for indirect, and other complex covariate relationships. In other ways, they are less flexible, e.g. with missing data, estimating nonlinear relationships, incorporating with many time points, dealing with time-varying covariates. With appropriate tools there is little one can’t do with the normal mixed model approach relative to the SEM approach, and one would likely have easier interpretation. As such I’d recommend sticking with the standard mixed model framework unless you really need to, but it is useful to have both tools.</p>
+<p>To best understand a growth curve model, I still think it’s instructive to see it from the mixed model perspective, where things are mostly interpretable from what you know from a standard linear model. We will use our GPA example from before, and one can refer to the <a href="appendix.html#appendix">appendix</a> for more detail.</p>
+<div id="random-effects-as-latent-variables" class="section level3">
+<h3>Random Effects as Latent Variables</h3>
+<p>[As before][random-intercepts-model] we assume the following for the GPA model. As a simple starting point we merely model a trend of time (occasion- 6 semesters) and have random effects due to student for both intercept and occasion. In this setting we are treating time as numeric, but one could treat the occasion variable as categorical<a href="#fn28" class="footnote-ref" id="fnref28"><sup>28</sup></a>.</p>
+<p><span class="math display">\[\mathcal{GPA} = (b_{\mathrm{intercept}} + \mathrm{re}_{\mathrm{intercept}}) + (b_{\mathrm{occ}}  + \mathrm{re}_{\mathrm{occasion}})\cdot \mathrm{occasion} +  \epsilon\]</span></p>
+<p><span class="math display">\[\mathrm{re}_{\mathrm{intercept}} \sim \mathcal{N}(0, \tau)\]</span>
+<span class="math display">\[\mathrm{re}_{\mathrm{occasion}} \sim \mathcal{N}(0, \varphi)\]</span>
+<span class="math display">\[\epsilon \sim \mathcal{N}(0, \sigma)\]</span></p>
+<p>Thus the student effects for the intercept and slope are random, and specifically are normally distributed with mean of zero and some estimated standard deviation (<span class="math inline">\(\tau\)</span>, <span class="math inline">\(\varphi\)</span> respectively)<a href="#fn29" class="footnote-ref" id="fnref29"><sup>29</sup></a>. We consider these effects as coming from unspecified, or <span class="emph">latent</span>, causes due to student. In addition, we have the usual residual error <span class="math inline">\(\epsilon\)</span>, which can also be thought of as a per-observation random effect due to all other unknown causes.</p>
+<p>The ‘multi-level model’ version might look like the following, but it is identical.</p>
+<p><span class="math display">\[\mathcal{GPA} = b_{\mathrm{int\_student}} + b_{\mathrm{occ\_student}}\cdot \mathrm{occasion} + \epsilon\]</span></p>
+<p><span class="math display">\[b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + \mathrm{re}_{\mathrm{intercept}}\]</span>
+<span class="math display">\[b_{\mathrm{occ\_student}} = b_{\mathrm{occ}} + \mathrm{re}_{\mathrm{occasion}}\]</span></p>
+<p>The corresponding model may be run using <span class="pack">lme4</span> as follows.</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb42-1" data-line-number="1"><span class="kw">load</span>(<span class="st">&#39;data/gpa.RData&#39;</span>)   </a>
+<a class="sourceLine" id="cb42-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb42-3" data-line-number="3"><span class="co"># if you haven&#39;t downloaded the workshop RStudio project</span></a>
+<a class="sourceLine" id="cb42-4" data-line-number="4"><span class="co"># load(url(&#39;https://github.com/m-clark/mixed-models-with-R/raw/master/data/gpa.RData?raw=true&#39;))</span></a>
+<a class="sourceLine" id="cb42-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb42-6" data-line-number="6"><span class="kw">library</span>(lme4)</a>
+<a class="sourceLine" id="cb42-7" data-line-number="7">mixed_init =<span class="st"> </span><span class="kw">lmer</span>(gpa <span class="op">~</span><span class="st"> </span>occasion <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>occasion<span class="op">|</span>student), <span class="dt">data =</span> gpa)</a>
+<a class="sourceLine" id="cb42-8" data-line-number="8"><span class="co"># summary(mixed_init)</span></a></code></pre></div>
+<p>I show a simplified output below, so make sure you can match the results to the <span class="func">summary</span> printout. The fixed (population-average) effects are the <span class="math inline">\(b_{\mathrm{intercept}}\)</span> and <span class="math inline">\(b_{\mathrm{occ}}\)</span> in the previous model depiction. The standard deviations of the random effects are the <span class="math inline">\(\tau\)</span>, <span class="math inline">\(\varphi\)</span> and <span class="math inline">\(\epsilon\)</span>.</p>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+effect
+</th>
+<th style="text-align:left;">
+group
+</th>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+std.error
+</th>
+<th style="text-align:right;">
+statistic
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+fixed
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+2.60
+</td>
+<td style="text-align:right;">
+0.02
+</td>
+<td style="text-align:right;">
+141.59
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+fixed
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+occasion
+</td>
+<td style="text-align:right;">
+0.11
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+<td style="text-align:right;">
+18.07
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ran_pars
+</td>
+<td style="text-align:left;">
+student
+</td>
+<td style="text-align:left;">
+sd__(Intercept)
+</td>
+<td style="text-align:right;">
+0.21
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ran_pars
+</td>
+<td style="text-align:left;">
+student
+</td>
+<td style="text-align:left;">
+sd__occasion
+</td>
+<td style="text-align:right;">
+0.07
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ran_pars
+</td>
+<td style="text-align:left;">
+student
+</td>
+<td style="text-align:left;">
+cor__(Intercept).occasion
+</td>
+<td style="text-align:right;">
+-0.10
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ran_pars
+</td>
+<td style="text-align:left;">
+Residual
+</td>
+<td style="text-align:left;">
+sd__Observation
+</td>
+<td style="text-align:right;">
+0.21
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+</tbody>
+</table>
+<p>We can also get estimates of the student level effects. These are the <span class="math inline">\(re_{intercept}\)</span> and <span class="math inline">\(re_{occasion}\)</span> from before.</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb43-1" data-line-number="1"><span class="kw">ranef</span>(mixed_init)</a></code></pre></div>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+(#tab:mixed_init_re_tell)Per-student random effects
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+student
+</th>
+<th style="text-align:right;">
+(Intercept)
+</th>
+<th style="text-align:right;">
+occasion
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+-0.202
+</td>
+<td style="text-align:right;">
+0.060
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+-0.211
+</td>
+<td style="text-align:right;">
+-0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+-0.007
+</td>
+<td style="text-align:right;">
+0.043
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+-0.093
+</td>
+<td style="text-align:right;">
+-0.042
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+0.087
+</td>
+<td style="text-align:right;">
+-0.026
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+-0.206
+</td>
+<td style="text-align:right;">
+-0.043
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="random-effects-in-sem" class="section level3">
+<h3>Random Effects in SEM</h3>
+<p>In SEM, we specify the latent linear, or common factor, model as follows.</p>
+<p><span class="math display">\[Y = b_{\mathrm{intercept}} + \lambda F +  \epsilon\]</span>
+<span class="math display">\[F \sim \mathcal{N}(0, \tau)\]</span></p>
+<p><span class="math display">\[\epsilon \sim \mathcal{N}(0, \sigma)\]</span></p>
+<p>In the above, <span class="math inline">\(Y\)</span> is our observed variable, <span class="math inline">\(b_{intercept}\)</span> is the intercept as in a standard linear regression model, <span class="math inline">\(\lambda\)</span> is the coefficient (<span class="emph">loading</span> in factor analysis/SEM terminology) regarding the effect of the latent variable, represented as <span class="math inline">\(F\)</span>. The latent variable is assumed normally distributed, with zero mean, and some estimated variance, just like the random effects in mixed models.</p>
+<p>Note that if <span class="math inline">\(\lambda = 1\)</span>, we then have the right hand side as <span class="math inline">\(b_{intercept} + F\)</span>, and this is indistinguishable from the random intercept portion of the mixed model (<span class="math inline">\(b_{\mathrm{intercept}} + \mathrm{re}_{\mathrm{intercept}}\)</span>). Through this that we can maybe start to get a sense of random effects as latent variables (or vice versa). Indeed, mixed models have ties to many other kinds of models (e.g. spatial, additive), because those models also add a ‘random’ component to the model in some fashion.</p>
+</div>
+<div id="running-a-growth-curve-model" class="section level3">
+<h3>Running a Growth Curve Model</h3>
+<p>The graphical model for the standard LGC model resembles that of <span class="emph">confirmatory factor analysis</span> (CFA) with two latent variables/factors. The observed, or <em>manifest</em>, measures are the dependent variable values at each respective time point. However, for those familiar with structural equation modeling (SEM), growth curve models will actually look a bit different compared with typical SEM, because we have to fix the factor loadings to specific values in order to make it work for the LGC. As we will see, this also leads to non-standard output relative to other SEM models, as there is nothing to estimate for the many fixed parameters.</p>
+<p>More specifically, we’ll have a latent variable representing the random intercepts, as well as one representing the random slopes for the longitudinal trend (time), which in the GPA data is the semester indicator. All loadings for the intercept factor are 1. The loadings for the effect of time are arbitrary, but should accurately reflect the time spacing, and typically it is good to start at zero, so that the zero has a meaningful interpretation.</p>
+<div style="width:50%; margin:auto auto; font-size:50%">
+<div id="htmlwidget-2766fd9fd134ae88d76a" style="width:100%;height:25%;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2766fd9fd134ae88d76a">{"x":{"diagram":"digraph growth {\n           # specifying label position is impossible as long as Diagrammer ignores several label attributes inherent in graphviz\n           # Intialization of graph attributes\n           graph [overlap=false ordering=out outputorder = edgesfirst splines=false bgcolor=transparent]    # order out keeps observed nodes in order; splines will keep straight after specifying headport\n           \n           # Node statements\n           node [shape=circle style=filled fillcolor=lightblue color=gray75 fontcolor=gray50 fontsize=\"14px\"];\n           \n           subgraph{\n            rankdir = LR;\n             rank = same;\n\n             # using plotly palette with alpha\n             Intercept [fontname=Roboto, fontcolor=white, fixedsize=true, width=1, height=1, fillcolor=\"#1f77b480\" color=\"#1f77b4\"];  \n             Slope [fontname=Roboto, fontcolor=white, fixedsize=true, width=1, height=1, fillcolor=\"#ff7f0e80\" color=\"#ff7f0e\"];\n           }\n\n           node [width=.66, height=.66, fixedsize=true, shape=square, style=\"\"]\n           subgraph {\n             rankdir = TB;\n             rank=same;\n             node [fontcolor=gray50]\n             node [color=\"#9467bd\"]\n             \n             V1 [label = <Y<FONT POINT-SIZE=\"8\"><SUB>T1<\/SUB><\/FONT>>];\n             V2 [label = <Y<FONT POINT-SIZE=\"8\"><SUB>T2<\/SUB><\/FONT>>]; \n             V3 [label = <Y<FONT POINT-SIZE=\"8\"><SUB>T3<\/SUB><\/FONT>>]; \n             V4 [label = <Y<FONT POINT-SIZE=\"8\"><SUB>T4<\/SUB><\/FONT>>]; \n           }\n\n           # Initialization of edge attributes\n           edge [color = gray50 overlap=false arrowsize=.5]\n           \n           # Edge statements\n           \n           edge [ fontcolor=gray25 dir=both fontsize=\"8px\"]  # labeleangle, labeldistance etc. attributes ignored\n           Intercept -> Slope[label=\"  &rho;\\n\" minlen=2];\n           \n           edge [dir=forward headport=\"c\" minlen=1]\n           edge [label=\"1\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V1; \n           edge [label=\"1\"   color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V2;\n           edge [label=\"1\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V3;\n           edge [label=\"1\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V4;\n           \n           edge [dir=forward headport=\"n\" minlen=1]\n           edge [label=\"0\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\" labelposition=3]\n           Slope -> V1; \n           edge [label=\"1\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\"]\n           Slope -> V2;\n           edge [label=\"2\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\"]\n           Slope -> V3;\n           edge [label=\"3\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\"]\n           Slope -> V4;\n} ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="wide-data" class="section level4">
+<h4>Wide Data</h4>
+<p>Given the above visualization, for the LGC our data needs to be in <em>wide</em> format, where each row represents the unit of interest, and we have separate columns for each time point of the target variable, as well as any other variable that varies over time. This is contrasted with the <em>long</em> format we use for the mixed model, where rows represent observations at a given time point. We can use the <span class="func">spread</span> function from <span class="pack">tidyr</span> to help with that. We end up with a data frame of two-hundred observations and columns for each semester gpa (0 through 5 for six semesters) denoted by <code>gpa_*</code>.</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb44-1" data-line-number="1">gpa_wide =<span class="st"> </span>gpa <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb44-2" data-line-number="2"><span class="st">  </span><span class="kw">select</span>(student, sex, highgpa, occasion, gpa) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb44-3" data-line-number="3"><span class="st">  </span><span class="kw">spread</span>(<span class="dt">key =</span> occasion, <span class="dt">value =</span> gpa) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb44-4" data-line-number="4"><span class="st">  </span><span class="kw">rename_at</span>(<span class="kw">vars</span>(<span class="st">`</span><span class="dt">0</span><span class="st">`</span>,<span class="st">`</span><span class="dt">1</span><span class="st">`</span>,<span class="st">`</span><span class="dt">2</span><span class="st">`</span>,<span class="st">`</span><span class="dt">3</span><span class="st">`</span>,<span class="st">`</span><span class="dt">4</span><span class="st">`</span>,<span class="st">`</span><span class="dt">5</span><span class="st">`</span>), <span class="cf">function</span>(x) glue<span class="op">::</span><span class="kw">glue</span>(<span class="st">&#39;gpa_{x}&#39;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb44-5" data-line-number="5"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">female =</span> <span class="kw">as.numeric</span>(sex)<span class="op">-</span><span class="dv">1</span>)   <span class="co"># convert to binary 0 = male 1 = female to be used later</span></a></code></pre></div>
+<div id="htmlwidget-7184245a3c4a2475fecd" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-7184245a3c4a2475fecd">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76","77","78","79","80","81","82","83","84","85","86","87","88","89","90","91","92","93","94","95","96","97","98","99","100","101","102","103","104","105","106","107","108","109","110","111","112","113","114","115","116","117","118","119","120","121","122","123","124","125","126","127","128","129","130","131","132","133","134","135","136","137","138","139","140","141","142","143","144","145","146","147","148","149","150","151","152","153","154","155","156","157","158","159","160","161","162","163","164","165","166","167","168","169","170","171","172","173","174","175","176","177","178","179","180","181","182","183","184","185","186","187","188","189","190","191","192","193","194","195","196","197","198","199","200"],["female","male","female","male","male","female","male","female","male","male","female","female","male","female","male","female","male","male","female","male","female","male","male","female","female","male","male","female","female","female","female","female","female","male","male","male","male","female","male","female","female","male","female","female","female","male","female","female","male","male","male","female","male","female","male","male","male","female","male","male","male","male","female","female","male","female","female","male","male","male","female","female","male","male","female","male","female","male","female","female","female","female","female","male","female","male","female","male","male","female","male","female","male","female","female","female","male","female","female","male","female","male","female","female","female","male","male","male","male","male","female","female","male","female","female","female","female","female","male","male","male","female","male","female","male","female","male","female","female","male","female","male","male","female","female","female","male","female","female","male","female","female","female","female","female","female","male","male","female","male","female","male","female","male","male","male","female","female","female","female","male","female","female","male","female","female","male","male","male","male","male","female","female","female","male","male","male","male","female","male","male","female","male","female","female","female","female","female","male","male","female","female","male","male","male","female","female","male","female","male"],[2.8,2.5,2.5,3.8,3.1,2.9,2.3,3.9,2,2.8,3.9,2.9,3.7,3.5,3.6,2.9,2.4,2.5,2.3,3.4,2.8,3.6,2.4,3.9,3.7,3,3.3,3.5,3.3,2.4,2,3.5,3.2,3.9,3.5,2.9,3,2.9,3.5,3.1,3.3,3.9,2.3,3.5,2.4,2.1,2.8,2.6,2.8,3.8,2.1,3.5,2.3,2.2,3.3,2.1,3.5,2.5,2.5,2.3,2.5,3,3.8,2.2,3.6,3.8,3.3,2.9,2.5,3.7,3.4,2.9,4,3.4,2,2.9,2.8,2.9,2.6,3.7,2.2,3.6,2.3,3.7,2.8,2.5,2.1,2.2,3.7,2.6,3.6,2.7,3.5,3.7,3.4,2.3,2.6,3.4,2.9,2.8,3.4,3.5,2.3,3.5,3.6,2.6,3.2,2.3,3.2,2.4,2.2,2.5,3.7,4,3.6,2.2,2.3,2.2,2.4,3.9,3.7,2.5,2.8,3.6,3.8,3.1,2.5,3.8,3.4,2.9,2.2,2.7,2,2.8,2.3,2,2,3.3,3.9,2.8,2.1,2.9,3.1,3.6,2.8,3.4,3.4,3.1,2.4,2.7,2.2,3.8,2.5,2.9,2.9,3.9,2.1,2.6,3.1,3.4,3.1,2.7,3,2.5,3.8,2.5,2.8,3.2,3.9,2,2.7,3.4,3.7,3.2,3.7,3.7,3.9,3.5,2.8,2.3,3.2,3.7,3,4,3.7,3.4,2.2,2.1,2.6,3.9,2,2.9,3,2.2,2.5,3.5,2.1,4,2.3,3.4],[2.3,2.2,2.4,2.5,2.8,2.5,2.4,2.8,2.8,2.8,2.6,2.6,2.8,2.4,2.2,2.5,2.6,2.4,2.5,2.8,2.6,2.8,2.8,2.7,3.5,2.3,2.2,2.6,2.9,2.9,2.6,2.8,2.3,2.4,2.5,2.5,2.2,2.9,2.4,2.5,2.9,2.5,2,3.1,2.7,2.9,2.6,2.9,3.1,2.4,1.7,2.5,2.8,2.8,2.4,2.2,2.5,2.5,2.8,2,2.4,2.4,2.6,2.4,1.9,2.3,2.6,2.3,2.3,2.7,2.9,3,2.6,3.5,2.5,2.4,2.4,2.4,2.3,3.1,2.3,3.3,2.5,2.3,2.4,2.7,2.3,2.7,2.6,2.4,2,2.7,2.9,2.7,2.5,2.4,2.3,3.3,2.2,2.7,2.8,3.1,2.2,2.3,3.4,1.8,2.4,2.7,2.7,2.5,2.4,3,2.7,2.8,2.2,2.5,2.8,2.5,2.4,2.5,2.9,3,2.9,2.5,2.8,2.5,2.7,3,2.7,2.4,2.8,2.2,2.5,2.5,3,2.8,2.8,2.5,2.5,2.5,2.7,2.8,2.9,2.5,2.4,2.6,2.6,2.5,2.7,2.7,2.4,2.4,2.5,2.6,2.7,2.6,3.3,3,3,2.9,2.6,1.7,2.2,2.5,2.8,3,2.7,2.9,2.9,2.4,2.3,2.7,2.2,2.8,2.3,2.9,2.9,2.8,2.7,2.9,2.3,2.7,2.7,2.3,2.6,2.2,2.4,2.3,3.3,1.7,2.4,2.9,3.1,2.4,2.4,2.2,2.9,2.5,2.6,2.8],[2.1,2.5,2.9,2.7,2.8,2.4,2.4,2.8,2.7,2.8,2.9,3,3.1,3,2.7,2.7,2.2,2.9,2.3,2.9,2.4,2.7,3.2,2.9,3.1,2.8,2.4,3.1,2.7,3,2.2,2.9,3,2.8,2.5,2.9,2.5,3.2,2.3,2.9,3.5,2.5,2.5,3,3.1,2.2,2.5,2.5,2.7,2.7,2.5,2.9,3.4,2.5,2.8,2,2.9,2.2,2.8,2.7,3.1,2.2,3.1,2.9,2.9,2.7,3,2.1,2.3,2.4,2.8,3.1,2.5,2.9,2.5,2.9,3.1,2.5,1.8,2.8,2.4,3.2,3.1,2.1,2.8,2.5,2.7,2.8,2.8,2.5,2.5,3.2,3.5,2.9,2.5,2.5,2.5,2.4,2.7,2,2.7,2.9,2.4,2.8,3.9,2.8,2.5,2,2.7,2.3,2.5,3.5,2.4,2.3,2.1,2.3,2.1,2.4,2.5,3.2,2.7,3.3,2.3,3.1,2.3,2.7,2.3,2.7,2.8,2.9,3.1,2.7,2.8,3.1,2.7,2.5,2.1,2.8,3.1,2.9,3.1,2.9,2.7,3,2.5,2.4,2.9,3,2.7,2.8,2.5,2.9,3,2.7,3.1,2.7,3,2.8,3,2.7,2.5,2.5,2.5,2.4,2.7,2.5,2.9,2.9,2.7,3.1,2.4,2.8,3.1,2.7,2.9,2.7,3,2.9,3.4,2.5,2.4,3.2,2.5,2.8,3.1,2.4,2.2,2.7,3.3,2.3,2.8,3,2.8,2.4,2.7,2.5,2.5,2.9,2.3,3.2],[3,2.6,3,2.4,2.8,2.4,2.8,3.1,2.7,3,3.2,2.3,3.5,2.9,2.6,2.8,2.6,2,3,3.2,2.5,3.1,2.8,3,3,2.1,2.5,2.9,2.9,3.2,2.1,3,2.4,2.6,2.6,3,3.3,3.2,3,3.2,3.2,3.4,3.1,3.1,3,2.7,2.8,2.7,3,2.4,3.3,3,2.7,3.3,3.2,2.6,2.8,2.4,2.6,2.6,3.2,2.5,3.1,2.7,2.4,3.2,2.5,2.3,2.5,3,3,3.5,2.6,2.8,3.2,2.8,3.2,2.1,2.2,3,2.8,2.7,3.2,2.4,3.1,3,2.7,2.5,3.2,2.7,2.3,3.8,3.2,3,2.9,2.8,3,3.2,2.7,2,3.1,2.7,2.8,2.9,3.9,2.6,2.3,2,2.7,2.2,2.2,3.2,3,2.8,3.1,2.8,3,3,2.6,3.2,2.6,2.9,2.3,2.5,2.7,2.1,2.4,2.3,2.7,3.6,3.2,3.4,2.3,2.8,3,2.8,2.7,2.7,3,2.6,3.1,3.1,2.4,2.9,2.8,2.3,3.4,2.5,2.4,2.4,2.5,2.7,2.7,3.2,2.5,2.7,3.1,2.9,3.1,3.2,2.7,2.2,2.9,2.6,2.9,3.2,3.1,3,3,3.2,2.7,3,3,2.9,3.1,2.8,3.1,2.8,2.5,2.5,2.2,3.1,2.7,2.8,3,3,2.1,3.3,2.8,2.7,2.8,2.4,2.7,2.6,2.2,2.7,2.8,3,2.7,3.4],[3,2.6,2.8,2.7,3,2.3,2.6,3.3,3.1,2.7,3.6,2.9,3.6,3,2.6,2.7,2.5,2.6,2.9,3.2,2.5,3.1,3,2.7,3.3,2.8,2.2,3.1,2.9,3.1,2.4,3.3,2.8,2.7,3.2,3.2,3.1,3.4,3.1,3.6,3.5,2.6,3.3,2.9,3.3,2.4,2.2,2.9,2.7,3.2,3.2,3.3,3,3.3,3.2,2.6,2.8,2.8,3.1,2.8,3.3,3,3.5,3.3,2.8,3.3,2.4,2.8,2.7,3.2,2.8,3.2,2.8,3.1,3,3.4,3.8,2.5,2.3,3.1,3.1,3.2,3.3,2.1,3.3,2.5,3.2,2.7,3,3,2.5,4,3.3,2.7,2.8,3.3,3.2,3.2,2.8,2.3,3.6,2.6,2.8,3,3.5,2.3,2.3,2.6,3.1,2.2,2.4,2.9,2.5,2.9,3,2.7,3.1,3.3,2.5,2.8,3,3,2.4,3.3,2.4,3.1,2.6,2.7,2.7,3.1,3.1,3,2.1,2.8,3.1,2.4,2.8,2.7,3.3,2.6,3.1,3,2.9,3,2.9,2.5,3.5,2.6,2.9,2.4,2.9,2.7,2.8,3.3,2.7,3,3.3,2.7,3.4,3.4,2.8,2.7,2.9,2.8,2.9,3.2,2.8,3.3,3.2,3.7,2.7,2.4,3.4,3.2,2.8,2.7,2.8,3,2.8,2.5,2.6,3.1,2.3,3,3,2.9,2.4,3.2,3,2.5,3,2.9,2.7,3.1,2.2,3.1,3.2,3.2,2.7,3.5],[3,3,3.3,2.9,2.9,2.7,3,3.3,3.1,3,3.6,3.1,3.9,3.3,2.8,2.8,2.6,2.5,2.9,3.4,2.5,3,2.9,2.9,3.4,2.8,2.8,3.1,3.3,3.2,2.6,3.4,2.8,2.6,3.4,3,3.3,3.6,3.1,3.3,3.8,2.8,3.2,3.1,3.1,2.6,2.8,3,3,3,3,3.3,2.8,3.2,3.1,2.9,3.4,2.9,3,3.1,3.5,2.9,3.4,3.2,2.8,3.4,2.6,2.7,2.7,2.9,2.9,3.7,2.6,3.1,3.2,3.3,4,2.3,2.5,3.4,3.3,3.3,3.4,2.2,3.1,2.6,3.1,3.1,3.1,3,2.8,4,3.4,2.7,2.7,3.4,2.9,3.1,2.8,2.4,3.6,2.9,3.1,3.4,3.9,2.5,2.6,2.5,2.8,2.2,2.2,3,2.6,3,3,2.9,3,3.3,2.8,3,3.3,3.1,2.2,3,2.6,3,2.3,2.9,2.9,3,3.4,3.3,2.3,2.9,3,2.8,3.1,2.9,3.3,2.9,3.4,3.1,3,3,2.9,2.5,3.6,2.8,3,2.6,2.7,2.8,3,3.4,2.7,2.8,3.4,2.8,3.8,3.7,2.8,2.6,3.2,2.8,2.9,3.2,3.6,3.4,3.6,3.6,2.5,2.8,3.7,3,3.4,2.6,3.3,2.9,2.9,2.6,2.6,3.3,2.6,3.1,3.2,3.2,2.8,3.1,3.1,2.6,3.1,2.8,2.9,3.4,2.4,3.3,3.3,3.3,2.8,3.3],[3.3,2.8,3.4,2.7,3.1,2.8,3,3.4,3.5,3,3.8,3.3,3.9,3.4,2.8,2.8,2.8,2.7,2.9,3.3,2.6,3.3,3,3,3.6,2.5,2.5,3.2,3.2,3.3,2.8,3.6,3,2.6,3.6,3.5,3.4,3.8,2.9,3.6,3.9,3,3.6,3.2,3.2,2.4,2.7,3.2,3.4,3,3.3,3.3,3,3.4,3.5,3.1,3.3,3.1,3.3,2.9,3.5,3.4,3.4,3.4,2.7,3.7,2.6,3.1,2.8,3.1,2.8,3.7,2.6,3.3,3,3.5,4,2.8,2.8,3.2,3.6,3.6,3.4,2.4,3.3,2.6,3.2,3,3.5,3.2,2.9,4,3.4,2.8,2.9,3.8,2.9,3.3,2.8,2.7,3.7,2.7,2.9,3.4,3.9,2.7,2.7,2.7,2.7,2.3,2.5,3.1,2.8,3.1,3.2,3.1,3.1,3.6,2.9,3.3,3.3,3.6,2.5,3.4,3,3,2.5,3.1,2.9,3.1,3.7,3.7,2.5,3.2,3,2.7,3,3.1,3.4,2.8,3.1,2.9,3,3.4,3.2,2.9,3.9,2.8,3.1,2.7,2.9,2.9,3,3.5,2.9,2.8,3.4,2.8,4,3.8,3.1,2.5,3.2,3.3,2.9,3.4,3.5,3.5,3.6,3.9,2.6,3.2,3.6,3.4,3.3,2.9,3.4,2.9,3.2,2.6,2.7,3.3,2.6,3.3,2.9,3.1,2.8,3.6,3.1,2.8,2.9,2.9,3.3,3.3,2.5,3.2,3.8,3.4,2.8,3.4],[1,0,1,0,0,1,0,1,0,0,1,1,0,1,0,1,0,0,1,0,1,0,0,1,1,0,0,1,1,1,1,1,1,0,0,0,0,1,0,1,1,0,1,1,1,0,1,1,0,0,0,1,0,1,0,0,0,1,0,0,0,0,1,1,0,1,1,0,0,0,1,1,0,0,1,0,1,0,1,1,1,1,1,0,1,0,1,0,0,1,0,1,0,1,1,1,0,1,1,0,1,0,1,1,1,0,0,0,0,0,1,1,0,1,1,1,1,1,0,0,0,1,0,1,0,1,0,1,1,0,1,0,0,1,1,1,0,1,1,0,1,1,1,1,1,1,0,0,1,0,1,0,1,0,0,0,1,1,1,1,0,1,1,0,1,1,0,0,0,0,0,1,1,1,0,0,0,0,1,0,0,1,0,1,1,1,1,1,0,0,1,1,0,0,0,1,1,0,1,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>student<\/th>\n      <th>sex<\/th>\n      <th>highgpa<\/th>\n      <th>gpa_0<\/th>\n      <th>gpa_1<\/th>\n      <th>gpa_2<\/th>\n      <th>gpa_3<\/th>\n      <th>gpa_4<\/th>\n      <th>gpa_5<\/th>\n      <th>female<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"ltipr","columnDefs":[{"className":"dt-right","targets":[2,3,4,5,6,7,8,9]}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<p>We’ll use <span class="pack">lavaan</span> for our excursion into LGC. The syntax will require its own modeling code, but lavaan tries to keep to R regression model style. The names of <span class="objclass">intercept</span> and <span class="objclass">occasion</span> are arbitrary, and correspond to the intercepts and slopes factors of the previous visualization. The <code>=~</code> is just denoting that the left-hand side is the latent variable, and the right-hand side are the observed/manifest variables. We use the standard fixed loadings for an LGC model.</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb45-1" data-line-number="1">lgc_init_model =<span class="st"> &#39;</span></a>
+<a class="sourceLine" id="cb45-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb45-3" data-line-number="3"><span class="st">  intercept =~ 1*gpa_0 + 1*gpa_1 + 1*gpa_2 + 1*gpa_3 + 1*gpa_4 + 1*gpa_5</span></a>
+<a class="sourceLine" id="cb45-4" data-line-number="4"><span class="st">  occasion  =~ 0*gpa_0 + 1*gpa_1 + 2*gpa_2 + 3*gpa_3 + 4*gpa_4 + 5*gpa_5</span></a>
+<a class="sourceLine" id="cb45-5" data-line-number="5"><span class="st">  </span></a>
+<a class="sourceLine" id="cb45-6" data-line-number="6"><span class="st">&#39;</span></a></code></pre></div>
+<p>Now we’re ready to run the model. Note that <span class="pack">lavaan</span> has a specific function, <span class="func">growth</span>, to use for these models. It doesn’t spare us any effort for the model syntax, but does make it unnecessary to set various arguments for the more generic <span class="func">sem</span> and <span class="func">lavaan</span> functions.</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb46-1" data-line-number="1"><span class="kw">library</span>(lavaan)</a>
+<a class="sourceLine" id="cb46-2" data-line-number="2">lgc_init =<span class="st"> </span><span class="kw">growth</span>(lgc_init_model, <span class="dt">data =</span> gpa_wide)</a>
+<a class="sourceLine" id="cb46-3" data-line-number="3"><span class="kw">summary</span>(lgc_init)</a></code></pre></div>
+<pre><code>lavaan 0.6-3 ended normally after 73 iterations
+
+  Optimization method                           NLMINB
+  Number of free parameters                         11
+
+  Number of observations                           200
+
+  Estimator                                         ML
+  Model Fit Test Statistic                      43.945
+  Degrees of freedom                                16
+  P-value (Chi-square)                           0.000
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard Errors                             Standard
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+  intercept =~                                        
+    gpa_0             1.000                           
+    gpa_1             1.000                           
+    gpa_2             1.000                           
+    gpa_3             1.000                           
+    gpa_4             1.000                           
+    gpa_5             1.000                           
+  occasion =~                                         
+    gpa_0             0.000                           
+    gpa_1             1.000                           
+    gpa_2             2.000                           
+    gpa_3             3.000                           
+    gpa_4             4.000                           
+    gpa_5             5.000                           
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+  intercept ~~                                        
+    occasion          0.002    0.002    1.629    0.103
+
+Intercepts:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+   .gpa_0             0.000                           
+   .gpa_1             0.000                           
+   .gpa_2             0.000                           
+   .gpa_3             0.000                           
+   .gpa_4             0.000                           
+   .gpa_5             0.000                           
+    intercept         2.598    0.018  141.956    0.000
+    occasion          0.106    0.005   20.338    0.000
+
+Variances:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+   .gpa_0             0.080    0.010    8.136    0.000
+   .gpa_1             0.071    0.008    8.799    0.000
+   .gpa_2             0.054    0.006    9.039    0.000
+   .gpa_3             0.029    0.003    8.523    0.000
+   .gpa_4             0.015    0.002    5.986    0.000
+   .gpa_5             0.016    0.003    4.617    0.000
+    intercept         0.035    0.007    4.947    0.000
+    occasion          0.003    0.001    5.645    0.000</code></pre>
+</div>
+<div id="fixed-effects" class="section level4">
+<h4>Fixed Effects</h4>
+<p>Most of the output is blank, which is needless clutter, but we do get the same five parameter values we are interested in though.</p>
+<p>We’ll start with the ‘intercepts’:</p>
+<pre><code>Intercepts:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+
+    intercept         2.598    0.018  141.956    0.000
+    occasion          0.106    0.005   20.338    0.000</code></pre>
+<p>It might be odd to call your fixed effects ‘intercepts’, but it makes sense if we are thinking of it as a multilevel model as depicted <a href="supplemental.html#random-effects-as-latent-variables">previously</a>, where we actually broke out the random effects as a separate model. These are the population average of the random intercepts and slopes for occasion. The estimates here are pretty much spot on with our mixed model estimates.</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb49-1" data-line-number="1"><span class="kw">library</span>(lme4)</a>
+<a class="sourceLine" id="cb49-2" data-line-number="2">gpa_mixed =<span class="st"> </span><span class="kw">lmer</span>(gpa <span class="op">~</span><span class="st"> </span>occasion <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>occasion <span class="op">|</span><span class="st"> </span>student), <span class="dt">data=</span>gpa)</a>
+<a class="sourceLine" id="cb49-3" data-line-number="3"><span class="kw">summary</span>(gpa_mixed, <span class="dt">cor=</span>F)</a></code></pre></div>
+<pre><code>Linear mixed model fit by REML [&#39;lmerMod&#39;]
+Formula: gpa ~ occasion + (1 + occasion | student)
+   Data: gpa
+
+REML criterion at convergence: 261
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.2695 -0.5377 -0.0128  0.5326  3.1939 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr 
+ student  (Intercept) 0.045193 0.21259       
+          occasion    0.004504 0.06711  -0.10
+ Residual             0.042388 0.20588       
+Number of obs: 1200, groups:  student, 200
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept) 2.599214   0.018357  141.59
+occasion    0.106314   0.005885   18.07</code></pre>
+</div>
+<div id="random-effects" class="section level4">
+<h4>Random Effects</h4>
+<p>Now let’s look at the variance estimates, where we see some differences between the LGC and mixed model approach. LGC by default assumes heterogeneous variance for each time point. Mixed models by default assume the same variance for each time point, but can allow them to be estimated separately in most modeling packages. Likewise, we could fix the LGC variances to be identical here. Just know that’s why the results are not identical (to go along with their respective estimation approaches, which are also different by default).</p>
+<pre><code>Covariances:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+  intercept ~~                                        
+    occasion          0.002    0.002    1.629    0.103
+    
+Variances:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+   .gpa_0             0.080    0.010    8.136    0.000
+   .gpa_1             0.071    0.008    8.799    0.000
+   .gpa_2             0.054    0.006    9.039    0.000
+   .gpa_3             0.029    0.003    8.523    0.000
+   .gpa_4             0.015    0.002    5.986    0.000
+   .gpa_5             0.016    0.003    4.617    0.000
+    intercept         0.035    0.007    4.947    0.000
+    occasion          0.003    0.001    5.645    0.000</code></pre>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb52-1" data-line-number="1"><span class="kw">print</span>(<span class="kw">VarCorr</span>(gpa_mixed), <span class="dt">comp=</span><span class="st">&#39;Var&#39;</span>)  <span class="co"># using print to show variance only</span></a></code></pre></div>
+<pre><code> Groups   Name        Variance  Corr  
+ student  (Intercept) 0.0451934       
+          occasion    0.0045039 -0.098
+ Residual             0.0423879       </code></pre>
+</div>
+</div>
+<div id="random-intercepts" class="section level3">
+<h3>Random Intercepts</h3>
+<p>How can we put these models on the same footing? Let’s take a step back and do a model with only random intercepts. In this case, time is an observed measure, and has no person-specific variability. Our graphical model now looks like the following. Time, or time point (i.e. semester in our example), is now represented with a square to denote it is no longer affiliated with a latent variable.</p>
+<div style="width:50%; margin:auto auto; font-size:50%">
+<div id="htmlwidget-1fbc3b3eac8862890b7e" style="width:100%;height:25%;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1fbc3b3eac8862890b7e">{"x":{"diagram":"digraph growth {\n           # specifying label position is impossible as long as Diagrammer ignores several label attributes inherent in graphviz\n           # Intialization of graph attributes\n           graph [overlap=false ordering=out outputorder = edgesfirst splines=false bgcolor=transparent]    # order out keeps observed nodes in order; splines will keep straight after specifying headport\n           \n           # Node statements\n           node [shape=circle style=filled fillcolor=lightblue color=gray75 fontcolor=gray50 fontsize=\"14px\"];\n           \n           subgraph{\n            rankdir = LR;\n             rank = same;\n\n             # using plotly palette with alpha\n             Intercept [label=\"Intercept\", fontname=Roboto, fontcolor=white, fixedsize=true, width=1, height=1, fillcolor=\"#1f77b480\" color=\"#1f77b4\"];  \n             \n           }\n           \n           Time [fontname=Roboto, fontcolor=white, fixedsize=true, width=.66, height=.66, fillcolor=\"#ff7f0e80\" color=\"#ff7f0e\" shape=square];\n\n           node [width=.66, height=.66, fixedsize=true, shape=square, style=\"\"]\n           subgraph {\n             rankdir = TB;\n             rank=same;\n             node [fontcolor=gray50]\n             node [color=\"#9467bd\"]\n             \n             V1 [label = <Y<FONT POINT-SIZE=\"8\"><SUB>T1<\/SUB><\/FONT>>];\n             V2 [label = <Y<FONT POINT-SIZE=\"8\"><SUB>T2<\/SUB><\/FONT>>]; \n             V3 [label = <Y<FONT POINT-SIZE=\"8\"><SUB>T3<\/SUB><\/FONT>>]; \n             V4 [label = <Y<FONT POINT-SIZE=\"8\"><SUB>T4<\/SUB><\/FONT>>]; \n           }\n\n           # Initialization of edge attributes\n           edge [color = gray50 overlap=false arrowsize=.5]\n           \n           # Edge statements\n\n           edge [dir=forward headport=\"c\" minlen=1]\n           edge [label=\"1\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V1; \n           edge [label=\"1\"   color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V2;\n           edge [label=\"1\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V3;\n           edge [label=\"1\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V4;\n           \n           edge [dir=back minlen=1]\n           edge [label=\"0\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\" labelposition=3]\n           V1 -> Time; \n           edge [label=\"1\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\"]\n           V2 -> Time;\n           edge [label=\"2\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\"]\n           V3 -> Time;\n           edge [label=\"3\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\"]\n           V4 -> Time;\n   \n} ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+<p>We can do this by fixing the slope ‘factor’ to have zero variance. However, note also that in the LGC, at each time point of the gpa outcome, we have a unique (residual) variance associated with it. Conversely, this is constant in the mixed model setting, i.e. we only have one estimate for the residual variance that does not vary by occasion. We deal with this in the LGC by giving the parameter an arbitrary name, <code>resid</code>, and then applying it to each time point.</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb54-1" data-line-number="1">lgc_ran_int_model =<span class="st"> &#39;</span></a>
+<a class="sourceLine" id="cb54-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb54-3" data-line-number="3"><span class="st"> intercept =~ 1*gpa_0 + 1*gpa_1 + 1*gpa_2 + 1*gpa_3 + 1*gpa_4 + 1*gpa_5</span></a>
+<a class="sourceLine" id="cb54-4" data-line-number="4"><span class="st"> slope     =~ 0*gpa_0 + 1*gpa_1 + 2*gpa_2 + 3*gpa_3 + 4*gpa_4 + 5*gpa_5</span></a>
+<a class="sourceLine" id="cb54-5" data-line-number="5"><span class="st"> </span></a>
+<a class="sourceLine" id="cb54-6" data-line-number="6"><span class="st"> slope     ~~ 0*slope    # slope variance is zero</span></a>
+<a class="sourceLine" id="cb54-7" data-line-number="7"><span class="st"> intercept ~~ 0*slope    # no covariance with intercept factor</span></a>
+<a class="sourceLine" id="cb54-8" data-line-number="8"><span class="st"> </span></a>
+<a class="sourceLine" id="cb54-9" data-line-number="9"><span class="st"> </span></a>
+<a class="sourceLine" id="cb54-10" data-line-number="10"><span class="st"> gpa_0 ~~ resid*gpa_0    # same residual variance for each time point</span></a>
+<a class="sourceLine" id="cb54-11" data-line-number="11"><span class="st"> gpa_1 ~~ resid*gpa_1</span></a>
+<a class="sourceLine" id="cb54-12" data-line-number="12"><span class="st"> gpa_2 ~~ resid*gpa_2</span></a>
+<a class="sourceLine" id="cb54-13" data-line-number="13"><span class="st"> gpa_3 ~~ resid*gpa_3</span></a>
+<a class="sourceLine" id="cb54-14" data-line-number="14"><span class="st"> gpa_4 ~~ resid*gpa_4</span></a>
+<a class="sourceLine" id="cb54-15" data-line-number="15"><span class="st"> gpa_5 ~~ resid*gpa_5</span></a>
+<a class="sourceLine" id="cb54-16" data-line-number="16"><span class="st"> </span></a>
+<a class="sourceLine" id="cb54-17" data-line-number="17"><span class="st">&#39;</span></a></code></pre></div>
+<p>Now each time point will have one variance estimate. Let’s run the LGC.</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb55-1" data-line-number="1">lgc_ran_int =<span class="st"> </span><span class="kw">growth</span>(lgc_ran_int_model, <span class="dt">data =</span> gpa_wide)</a>
+<a class="sourceLine" id="cb55-2" data-line-number="2"><span class="kw">summary</span>(lgc_ran_int, <span class="dt">nd=</span><span class="dv">4</span>)  <span class="co"># increase the number of digits shown</span></a></code></pre></div>
+<pre><code>lavaan 0.6-3 ended normally after 36 iterations
+
+  Optimization method                           NLMINB
+  Number of free parameters                          9
+  Number of equality constraints                     5
+
+  Number of observations                           200
+
+  Estimator                                         ML
+  Model Fit Test Statistic                     338.824
+  Degrees of freedom                                23
+  P-value (Chi-square)                           0.000
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard Errors                             Standard
+
+Latent Variables:
+                    Estimate   Std.Err   z-value   P(&gt;|z|)
+  intercept =~                                            
+    gpa_0             1.0000                              
+    gpa_1             1.0000                              
+    gpa_2             1.0000                              
+    gpa_3             1.0000                              
+    gpa_4             1.0000                              
+    gpa_5             1.0000                              
+  slope =~                                                
+    gpa_0             0.0000                              
+    gpa_1             1.0000                              
+    gpa_2             2.0000                              
+    gpa_3             3.0000                              
+    gpa_4             4.0000                              
+    gpa_5             5.0000                              
+
+Covariances:
+                    Estimate   Std.Err   z-value   P(&gt;|z|)
+  intercept ~~                                            
+    slope             0.0000                              
+
+Intercepts:
+                    Estimate   Std.Err   z-value   P(&gt;|z|)
+   .gpa_0             0.0000                              
+   .gpa_1             0.0000                              
+   .gpa_2             0.0000                              
+   .gpa_3             0.0000                              
+   .gpa_4             0.0000                              
+   .gpa_5             0.0000                              
+    intercept         2.5992    0.0217  120.0471    0.0000
+    slope             0.1063    0.0041   26.1094    0.0000
+
+Variances:
+                    Estimate   Std.Err   z-value   P(&gt;|z|)
+    slope             0.0000                              
+   .gpa_0   (resd)    0.0580    0.0026   22.3607    0.0000
+   .gpa_1   (resd)    0.0580    0.0026   22.3607    0.0000
+   .gpa_2   (resd)    0.0580    0.0026   22.3607    0.0000
+   .gpa_3   (resd)    0.0580    0.0026   22.3607    0.0000
+   .gpa_4   (resd)    0.0580    0.0026   22.3607    0.0000
+   .gpa_5   (resd)    0.0580    0.0026   22.3607    0.0000
+    intrcpt           0.0634    0.0073    8.6605    0.0000</code></pre>
+<p>Compare it to the corresponding mixed model.</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb57-1" data-line-number="1">mixed_ran_int =<span class="st"> </span><span class="kw">lmer</span>(gpa <span class="op">~</span><span class="st"> </span>occasion <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>student), <span class="dt">data=</span>gpa)</a>
+<a class="sourceLine" id="cb57-2" data-line-number="2"><span class="kw">summary</span>(mixed_ran_int, <span class="dt">cor=</span>F)</a></code></pre></div>
+<pre><code>Linear mixed model fit by REML [&#39;lmerMod&#39;]
+Formula: gpa ~ occasion + (1 | student)
+   Data: gpa
+
+REML criterion at convergence: 408.9
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.6169 -0.6373 -0.0004  0.6361  2.8310 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ student  (Intercept) 0.06372  0.2524  
+ Residual             0.05809  0.2410  
+Number of obs: 1200, groups:  student, 200
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept) 2.599214   0.021696   119.8
+occasion    0.106314   0.004074    26.1</code></pre>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb59-1" data-line-number="1"><span class="co">#   broom.mixed::tidy(comp=&#39;var&#39;) %&gt;% </span></a>
+<a class="sourceLine" id="cb59-2" data-line-number="2"><span class="co">#   kable_df()</span></a></code></pre></div>
+<p>Now we have essentially identical results to <span class="objclass">mixed_ran_int</span>. The default estimation process is different for the two, resulting in some differences starting several decimal places out, but these are not meaningful differences. We can actually use the same estimator, but the results will still differ slightly due to the data differences.</p>
+</div>
+<div id="random-intercepts-and-slopes" class="section level3">
+<h3>Random Intercepts and Slopes</h3>
+<p>Now let’s let the slope for occasion vary. We can just delete or comment out the syntax related to the (co-) variance. By default slopes and intercepts are allowed to correlate as in the mixed model. We will continue to keep the variance constant.</p>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb60-1" data-line-number="1">lgc_ran_int_ran_slope_model =<span class="st"> &#39;</span></a>
+<a class="sourceLine" id="cb60-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb60-3" data-line-number="3"><span class="st"> intercept =~ 1*gpa_0 + 1*gpa_1 + 1*gpa_2 + 1*gpa_3 + 1*gpa_4 + 1*gpa_5</span></a>
+<a class="sourceLine" id="cb60-4" data-line-number="4"><span class="st"> slope     =~ 0*gpa_0 + 1*gpa_1 + 2*gpa_2 + 3*gpa_3 + 4*gpa_4 + 5*gpa_5</span></a>
+<a class="sourceLine" id="cb60-5" data-line-number="5"><span class="st"> </span></a>
+<a class="sourceLine" id="cb60-6" data-line-number="6"><span class="st"> # slope     ~~ 0*slope  # slope variance is zero</span></a>
+<a class="sourceLine" id="cb60-7" data-line-number="7"><span class="st"> # intercept ~~ 0*slope  # no covariance</span></a>
+<a class="sourceLine" id="cb60-8" data-line-number="8"><span class="st"> </span></a>
+<a class="sourceLine" id="cb60-9" data-line-number="9"><span class="st"> </span></a>
+<a class="sourceLine" id="cb60-10" data-line-number="10"><span class="st"> gpa_0 ~~ resid*gpa_0    # same residual variance for each time point</span></a>
+<a class="sourceLine" id="cb60-11" data-line-number="11"><span class="st"> gpa_1 ~~ resid*gpa_1</span></a>
+<a class="sourceLine" id="cb60-12" data-line-number="12"><span class="st"> gpa_2 ~~ resid*gpa_2</span></a>
+<a class="sourceLine" id="cb60-13" data-line-number="13"><span class="st"> gpa_3 ~~ resid*gpa_3</span></a>
+<a class="sourceLine" id="cb60-14" data-line-number="14"><span class="st"> gpa_4 ~~ resid*gpa_4</span></a>
+<a class="sourceLine" id="cb60-15" data-line-number="15"><span class="st"> gpa_5 ~~ resid*gpa_5</span></a>
+<a class="sourceLine" id="cb60-16" data-line-number="16"><span class="st"> </span></a>
+<a class="sourceLine" id="cb60-17" data-line-number="17"><span class="st">&#39;</span></a></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb61-1" data-line-number="1">lgc_ran_int_ran_slope =<span class="st"> </span><span class="kw">growth</span>(lgc_ran_int_ran_slope_model, <span class="dt">data =</span> gpa_wide)</a>
+<a class="sourceLine" id="cb61-2" data-line-number="2"><span class="kw">summary</span>(lgc_ran_int_ran_slope, <span class="dt">nd=</span><span class="dv">4</span>)  <span class="co"># increase the number of digits shown</span></a></code></pre></div>
+<pre><code>lavaan 0.6-3 ended normally after 51 iterations
+
+  Optimization method                           NLMINB
+  Number of free parameters                         11
+  Number of equality constraints                     5
+
+  Number of observations                           200
+
+  Estimator                                         ML
+  Model Fit Test Statistic                     191.409
+  Degrees of freedom                                21
+  P-value (Chi-square)                           0.000
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard Errors                             Standard
+
+Latent Variables:
+                    Estimate   Std.Err   z-value   P(&gt;|z|)
+  intercept =~                                            
+    gpa_0             1.0000                              
+    gpa_1             1.0000                              
+    gpa_2             1.0000                              
+    gpa_3             1.0000                              
+    gpa_4             1.0000                              
+    gpa_5             1.0000                              
+  slope =~                                                
+    gpa_0             0.0000                              
+    gpa_1             1.0000                              
+    gpa_2             2.0000                              
+    gpa_3             3.0000                              
+    gpa_4             4.0000                              
+    gpa_5             5.0000                              
+
+Covariances:
+                    Estimate   Std.Err   z-value   P(&gt;|z|)
+  intercept ~~                                            
+    slope            -0.0014    0.0016   -0.8337    0.4045
+
+Intercepts:
+                    Estimate   Std.Err   z-value   P(&gt;|z|)
+   .gpa_0             0.0000                              
+   .gpa_1             0.0000                              
+   .gpa_2             0.0000                              
+   .gpa_3             0.0000                              
+   .gpa_4             0.0000                              
+   .gpa_5             0.0000                              
+    intercept         2.5992    0.0183  141.9471    0.0000
+    slope             0.1063    0.0059   18.1113    0.0000
+
+Variances:
+                    Estimate   Std.Err   z-value   P(&gt;|z|)
+   .gpa_0   (resd)    0.0424    0.0021   20.0000    0.0000
+   .gpa_1   (resd)    0.0424    0.0021   20.0000    0.0000
+   .gpa_2   (resd)    0.0424    0.0021   20.0000    0.0000
+   .gpa_3   (resd)    0.0424    0.0021   20.0000    0.0000
+   .gpa_4   (resd)    0.0424    0.0021   20.0000    0.0000
+   .gpa_5   (resd)    0.0424    0.0021   20.0000    0.0000
+    intrcpt           0.0449    0.0068    6.5992    0.0000
+    slope             0.0045    0.0007    6.3874    0.0000</code></pre>
+<p>Again, we compare the mixed model to show identical output.</p>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb63-1" data-line-number="1">mixed_ran_int_ran_slope =<span class="st"> </span><span class="kw">lmer</span>(gpa <span class="op">~</span><span class="st"> </span>occasion <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>occasion<span class="op">|</span>student), <span class="dt">data=</span>gpa)</a>
+<a class="sourceLine" id="cb63-2" data-line-number="2"><span class="kw">summary</span>(mixed_ran_int_ran_slope)</a></code></pre></div>
+<pre><code>Linear mixed model fit by REML [&#39;lmerMod&#39;]
+Formula: gpa ~ occasion + (1 + occasion | student)
+   Data: gpa
+
+REML criterion at convergence: 261
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.2695 -0.5377 -0.0128  0.5326  3.1939 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr 
+ student  (Intercept) 0.045193 0.21259       
+          occasion    0.004504 0.06711  -0.10
+ Residual             0.042388 0.20588       
+Number of obs: 1200, groups:  student, 200
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept) 2.599214   0.018357  141.59
+occasion    0.106314   0.005885   18.07
+
+Correlation of Fixed Effects:
+         (Intr)
+occasion -0.345</code></pre>
+<p>In addition, the estimated random coefficients estimates from the mixed model perfectly correlate with those of the latent variables.</p>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+student
+</th>
+<th style="text-align:right;">
+Int_mixed
+</th>
+<th style="text-align:right;">
+Slope_mixed
+</th>
+<th style="text-align:right;">
+Int_LGC
+</th>
+<th style="text-align:right;">
+Slope_LGC
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+2.397
+</td>
+<td style="text-align:right;">
+0.166
+</td>
+<td style="text-align:right;">
+2.398
+</td>
+<td style="text-align:right;">
+0.166
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2
+</td>
+<td style="text-align:right;">
+2.389
+</td>
+<td style="text-align:right;">
+0.105
+</td>
+<td style="text-align:right;">
+2.389
+</td>
+<td style="text-align:right;">
+0.104
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:right;">
+2.593
+</td>
+<td style="text-align:right;">
+0.149
+</td>
+<td style="text-align:right;">
+2.593
+</td>
+<td style="text-align:right;">
+0.149
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+4
+</td>
+<td style="text-align:right;">
+2.506
+</td>
+<td style="text-align:right;">
+0.064
+</td>
+<td style="text-align:right;">
+2.506
+</td>
+<td style="text-align:right;">
+0.064
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+5
+</td>
+<td style="text-align:right;">
+2.686
+</td>
+<td style="text-align:right;">
+0.080
+</td>
+<td style="text-align:right;">
+2.686
+</td>
+<td style="text-align:right;">
+0.081
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+6
+</td>
+<td style="text-align:right;">
+2.394
+</td>
+<td style="text-align:right;">
+0.063
+</td>
+<td style="text-align:right;">
+2.394
+</td>
+<td style="text-align:right;">
+0.063
+</td>
+</tr>
+</tbody>
+</table>
+<p>Note that the intercept-slope relationship in the LGC is expressed as a covariance. If we want correlation, we just ask for standardized output.</p>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb65-1" data-line-number="1"><span class="kw">summary</span>(lgc_ran_int_ran_slope, <span class="dt">nd=</span><span class="dv">4</span>, <span class="dt">std=</span>T)</a></code></pre></div>
+<pre><code>lavaan 0.6-3 ended normally after 51 iterations
+
+  Optimization method                           NLMINB
+  Number of free parameters                         11
+  Number of equality constraints                     5
+
+  Number of observations                           200
+
+  Estimator                                         ML
+  Model Fit Test Statistic                     191.409
+  Degrees of freedom                                21
+  P-value (Chi-square)                           0.000
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard Errors                             Standard
+
+Latent Variables:
+                    Estimate   Std.Err   z-value   P(&gt;|z|)    Std.lv   Std.all
+  intercept =~                                                                
+    gpa_0             1.0000                                  0.2118    0.7170
+    gpa_1             1.0000                                  0.2118    0.7100
+    gpa_2             1.0000                                  0.2118    0.6709
+    gpa_3             1.0000                                  0.2118    0.6132
+    gpa_4             1.0000                                  0.2118    0.5508
+    gpa_5             1.0000                                  0.2118    0.4920
+  slope =~                                                                    
+    gpa_0             0.0000                                  0.0000    0.0000
+    gpa_1             1.0000                                  0.0669    0.2241
+    gpa_2             2.0000                                  0.1337    0.4235
+    gpa_3             3.0000                                  0.2006    0.5807
+    gpa_4             4.0000                                  0.2674    0.6955
+    gpa_5             5.0000                                  0.3343    0.7764
+
+Covariances:
+                    Estimate   Std.Err   z-value   P(&gt;|z|)    Std.lv   Std.all
+  intercept ~~                                                                
+    slope            -0.0014    0.0016   -0.8337    0.4045   -0.0963   -0.0963
+
+Intercepts:
+                    Estimate   Std.Err   z-value   P(&gt;|z|)    Std.lv   Std.all
+   .gpa_0             0.0000                                  0.0000    0.0000
+   .gpa_1             0.0000                                  0.0000    0.0000
+   .gpa_2             0.0000                                  0.0000    0.0000
+   .gpa_3             0.0000                                  0.0000    0.0000
+   .gpa_4             0.0000                                  0.0000    0.0000
+   .gpa_5             0.0000                                  0.0000    0.0000
+    intercept         2.5992    0.0183  141.9471    0.0000   12.2724   12.2724
+    slope             0.1063    0.0059   18.1113    0.0000    1.5903    1.5903
+
+Variances:
+                    Estimate   Std.Err   z-value   P(&gt;|z|)    Std.lv   Std.all
+   .gpa_0   (resd)    0.0424    0.0021   20.0000    0.0000    0.0424    0.4859
+   .gpa_1   (resd)    0.0424    0.0021   20.0000    0.0000    0.0424    0.4763
+   .gpa_2   (resd)    0.0424    0.0021   20.0000    0.0000    0.0424    0.4253
+   .gpa_3   (resd)    0.0424    0.0021   20.0000    0.0000    0.0424    0.3554
+   .gpa_4   (resd)    0.0424    0.0021   20.0000    0.0000    0.0424    0.2867
+   .gpa_5   (resd)    0.0424    0.0021   20.0000    0.0000    0.0424    0.2287
+    intrcpt           0.0449    0.0068    6.5992    0.0000    1.0000    1.0000
+    slope             0.0045    0.0007    6.3874    0.0000    1.0000    1.0000</code></pre>
+<p>The <code>std.all</code> is what we typically will look at.</p>
+</div>
+<div id="random-effects-with-heterogeneous-variances" class="section level3">
+<h3>Random Effects with Heterogeneous Variances</h3>
+<p>We have demonstrated heterogeneous variances <a href="extensions.html#heterogeneous-variance">previously</a>. But to revisit here, <span class="pack">lme4</span> does not provide an easy way to have separate variance at each time point, sacrificing various model complexities for computational advantages. However, <span class="pack">nlme</span> provides an easy, though not straightforward way to get at these estimates. See the previous section for details.</p>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb67-1" data-line-number="1"><span class="kw">library</span>(nlme)</a>
+<a class="sourceLine" id="cb67-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb67-3" data-line-number="3">mixed_ran_int_ran_slope_hetero_var =<span class="st"> </span><span class="kw">lme</span>(gpa <span class="op">~</span><span class="st"> </span>occasion,</a>
+<a class="sourceLine" id="cb67-4" data-line-number="4">                                         <span class="dt">random =</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>occasion <span class="op">|</span><span class="st"> </span>student,</a>
+<a class="sourceLine" id="cb67-5" data-line-number="5">                                         <span class="dt">data =</span> gpa,</a>
+<a class="sourceLine" id="cb67-6" data-line-number="6">                                         <span class="dt">weights =</span> <span class="kw">varIdent</span>(<span class="dt">form =</span> <span class="op">~</span><span class="dv">1</span><span class="op">|</span>occasion))</a>
+<a class="sourceLine" id="cb67-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb67-8" data-line-number="8"><span class="kw">summary</span>(mixed_ran_int_ran_slope_hetero_var)</a></code></pre></div>
+<pre><code>Linear mixed-effects model fit by REML
+ Data: gpa 
+       AIC      BIC    logLik
+  135.6756 191.6481 -56.83781
+
+Random effects:
+ Formula: ~1 + occasion | student
+ Structure: General positive-definite, Log-Cholesky parametrization
+            StdDev     Corr  
+(Intercept) 0.18748341 (Intr)
+occasion    0.05743311 0.228 
+Residual    0.28217560       
+
+Variance function:
+ Structure: Different standard deviations per stratum
+ Formula: ~1 | occasion 
+ Parameter estimates:
+        0         1         2         3         4         5 
+1.0000000 0.9417088 0.8241164 0.6026302 0.4295708 0.4451890 
+Fixed effects: gpa ~ occasion 
+                Value   Std.Error  DF   t-value p-value
+(Intercept) 2.5979778 0.018347305 999 141.59997       0
+occasion    0.1064788 0.005249017 999  20.28548       0
+ Correlation: 
+         (Intr)
+occasion -0.277
+
+Standardized Within-Group Residuals:
+         Min           Q1          Med           Q3          Max 
+-2.949990210 -0.594480704 -0.006692484  0.585054676  3.016566638 
+
+Number of Observations: 1200
+Number of Groups: 200 </code></pre>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+(#tab:mixed_heterogenous)Residual variance at each time point
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+Semester
+</th>
+<th style="text-align:right;">
+Variance
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.080
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.071
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0.054
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0.029
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0.015
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+0.016
+</td>
+</tr>
+</tbody>
+</table>
+<p>Compare to the LGC (our <span class="objclass">lgc_init model</span>).</p>
+<pre><code>Variances:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+   .gpa_0             0.080    0.010    8.136    0.000
+   .gpa_1             0.071    0.008    8.799    0.000
+   .gpa_2             0.054    0.006    9.039    0.000
+   .gpa_3             0.029    0.003    8.523    0.000
+   .gpa_4             0.015    0.002    5.986    0.000
+   .gpa_5             0.016    0.003    4.617    0.000</code></pre>
+</div>
+<div id="other-covariates" class="section level3">
+<h3>Other covariates</h3>
+<p>Within these models we can have cluster level covariates which are constant over time, or covariates that vary over time. We will examine each in turn.</p>
+<div id="cluster-level-covariates" class="section level4">
+<h4>Cluster level covariates</h4>
+<div id="mixed-model-1" class="section level5">
+<h5>Mixed model</h5>
+<p>To add a <span class="emph">cluster-level covariate</span>, for a mixed model, it looks something like this (ignoring lowest level subscript, <span class="math inline">\(b_0\)</span> = intercept):</p>
+<p><em>standard random intercept</em></p>
+<p><span class="math display">\[\mathcal{GPA} = b_{\mathrm{int\_student}} + b_{occ}\cdot\mathrm{time} + \epsilon \]</span></p>
+<p><span class="math display">\[b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + \mathrm{re}_{\mathrm{intercept}}\]</span></p>
+<p>Plugging in becomes:</p>
+<p><span class="math display">\[\mathcal{GPA} = b_{\mathrm{intercept}} + b_{occ}\cdot\mathrm{occasion} +  \mathrm{re}_{\mathrm{intercept}} + \epsilon \]</span></p>
+<p><em>subject level covariate added</em></p>
+<p><span class="math display">\[b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + b_{sex}\cdot\mathrm{sex} + \mathrm{re}_{\mathrm{intercept}}\]</span></p>
+<p>But if we plug that into our level 1 model, it just becomes:</p>
+<p><span class="math display">\[\mathcal{GPA} = b_{\mathrm{intercept}} + b_{sex}\cdot\mathrm{sex} + b_{occ}\cdot\mathrm{occasion} +  \mathrm{re}_{\mathrm{intercept}} + \epsilon \]</span></p>
+<p>In our previous modeling syntax it would look like this:</p>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb70-1" data-line-number="1">gpa_mixed =<span class="st"> </span><span class="kw">lmer</span>(gpa <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>occasion <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>student), <span class="dt">data =</span> gpa)</a></code></pre></div>
+<p>We’d have a fixed effect for sex and interpret it just like in the standard regression setting.</p>
+</div>
+<div id="lgc" class="section level5">
+<h5>LGC</h5>
+<p>With LGC, there is a tendency to interpret the model as an SEM, with the language of effects on latent variables, and certainly one can. For example, we can talk about the (implicitly causal) effect of sex on the intercepts factor, which represents GPA at the first semester. However, adding additional covariates typically causes confusion for those not familiar with mixed models. We literally do have to regress the intercept and slope latent variables on cluster level covariates as follows.</p>
+<p><span class="math display">\[\mathcal{GPA} = b_{\mathrm{int\_student}} + b_{\mathrm{occ\_student}}\cdot \mathrm{occasion} + \epsilon\]</span>
+<span class="math display">\[b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + b_{sex}\cdot\mathrm{sex} + \mathrm{re}_{\mathrm{intercept}}\]</span>
+Furthermore, people almost automatically put in an effect for the cluster level covariate on the slope factor also. In the mixed model this would result in the following:</p>
+<p><em>subject level covariate added added for slopes</em></p>
+<p><span class="math display">\[b_{\mathrm{occ\_student}} = b_{\mathrm{occ}} + \gamma\cdot\mathrm{sex} + \mathrm{re}_{\mathrm{occasion}}\]</span></p>
+<p>And after plugging in:</p>
+<p><span class="math display">\[\mathcal{GPA} = \color{#b2001d}{b_{\mathrm{intercept}} + b_{sex}\cdot\mathrm{sex} + b_{occ}\cdot\mathrm{occasion} + \mathbf{\gamma\cdot\mathrm{sex}\cdot\mathrm{occasion}}}  + \color{#001eb2}{\mathrm{re}_{\mathrm{intercept}} + \mathrm{re}_{\mathrm{occasion}}\cdot\mathrm{occasion}} + e\]</span></p>
+<p>The fixed effects are in red, while the random effects are in blue. Focusing on the fixed effects, we can see that this warrants an interaction between sex and occasion. This is <em>not required</em>, but one should add it if they actually are interested in the interaction. Our graphical model looks like the following using the above notation.</p>
+<div style="width:50%; margin:auto auto; font-size:50%">
+<div id="htmlwidget-98f126bc18d021b2e449" style="width:100%;height:25%;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-98f126bc18d021b2e449">{"x":{"diagram":"digraph growth {\n           # specifying label position is impossible as long as Diagrammer ignores several label attributes inherent in graphviz\n           # Intialization of graph attributes\n           graph [overlap=false ordering=out outputorder = edgesfirst splines=false bgcolor=transparent]    # order out keeps observed nodes in order; splines will keep straight after specifying headport\n           \n           # Node statements\n           node [shape=circle style=filled fillcolor=lightblue color=gray75 fontcolor=gray50 fontsize=\"14px\"];\n           \n           subgraph{\n            rankdir = LR;\n             rank = same;\n\n             # using plotly palette with alpha\n             Intercept [label=\"Intercept\", fontname=Roboto, fontcolor=white, fixedsize=true, width=1, height=1, fillcolor=\"#1f77b480\" color=\"#1f77b4\"];  \n             Occasion [fontname=Roboto, fontcolor=white, fixedsize=true, width=1, height=1, fillcolor=\"#ff7f0e80\" color=\"#ff7f0e\"];\n           }\n           \n           \n           node [width=.75, height=.75, fixedsize=true, shape=square, style=\"\"]\n           sex;\n\n           node [width=.75, height=.75, fixedsize=true, shape=square, style=\"\"]\n           subgraph {\n             rankdir = TB;\n             rank=same;\n             node [fontcolor=gray50]\n             node [color=\"#9467bd\"]\n             \n             V1 [label = <GPA<FONT POINT-SIZE=\"8\"><SUB>sem_1<\/SUB><\/FONT>>];\n             V2 [label = <GPA<FONT POINT-SIZE=\"8\"><SUB>sem_2<\/SUB><\/FONT>>]; \n             V3 [label = <GPA<FONT POINT-SIZE=\"8\"><SUB>sem_3<\/SUB><\/FONT>>]; \n             V4 [label = <GPA<FONT POINT-SIZE=\"8\"><SUB>sem_4<\/SUB><\/FONT>>]; \n             V5 [label = <GPA<FONT POINT-SIZE=\"8\"><SUB>sem_5<\/SUB><\/FONT>>]; \n             V6 [label = <GPA<FONT POINT-SIZE=\"8\"><SUB>sem_6<\/SUB><\/FONT>>]; \n           }\n\n           # Initialization of edge attributes\n           edge [color = gray50 overlap=false arrowsize=.5]\n           \n           # Edge statements\n           \n           edge [ fontcolor=gray25 dir=both fontsize=\"8px\"]  # labeleangle, labeldistance etc. attributes ignored\n           Intercept -> Occasion[label=\"  &rho;\\n\" minlen=2];\n           \n           edge [dir=forward headport=\"c\" minlen=1]\n           edge [label=\"1\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V1; \n           edge [label=\"1\"   color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V2;\n           edge [label=\"1\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V3;\n           edge [label=\"1\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V4;\n           edge [label=\"1\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V5;\n           edge [label=\"1\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V6;\n           \n           edge [dir=forward headport=\"n\" minlen=1]\n           edge [label=\"0\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\" labelposition=3]\n           Occasion -> V1; \n           edge [label=\"1\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\"]\n           Occasion -> V2;\n           edge [label=\"2\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\"]\n           Occasion -> V3;\n           edge [label=\"3\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\"]\n           Occasion -> V4;\n           edge [label=\"4\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\"]\n           Occasion -> V5;\n           edge [label=\"5\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\"]\n           Occasion -> V6;\n           \n           edge [dir=forward headport=\"n\" minlen=1]\n           sex -> Intercept [label = <b<FONT POINT-SIZE=\"8\"><SUB>sex<\/SUB><\/FONT>>];\n           sex -> Occasion [label = \"γ\"];\n} ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+<p>We are now ready to run the LGC for comparison.</p>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb71-1" data-line-number="1">lgc_cluster_level_model &lt;-<span class="st"> &#39;</span></a>
+<a class="sourceLine" id="cb71-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb71-3" data-line-number="3"><span class="st">  intercept =~ 1*gpa_0 + 1*gpa_1 + 1*gpa_2 + 1*gpa_3 + 1*gpa_4 + 1*gpa_5</span></a>
+<a class="sourceLine" id="cb71-4" data-line-number="4"><span class="st">  occasion  =~ 0*gpa_0 + 1*gpa_1 + 2*gpa_2 + 3*gpa_3 + 4*gpa_4 + 5*gpa_5</span></a>
+<a class="sourceLine" id="cb71-5" data-line-number="5"><span class="st">  </span></a>
+<a class="sourceLine" id="cb71-6" data-line-number="6"><span class="st">  # regressions</span></a>
+<a class="sourceLine" id="cb71-7" data-line-number="7"><span class="st">  intercept ~ female</span></a>
+<a class="sourceLine" id="cb71-8" data-line-number="8"><span class="st">  occasion  ~ female </span></a>
+<a class="sourceLine" id="cb71-9" data-line-number="9"><span class="st">  </span></a>
+<a class="sourceLine" id="cb71-10" data-line-number="10"><span class="st">  gpa_0 ~~ resid*gpa_0    # same residual variance for each time point</span></a>
+<a class="sourceLine" id="cb71-11" data-line-number="11"><span class="st">  gpa_1 ~~ resid*gpa_1</span></a>
+<a class="sourceLine" id="cb71-12" data-line-number="12"><span class="st">  gpa_2 ~~ resid*gpa_2</span></a>
+<a class="sourceLine" id="cb71-13" data-line-number="13"><span class="st">  gpa_3 ~~ resid*gpa_3</span></a>
+<a class="sourceLine" id="cb71-14" data-line-number="14"><span class="st">  gpa_4 ~~ resid*gpa_4</span></a>
+<a class="sourceLine" id="cb71-15" data-line-number="15"><span class="st">  gpa_5 ~~ resid*gpa_5</span></a>
+<a class="sourceLine" id="cb71-16" data-line-number="16"><span class="st">  </span></a>
+<a class="sourceLine" id="cb71-17" data-line-number="17"><span class="st">&#39;</span></a>
+<a class="sourceLine" id="cb71-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb71-19" data-line-number="19">lgc_cluster_level =<span class="st"> </span><span class="kw">growth</span>(lgc_cluster_level_model, <span class="dt">data =</span> gpa_wide)</a>
+<a class="sourceLine" id="cb71-20" data-line-number="20"><span class="kw">summary</span>(lgc_cluster_level, <span class="dt">std=</span>T)</a></code></pre></div>
+<pre><code>lavaan 0.6-3 ended normally after 59 iterations
+
+  Optimization method                           NLMINB
+  Number of free parameters                         13
+  Number of equality constraints                     5
+
+  Number of observations                           200
+
+  Estimator                                         ML
+  Model Fit Test Statistic                     193.415
+  Degrees of freedom                                25
+  P-value (Chi-square)                           0.000
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard Errors                             Standard
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
+  intercept =~                                                          
+    gpa_0             1.000                               0.212    0.717
+    gpa_1             1.000                               0.212    0.710
+    gpa_2             1.000                               0.212    0.671
+    gpa_3             1.000                               0.212    0.613
+    gpa_4             1.000                               0.212    0.551
+    gpa_5             1.000                               0.212    0.492
+  occasion =~                                                           
+    gpa_0             0.000                               0.000    0.000
+    gpa_1             1.000                               0.067    0.224
+    gpa_2             2.000                               0.134    0.424
+    gpa_3             3.000                               0.201    0.581
+    gpa_4             4.000                               0.267    0.695
+    gpa_5             5.000                               0.334    0.776
+
+Regressions:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
+  intercept ~                                                           
+    female            0.076    0.036    2.083    0.037    0.357    0.178
+  occasion ~                                                            
+    female            0.029    0.012    2.499    0.012    0.433    0.216
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
+ .intercept ~~                                                          
+   .occasion         -0.002    0.002   -1.184    0.237   -0.140   -0.140
+
+Intercepts:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
+   .gpa_0             0.000                               0.000    0.000
+   .gpa_1             0.000                               0.000    0.000
+   .gpa_2             0.000                               0.000    0.000
+   .gpa_3             0.000                               0.000    0.000
+   .gpa_4             0.000                               0.000    0.000
+   .gpa_5             0.000                               0.000    0.000
+   .intercept         2.560    0.026   97.376    0.000   12.085   12.085
+   .occasion          0.091    0.008   10.865    0.000    1.363    1.363
+
+Variances:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
+   .gpa_0   (resd)    0.042    0.002   20.000    0.000    0.042    0.486
+   .gpa_1   (resd)    0.042    0.002   20.000    0.000    0.042    0.476
+   .gpa_2   (resd)    0.042    0.002   20.000    0.000    0.042    0.425
+   .gpa_3   (resd)    0.042    0.002   20.000    0.000    0.042    0.355
+   .gpa_4   (resd)    0.042    0.002   20.000    0.000    0.042    0.287
+   .gpa_5   (resd)    0.042    0.002   20.000    0.000    0.042    0.229
+   .intrcpt           0.043    0.007    6.525    0.000    0.968    0.968
+   .occasin           0.004    0.001    6.273    0.000    0.953    0.953</code></pre>
+<p>Applied researchers commonly have difficulty interpreting the model due to past experience with SEM. While these are latent variables, they aren’t typical latent variables that represent underlying theoretical constructs. It doesn’t help that the output can be confusing, because now one has an ‘intercept for your intercepts’ and an ‘intercept for your slopes’. In the multilevel context it makes sense, but there you know ‘intercept’ is just ‘fixed effect’.</p>
+<p>This is the corresponding mixed model for comparison:</p>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb73-1" data-line-number="1">mixed_cluster_level_cov =<span class="st"> </span><span class="kw">lmer</span>(gpa <span class="op">~</span><span class="st"> </span>sex <span class="op">+</span><span class="st"> </span>occasion <span class="op">+</span><span class="st"> </span>sex<span class="op">:</span>occasion <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>occasion<span class="op">|</span>student), <span class="dt">data =</span> gpa)</a>
+<a class="sourceLine" id="cb73-2" data-line-number="2"><span class="kw">summary</span>(mixed_cluster_level_cov, <span class="dt">cor=</span>F)</a></code></pre></div>
+<pre><code>Linear mixed model fit by REML [&#39;lmerMod&#39;]
+Formula: gpa ~ sex + occasion + sex:occasion + (1 + occasion | student)
+   Data: gpa
+
+REML criterion at convergence: 256.7
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.2556 -0.5409 -0.0142  0.5407  3.2263 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr 
+ student  (Intercept) 0.044096 0.20999       
+          occasion    0.004328 0.06579  -0.14
+ Residual             0.042388 0.20588       
+Number of obs: 1200, groups:  student, 200
+
+Fixed effects:
+                   Estimate Std. Error t value
+(Intercept)        2.559549   0.026418  96.888
+sexfemale          0.075553   0.036460   2.072
+occasion           0.091128   0.008429  10.811
+sexfemale:occasion 0.028927   0.011634   2.486</code></pre>
+</div>
+</div>
+<div id="time-varying-covariates" class="section level4">
+<h4>Time-varying covariates</h4>
+<div id="mixed-model-2" class="section level5">
+<h5>Mixed Model</h5>
+<p>If we had a <span class="emph">time varying covariate</span>, it’d look like the following. The <code>gpa</code> data doesn’t really come with a useful time-varying covariate, so I’ve added one for demonstration, <em>average weekly hours spent in the library</em> (<code>lib_hours</code>).</p>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb75-1" data-line-number="1"><span class="kw">summary</span>(gpa_mixed_tvc, <span class="dt">cor=</span>F)</a></code></pre></div>
+<pre><code>Linear mixed model fit by REML [&#39;lmerMod&#39;]
+Formula: gpa ~ occasion + lib_hours + (1 + occasion | student)
+   Data: gpa
+
+REML criterion at convergence: 48.5
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.4105 -0.5185 -0.0023  0.5202  2.9575 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr 
+ student  (Intercept) 0.033135 0.18203       
+          occasion    0.002817 0.05307  -0.13
+ Residual             0.037591 0.19388       
+Number of obs: 1200, groups:  student, 200
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept) 2.385494   0.021079  113.17
+occasion    0.082838   0.005196   15.94
+lib_hours   0.032216   0.002024   15.92</code></pre>
+<p>Note that we could have a random slope for library hours if we wanted. The fixed effect for the covariate is still as it would be for standard regression interpretation.</p>
+</div>
+<div id="lgc-1" class="section level5">
+<h5>LGC</h5>
+<p>With time varying covariates, the syntax starts to get tedious for the LGC. Here we add <code>lib_hours</code> to the model, but we need to convert it to wide format and add it to our previous data. Thus <code>lib_hours_*</code> represent the average weekly hours spent in the library for each each student at each semester.</p>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb77-1" data-line-number="1">lgc_tvc &lt;-<span class="st"> </span><span class="kw">growth</span>(lgc_tvc_model, <span class="dt">data=</span>gpa_wide)</a>
+<a class="sourceLine" id="cb77-2" data-line-number="2"><span class="kw">summary</span>(lgc_tvc)</a></code></pre></div>
+<pre><code>lavaan 0.6-3 ended normally after 91 iterations
+
+  Optimization method                           NLMINB
+  Number of free parameters                         17
+  Number of equality constraints                     5
+
+  Number of observations                           200
+
+  Estimator                                         ML
+  Model Fit Test Statistic                     341.888
+  Degrees of freedom                                51
+  P-value (Chi-square)                           0.000
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard Errors                             Standard
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+  intercept =~                                        
+    gpa_0             1.000                           
+    gpa_1             1.000                           
+    gpa_2             1.000                           
+    gpa_3             1.000                           
+    gpa_4             1.000                           
+    gpa_5             1.000                           
+  occasion =~                                         
+    gpa_0             0.000                           
+    gpa_1             1.000                           
+    gpa_2             2.000                           
+    gpa_3             3.000                           
+    gpa_4             4.000                           
+    gpa_5             5.000                           
+
+Regressions:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+  gpa_0 ~                                             
+    lib_hours_0       0.045    0.004   10.701    0.000
+  gpa_1 ~                                             
+    lib_hours_1       0.039    0.003   13.514    0.000
+  gpa_2 ~                                             
+    lib_hours_2       0.033    0.002   13.752    0.000
+  gpa_3 ~                                             
+    lib_hours_3       0.028    0.003   11.271    0.000
+  gpa_4 ~                                             
+    lib_hours_4       0.024    0.003    8.527    0.000
+  gpa_5 ~                                             
+    lib_hours_5       0.022    0.003    6.348    0.000
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+  intercept ~~                                        
+    occasion         -0.001    0.001   -0.656    0.512
+
+Intercepts:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+   .gpa_0             0.000                           
+   .gpa_1             0.000                           
+   .gpa_2             0.000                           
+   .gpa_3             0.000                           
+   .gpa_4             0.000                           
+   .gpa_5             0.000                           
+    intercept         2.300    0.030   76.682    0.000
+    occasion          0.122    0.011   11.123    0.000
+
+Variances:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+   .gpa_0   (resd)    0.036    0.002   20.000    0.000
+   .gpa_1   (resd)    0.036    0.002   20.000    0.000
+   .gpa_2   (resd)    0.036    0.002   20.000    0.000
+   .gpa_3   (resd)    0.036    0.002   20.000    0.000
+   .gpa_4   (resd)    0.036    0.002   20.000    0.000
+   .gpa_5   (resd)    0.036    0.002   20.000    0.000
+    intrcpt           0.030    0.005    6.019    0.000
+    occasin           0.003    0.001    5.975    0.000</code></pre>
+<p>However, this result is not the same as our mixed model. Here is the corresponding graphical model. The <code>*</code> represents a coefficient that is freely estimated.</p>
+<div style="width:50%; margin:auto auto; font-size:50%">
+<div id="htmlwidget-70d3b3a1497878366c55" style="width:100%;height:25%;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-70d3b3a1497878366c55">{"x":{"diagram":"digraph growth {\n           # specifying label position is impossible as long as Diagrammer ignores several label attributes inherent in graphviz\n           # Intialization of graph attributes\n           graph [overlap=false ordering=out outputorder = edgesfirst splines=false bgcolor=transparent]    # order out keeps observed nodes in order; splines will keep straight after specifying headport\n           \n           # Node statements\n           node [shape=circle style=filled fillcolor=lightblue color=gray75 fontcolor=gray50 fontsize=\"14px\"];\n           \n           subgraph{\n            rankdir = LR;\n             rank = same;\n\n             # using plotly palette with alpha\n             Intercept [label=\"Intercept\", fontname=Roboto, fontcolor=white, fixedsize=true, width=1, height=1, fillcolor=\"#1f77b480\" color=\"#1f77b4\"];  \n             Occasion [fontname=Roboto, fontcolor=white, fixedsize=true, width=1, height=1, fillcolor=\"#ff7f0e80\" color=\"#ff7f0e\"];\n           }\n           \n           \n\n           node [width=.75, height=.75, fixedsize=true, shape=square, style=\"\"]\n           subgraph {\n             rankdir = TB;\n             rank=same;\n             node [fontcolor=gray50]\n             node [color=\"#9467bd\"]\n             \n             V1 [label = <GPA<FONT POINT-SIZE=\"8\"><SUB>sem_1<\/SUB><\/FONT>>];\n             V2 [label = <GPA<FONT POINT-SIZE=\"8\"><SUB>sem_2<\/SUB><\/FONT>>]; \n             V3 [label = <GPA<FONT POINT-SIZE=\"8\"><SUB>sem_3<\/SUB><\/FONT>>]; \n             V4 [label = <GPA<FONT POINT-SIZE=\"8\"><SUB>sem_4<\/SUB><\/FONT>>]; \n             V5 [label = <GPA<FONT POINT-SIZE=\"8\"><SUB>sem_5<\/SUB><\/FONT>>]; \n             V6 [label = <GPA<FONT POINT-SIZE=\"8\"><SUB>sem_6<\/SUB><\/FONT>>]; \n           }\n           \n           node [width=.75, height=.75, fixedsize=true, shape=square, style=\"\"]\n           subgraph {\n             rankdir = TB;\n             rank=same;\n             node [fontcolor=gray50]\n             node [color=\"#9467bd\"]\n             \n             LH_sem_1 [label = <LH<FONT POINT-SIZE=\"8\"><SUB>sem_1<\/SUB><\/FONT>>];\n             LH_sem_2 [label = <LH<FONT POINT-SIZE=\"8\"><SUB>sem_2<\/SUB><\/FONT>>]; \n             LH_sem_3 [label = <LH<FONT POINT-SIZE=\"8\"><SUB>sem_3<\/SUB><\/FONT>>]; \n             LH_sem_4 [label = <LH<FONT POINT-SIZE=\"8\"><SUB>sem_4<\/SUB><\/FONT>>]; \n             LH_sem_5 [label = <LH<FONT POINT-SIZE=\"8\"><SUB>sem_5<\/SUB><\/FONT>>]; \n             LH_sem_6 [label = <LH<FONT POINT-SIZE=\"8\"><SUB>sem_6<\/SUB><\/FONT>>]; \n           }\n\n           # Initialization of edge attributes\n           edge [color = gray50 overlap=false arrowsize=.5]\n           \n           # Edge statements\n           \n           edge [ fontcolor=gray25 dir=both fontsize=\"8px\"]  # labeleangle, labeldistance etc. attributes ignored\n           Intercept -> Occasion[label=\"  &rho;\\n\" minlen=2];\n           \n           edge [dir=forward headport=\"c\" minlen=1]\n           edge [label=\"1\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V1; \n           edge [label=\"1\"   color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V2;\n           edge [label=\"1\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V3;\n           edge [label=\"1\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V4;\n           edge [label=\"1\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V5;\n           edge [label=\"1\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           Intercept -> V6;\n           \n           edge [dir=forward headport=\"n\" minlen=1]\n           edge [label=\"0\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\" labelposition=3]\n           Occasion -> V1; \n           edge [label=\"1\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\"]\n           Occasion -> V2;\n           edge [label=\"2\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\"]\n           Occasion -> V3;\n           edge [label=\"3\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\"]\n           Occasion -> V4;\n           edge [label=\"4\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\"]\n           Occasion -> V5;\n           edge [label=\"5\"  color=\"#ff7f0e\" fontcolor=\"#ff7f0e\"]\n           Occasion -> V6;\n           \n           \n           edge [dir=back headport=\"c\" minlen=1]\n           edge [label=\" *\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           V1 -> LH_sem_1; \n           edge [label=\" *\"   color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           V2 -> LH_sem_2;\n           edge [label=\" *\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           V3 -> LH_sem_3;\n           edge [label=\" *\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           V4 -> LH_sem_4;\n           edge [label=\" *\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           V5 -> LH_sem_5;\n           edge [label=\" *\"  color=\"#1f77b4\" fontcolor=\"#1f77b4\"]\n           V6 -> LH_sem_6;\n           \n\n} ","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+<p>The problem here is similar to that seen with the residual variances. Unless we fix the coefficient to be constant, this is akin to having an interaction of the time-varying covariate with a <em>categorical form of time</em>. So in the same model we flip from considering time as a numeric and linear effect on the outcome, to one that is categorical. This is rarely done in typical mixed or other regression models, though for some reason is the standard for the LGC setting. The following will get us back to the comparable mixed model.</p>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb79-1" data-line-number="1">lgc_tvc_model &lt;-<span class="st"> &#39;</span></a>
+<a class="sourceLine" id="cb79-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb79-3" data-line-number="3"><span class="st">  intercept =~ 1*gpa_0 + 1*gpa_1 + 1*gpa_2 + 1*gpa_3 + 1*gpa_4 + 1*gpa_5</span></a>
+<a class="sourceLine" id="cb79-4" data-line-number="4"><span class="st">  occasion  =~ 0*gpa_0 + 1*gpa_1 + 2*gpa_2 + 3*gpa_3 + 4*gpa_4 + 5*gpa_5</span></a>
+<a class="sourceLine" id="cb79-5" data-line-number="5"><span class="st">  </span></a>
+<a class="sourceLine" id="cb79-6" data-line-number="6"><span class="st">  # time-varying covariates</span></a>
+<a class="sourceLine" id="cb79-7" data-line-number="7"><span class="st">  gpa_0 ~ lh_coef*lib_hours_0</span></a>
+<a class="sourceLine" id="cb79-8" data-line-number="8"><span class="st">  gpa_1 ~ lh_coef*lib_hours_1</span></a>
+<a class="sourceLine" id="cb79-9" data-line-number="9"><span class="st">  gpa_2 ~ lh_coef*lib_hours_2</span></a>
+<a class="sourceLine" id="cb79-10" data-line-number="10"><span class="st">  gpa_3 ~ lh_coef*lib_hours_3</span></a>
+<a class="sourceLine" id="cb79-11" data-line-number="11"><span class="st">  gpa_4 ~ lh_coef*lib_hours_4</span></a>
+<a class="sourceLine" id="cb79-12" data-line-number="12"><span class="st">  gpa_5 ~ lh_coef*lib_hours_5</span></a>
+<a class="sourceLine" id="cb79-13" data-line-number="13"><span class="st">    </span></a>
+<a class="sourceLine" id="cb79-14" data-line-number="14"><span class="st">  gpa_0 ~~ resid*gpa_0    # same residual variance for each time point</span></a>
+<a class="sourceLine" id="cb79-15" data-line-number="15"><span class="st">  gpa_1 ~~ resid*gpa_1</span></a>
+<a class="sourceLine" id="cb79-16" data-line-number="16"><span class="st">  gpa_2 ~~ resid*gpa_2</span></a>
+<a class="sourceLine" id="cb79-17" data-line-number="17"><span class="st">  gpa_3 ~~ resid*gpa_3</span></a>
+<a class="sourceLine" id="cb79-18" data-line-number="18"><span class="st">  gpa_4 ~~ resid*gpa_4</span></a>
+<a class="sourceLine" id="cb79-19" data-line-number="19"><span class="st">  gpa_5 ~~ resid*gpa_5  </span></a>
+<a class="sourceLine" id="cb79-20" data-line-number="20"><span class="st">  </span></a>
+<a class="sourceLine" id="cb79-21" data-line-number="21"><span class="st">&#39;</span></a>
+<a class="sourceLine" id="cb79-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb79-23" data-line-number="23">lgc_tvc &lt;-<span class="st"> </span><span class="kw">growth</span>(lgc_tvc_model, <span class="dt">data=</span>gpa_wide)</a>
+<a class="sourceLine" id="cb79-24" data-line-number="24"><span class="kw">summary</span>(lgc_tvc)</a></code></pre></div>
+<pre><code>lavaan 0.6-3 ended normally after 54 iterations
+
+  Optimization method                           NLMINB
+  Number of free parameters                         17
+  Number of equality constraints                    10
+
+  Number of observations                           200
+
+  Estimator                                         ML
+  Model Fit Test Statistic                     357.578
+  Degrees of freedom                                56
+  P-value (Chi-square)                           0.000
+
+Parameter Estimates:
+
+  Information                                 Expected
+  Information saturated (h1) model          Structured
+  Standard Errors                             Standard
+
+Latent Variables:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+  intercept =~                                        
+    gpa_0             1.000                           
+    gpa_1             1.000                           
+    gpa_2             1.000                           
+    gpa_3             1.000                           
+    gpa_4             1.000                           
+    gpa_5             1.000                           
+  occasion =~                                         
+    gpa_0             0.000                           
+    gpa_1             1.000                           
+    gpa_2             2.000                           
+    gpa_3             3.000                           
+    gpa_4             4.000                           
+    gpa_5             5.000                           
+
+Regressions:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+  gpa_0 ~                                             
+    lb_hr_0 (lh_c)    0.032    0.002   15.951    0.000
+  gpa_1 ~                                             
+    lb_hr_1 (lh_c)    0.032    0.002   15.951    0.000
+  gpa_2 ~                                             
+    lb_hr_2 (lh_c)    0.032    0.002   15.951    0.000
+  gpa_3 ~                                             
+    lb_hr_3 (lh_c)    0.032    0.002   15.951    0.000
+  gpa_4 ~                                             
+    lb_hr_4 (lh_c)    0.032    0.002   15.951    0.000
+  gpa_5 ~                                             
+    lb_hr_5 (lh_c)    0.032    0.002   15.951    0.000
+
+Covariances:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+  intercept ~~                                        
+    occasion         -0.001    0.001   -0.973    0.331
+
+Intercepts:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+   .gpa_0             0.000                           
+   .gpa_1             0.000                           
+   .gpa_2             0.000                           
+   .gpa_3             0.000                           
+   .gpa_4             0.000                           
+   .gpa_5             0.000                           
+    intercept         2.385    0.021  113.389    0.000
+    occasion          0.083    0.005   15.983    0.000
+
+Variances:
+                   Estimate  Std.Err  z-value  P(&gt;|z|)
+   .gpa_0   (resd)    0.038    0.002   20.000    0.000
+   .gpa_1   (resd)    0.038    0.002   20.000    0.000
+   .gpa_2   (resd)    0.038    0.002   20.000    0.000
+   .gpa_3   (resd)    0.038    0.002   20.000    0.000
+   .gpa_4   (resd)    0.038    0.002   20.000    0.000
+   .gpa_5   (resd)    0.038    0.002   20.000    0.000
+    intrcpt           0.033    0.005    6.148    0.000
+    occasin           0.003    0.001    5.523    0.000</code></pre>
+<p>Compare again to the mixed model result.</p>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb81-1" data-line-number="1"><span class="kw">summary</span>(gpa_mixed_tvc, <span class="dt">cor=</span>F)</a></code></pre></div>
+<pre><code>Linear mixed model fit by REML [&#39;lmerMod&#39;]
+Formula: gpa ~ occasion + lib_hours + (1 + occasion | student)
+   Data: gpa
+
+REML criterion at convergence: 48.5
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.4105 -0.5185 -0.0023  0.5202  2.9575 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr 
+ student  (Intercept) 0.033135 0.18203       
+          occasion    0.002817 0.05307  -0.13
+ Residual             0.037591 0.19388       
+Number of obs: 1200, groups:  student, 200
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept) 2.385494   0.021079  113.17
+occasion    0.082838   0.005196   15.94
+lib_hours   0.032216   0.002024   15.92</code></pre>
+<p>Now imagine having just a few of those kinds of variables as would be common in most longitudinal settings. In the mixed model framework one would add them in as any covariate in a regression model, and each covariate would be associated with a single fixed effect. In the LGC framework, one has to regress each time point for the target variable on its corresponding predictor time point. It might take a few paragraphs to explain the coefficients for just a handful of covariates. If you fix them to a single value, you would duplicate the mixed model, but the syntax requires even more tedium<a href="#fn30" class="footnote-ref" id="fnref30"><sup>30</sup></a>.</p>
+</div>
+</div>
+</div>
+<div id="some-differences-between-mixed-models-and-growth-curves" class="section level3">
+<h3>Some Differences between Mixed Models and Growth Curves</h3>
+<div id="wide-vs.long" class="section level4">
+<h4>Wide vs. long</h4>
+<p>The SEM framework is inherently multivariate, i.e. assuming multiple outcomes, so your data will need to be in wide format. In the R world, this is ‘untidy’ data, and makes other data processing and visualization more tedious.</p>
+</div>
+<div id="random-slopes" class="section level4">
+<h4>Random slopes</h4>
+<p>One difference seen in comparing LGC models vs. mixed models is that in the former, random slopes are always assumed, whereas in the latter, one would typically see if it’s worth adding random slopes in the first place, or simply not assume them.</p>
+</div>
+<div id="other-random-effects" class="section level4">
+<h4>Other random effects</h4>
+<p>Just about any LGC you come across in the wild has only one clustering level of interest. However, it’s very common to have multiple random effects structure or additional random effects beyond the time covariate. In our example, these might include school, district, or other complicated structure, or the library hours from the time-varying covariate example. Tools like <span class="pack">lme4</span> handle random effects and complicated structure easily. SEM tools do not do this easily, and resort to the multilevel (long-format) approach, which more or less defeats the purpose of using them, as they merely mimic the standard mixed model approach, albeit with yet another and different type of syntax<a href="#fn31" class="footnote-ref" id="fnref31"><sup>31</sup></a>. However, if you have other latent variables or complicated indirect effects, this may be the way to go.</p>
+</div>
+<div id="sample-size" class="section level4">
+<h4>Sample size</h4>
+<p>SEM is inherently a large sample technique. The growth curve model does not require as much for standard approaches, but may require a lot more depending on the model one tries to estimate. In <a href="https://m-clark.github.io/docs/gpa_mixeds/growth_vs_mixed_sim.html">my own simulations</a>, I haven’t seen too much difference compared to mixed models even for notably small sample sizes, but those were for very simple models.</p>
+</div>
+<div id="number-of-time-points" class="section level4">
+<h4>Number of time points</h4>
+<p>A basic growth curve model requires four time points to incorporate the flexibility that would make it worthwhile. Mixed models don’t have the restriction (outside of the obvious need of two). In addition, mixed models can handle any number of time points without changing the syntax at all, while LGC is rarely applied to more than a handful of time points. Even then, when you have many time-varying covariates, which is common, the model syntax is tedious, and you end up having the number of parameters to estimate climb rapidly, as the default model assumes interactions with time as a categorical variable.</p>
+</div>
+<div id="balance" class="section level4">
+<h4>Balance</h4>
+<p>Mixed models can run even if some clusters have a single value. SEM requires balanced data and so one will always have to estimate missing values or drop them. Whether this missingness can be ignored in the standard mixed model framework is a matter of some debate. Most disciplines ignore the missingness, which for mixed models means assuming the observations are <em>missing at random</em> (MAR). With the LGC, the default is simply to drop any observation with missing, and so the assumption there is <em>missing completely at random</em> (MCAR), a stronger assumption.</p>
+</div>
+<div id="numbering-the-time-points" class="section level4">
+<h4>Numbering the time points</h4>
+<p>Numbering your time from zero makes sense in both worlds. This leads to the natural interpretation that the intercept is the mean of the outcome for your first time point. In other cases having a centered value would make sense, or numbering from 0 to a final value of 1, which would mean the slope coefficient represents the change over the whole time span.</p>
+</div>
+</div>
+<div id="recommended-packages-that-can-do-lgc-models" class="section level3">
+<h3>Recommended Packages that can do LGC models</h3>
+<p>Between <span class="pack">lme4</span> and <span class="pack">nlme</span>, you can do any standard LGC. Besides that, various packages provide functionality that some might think is only done with SEM software. One package I highly recommend is <span class="pack">brms</span>, as it builds on many other packages that incorporate a mixed model approach in the Bayesian framework. The others are ones that come to mind off the top of my head, so in some cases should be seen as a starting point only.</p>
+<ul>
+<li>Standard LGC, including alternative distributions (e.g. robust t, beta, count, zero-inflated): <span class="pack">nlme</span>, <span class="pack">lavaan</span>, <span class="pack">lme4</span>, <span class="pack">mgcv</span>, <span class="pack">brms</span>, many others</li>
+<li>Multilevel SEM: <span class="pack">lavaan</span></li>
+<li>Flexible nonlinear relationships: <span class="pack">nlme</span>, <span class="pack">mgcv</span>, <span class="pack">brms</span></li>
+<li>Missing data: <span class="pack">mice</span>, <span class="pack">lavaan</span>, <span class="pack">brms</span></li>
+<li>Multivariate/Parallel Process/Correlated random effects: <span class="pack">brms</span></li>
+<li>Mediation: <span class="pack">mediation</span>, <span class="pack">brms</span></li>
+<li>Growth Mixture Models: <span class="pack">flexmix</span></li>
+</ul>
+<p>In short, you’d need a very complicated growth model to require moving from the mixed model framework to SEM-specific software or beyond R, in other words, one that combines potentially already complex modeling situations. Note also, unless you are incorporating latent variables, e.g. from scale measurements, there is little need to use something like <span class="pack">lavaan</span> or <span class="pack">Mplus</span> for standard mixed/multilevel modeling (i.e. in the long data framework), though they have such functionality. The <span class="pack">Mplus</span> manual also lumps survival and standard time series in the chapter on longitudinal and related models. However, I personally can’t see a scenario where I would use <span class="pack">Mplus</span> for survival or time series given the multitude of easier to use, more flexible, and more powerful options in R.</p>
+</div>
+<div id="summary-3" class="section level3">
+<h3>Summary</h3>
+<p>Latent Growth Curve modeling is an alternative way to do what is very commonly accomplished through mixed models, and allow for more complex models than typically seen for standard mixed models. One’s default should probably be to use the more commonly used, and probably more flexible (in most situations), mixed modeling tools, where there are packages in R that could handle nonlinear effects, mediation and multivariate outcomes for mixed models. I have other documents regarding mixed models on my <a href="https://m-clark.github.io/documents">website</a> and code at <a href="https://github.com/m-clark/Miscellaneous-R-Code">GitHub</a>, including a document that does <a href="http://m-clark.github.io/mixed-growth-comparison/">more comparison to growth curve models</a>. However, the latent variable approach may provide what you need, and at the very least gives you a fresh take on the standard mixed model perspective.</p>
+
+</div>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="28">
+<li id="fn28"><p>I’m omitting the observation level subscript, so this can work for the single observation or entire data set.<a href="supplemental.html#fnref28" class="footnote-back">↩</a></p></li>
+<li id="fn29"><p>Usually we would draw both random effects from a multivariate normal distribution with some covariance.<a href="supplemental.html#fnref29" class="footnote-back">↩</a></p></li>
+<li id="fn30"><p>To be fair, <span class="pack">Mplus</span> (and presumably <span class="pack">lavaan</span> at some point in the future) has shortcuts to make the syntax easier, but it also can make for more esoteric and less understandable syntax.<a href="supplemental.html#fnref30" class="footnote-back">↩</a></p></li>
+<li id="fn31"><p>Honestly, for the same types of models I find the multilevel syntax of <span class="pack">Mplus</span> ridiculously complex relative to R packages.<a href="supplemental.html#fnref31" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="summary.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="appendix.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": false,
+"twitter": false,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapper": false,
+"vk": false,
+"all": ["twitter", "facebook", "google", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": null,
+"download": null,
+"toc": {
+"collapse": "section",
+"depth": 2,
+"scroll_highlight": true
+},
+"df_print": "kable",
+"highlight": "pygments",
+"search": true
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

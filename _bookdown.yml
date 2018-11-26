@@ -9,15 +9,18 @@ rmd_files: [
   'index.Rmd',
   'introduction.Rmd',
 
-  # Part I
+  # Part I: Standard Models
   'random_intercepts.Rmd',
   'random_slopes.Rmd',
 
 
-  # Part II
+  # Part II: E
   'extensions.Rmd',
   'issues.Rmd',
   'further.Rmd',
+  
+  # Part III: Conclusion
   'summary.Rmd',
+  'supplemental.Rmd',
   'appendix.Rmd'
 ]

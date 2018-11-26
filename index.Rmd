@@ -37,6 +37,9 @@ library(visibly); library(htmltools); library(forcats); library(lme4)
 library(broom); library(plotly); library(tidyverse); library(kableExtra); library(patchwork)
 
 kable_styling = function(..., full_width = FALSE) kableExtra::kable_styling(..., full_width = full_width)
+
+kable_df = function(..., digits =3, full_width = FALSE) 
+  kable(..., digits=digits) %>% kable_styling(full_width = full_width)
 ```
 
 ####

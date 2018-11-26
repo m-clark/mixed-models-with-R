@@ -497,7 +497,7 @@
     <rect x='296.03' y='22.91' width='256.62' height='17.87' />
   </clipPath>
 </defs>
-<g clip-path='url(#cpMjk2LjAyOHw1NTIuNjUxfDQwLjc4MDV8MjIuOTExNA==)'><text x='394.32' y='35.06' style='font-size: 8.80px; fill: #1A1A1A; font-family: Arial;' textLength='60.03px' lengthAdjust='spacingAndGlyphs'>hospital:wardid</text></g>
+<g clip-path='url(#cpMjk2LjAyOHw1NTIuNjUxfDQwLjc4MDV8MjIuOTExNA==)'><text x='397.83' y='35.06' style='font-size: 8.80px; fill: #1A1A1A; font-family: Arial;' textLength='53.03px' lengthAdjust='spacingAndGlyphs'>hospital:ward</text></g>
 <defs>
   <clipPath id='cpMHw1NzZ8MzYwfDA='>
     <rect x='0.00' y='0.00' width='576.00' height='360.00' />
@@ -514,26 +514,26 @@
     <rect x='0.00' y='0.00' width='576.00' height='360.00' />
   </clipPath>
 </defs>
-<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='33.37' y='339.92' style='font-size: 8.80px; fill: #757575; font-family: Arial;' textLength='5.01px' lengthAdjust='spacingAndGlyphs'>0</text></g>
-<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='81.97' y='339.92' style='font-size: 8.80px; fill: #757575; font-family: Arial;' textLength='5.01px' lengthAdjust='spacingAndGlyphs'>5</text></g>
-<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='128.07' y='339.92' style='font-size: 8.80px; fill: #757575; font-family: Arial;' textLength='10.01px' lengthAdjust='spacingAndGlyphs'>10</text></g>
-<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='176.67' y='339.92' style='font-size: 8.80px; fill: #757575; font-family: Arial;' textLength='10.01px' lengthAdjust='spacingAndGlyphs'>15</text></g>
-<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='225.28' y='339.92' style='font-size: 8.80px; fill: #757575; font-family: Arial;' textLength='10.01px' lengthAdjust='spacingAndGlyphs'>20</text></g>
-<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='273.88' y='339.92' style='font-size: 8.80px; fill: #757575; font-family: Arial;' textLength='10.01px' lengthAdjust='spacingAndGlyphs'>25</text></g>
-<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='300.33' y='339.92' style='font-size: 8.80px; fill: #757575; font-family: Arial;' textLength='10.01px' lengthAdjust='spacingAndGlyphs'>25</text></g>
-<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='359.24' y='339.92' style='font-size: 8.80px; fill: #757575; font-family: Arial;' textLength='10.01px' lengthAdjust='spacingAndGlyphs'>50</text></g>
-<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='418.16' y='339.92' style='font-size: 8.80px; fill: #757575; font-family: Arial;' textLength='10.01px' lengthAdjust='spacingAndGlyphs'>75</text></g>
-<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='474.57' y='339.92' style='font-size: 8.80px; fill: #757575; font-family: Arial;' textLength='15.02px' lengthAdjust='spacingAndGlyphs'>100</text></g>
-<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='533.48' y='339.92' style='font-size: 8.80px; fill: #757575; font-family: Arial;' textLength='15.02px' lengthAdjust='spacingAndGlyphs'>125</text></g>
-<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='20.99' y='327.79' style='font-size: 8.80px; fill: #757575; font-family: Arial;' textLength='8.00px' lengthAdjust='spacingAndGlyphs'>-2</text></g>
-<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='20.99' y='256.50' style='font-size: 8.80px; fill: #757575; font-family: Arial;' textLength='8.00px' lengthAdjust='spacingAndGlyphs'>-1</text></g>
-<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='23.99' y='185.21' style='font-size: 8.80px; fill: #757575; font-family: Arial;' textLength='5.01px' lengthAdjust='spacingAndGlyphs'>0</text></g>
-<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='23.99' y='113.92' style='font-size: 8.80px; fill: #757575; font-family: Arial;' textLength='5.01px' lengthAdjust='spacingAndGlyphs'>1</text></g>
+<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='33.37' y='339.92' style='font-size: 8.80px; fill: #7F7F7F; font-family: Arial;' textLength='5.01px' lengthAdjust='spacingAndGlyphs'>0</text></g>
+<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='81.97' y='339.92' style='font-size: 8.80px; fill: #7F7F7F; font-family: Arial;' textLength='5.01px' lengthAdjust='spacingAndGlyphs'>5</text></g>
+<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='128.07' y='339.92' style='font-size: 8.80px; fill: #7F7F7F; font-family: Arial;' textLength='10.01px' lengthAdjust='spacingAndGlyphs'>10</text></g>
+<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='176.67' y='339.92' style='font-size: 8.80px; fill: #7F7F7F; font-family: Arial;' textLength='10.01px' lengthAdjust='spacingAndGlyphs'>15</text></g>
+<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='225.28' y='339.92' style='font-size: 8.80px; fill: #7F7F7F; font-family: Arial;' textLength='10.01px' lengthAdjust='spacingAndGlyphs'>20</text></g>
+<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='273.88' y='339.92' style='font-size: 8.80px; fill: #7F7F7F; font-family: Arial;' textLength='10.01px' lengthAdjust='spacingAndGlyphs'>25</text></g>
+<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='300.33' y='339.92' style='font-size: 8.80px; fill: #7F7F7F; font-family: Arial;' textLength='10.01px' lengthAdjust='spacingAndGlyphs'>25</text></g>
+<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='359.24' y='339.92' style='font-size: 8.80px; fill: #7F7F7F; font-family: Arial;' textLength='10.01px' lengthAdjust='spacingAndGlyphs'>50</text></g>
+<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='418.16' y='339.92' style='font-size: 8.80px; fill: #7F7F7F; font-family: Arial;' textLength='10.01px' lengthAdjust='spacingAndGlyphs'>75</text></g>
+<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='474.57' y='339.92' style='font-size: 8.80px; fill: #7F7F7F; font-family: Arial;' textLength='15.02px' lengthAdjust='spacingAndGlyphs'>100</text></g>
+<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='533.48' y='339.92' style='font-size: 8.80px; fill: #7F7F7F; font-family: Arial;' textLength='15.02px' lengthAdjust='spacingAndGlyphs'>125</text></g>
+<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='20.99' y='327.79' style='font-size: 8.80px; fill: #7F7F7F; font-family: Arial;' textLength='8.00px' lengthAdjust='spacingAndGlyphs'>-2</text></g>
+<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='20.99' y='256.50' style='font-size: 8.80px; fill: #7F7F7F; font-family: Arial;' textLength='8.00px' lengthAdjust='spacingAndGlyphs'>-1</text></g>
+<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='23.99' y='185.21' style='font-size: 8.80px; fill: #7F7F7F; font-family: Arial;' textLength='5.01px' lengthAdjust='spacingAndGlyphs'>0</text></g>
+<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='23.99' y='113.92' style='font-size: 8.80px; fill: #7F7F7F; font-family: Arial;' textLength='5.01px' lengthAdjust='spacingAndGlyphs'>1</text></g>
 <polyline points='31.19,324.58 33.93,324.58 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' clip-path='url(#cpMHw1NzZ8MzYwfDA=)' />
 <polyline points='31.19,253.29 33.93,253.29 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' clip-path='url(#cpMHw1NzZ8MzYwfDA=)' />
 <polyline points='31.19,182.00 33.93,182.00 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' clip-path='url(#cpMHw1NzZ8MzYwfDA=)' />
 <polyline points='31.19,110.71 33.93,110.71 ' style='stroke-width: 1.07; stroke: #333333; stroke-linecap: butt;' clip-path='url(#cpMHw1NzZ8MzYwfDA=)' />
-<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='278.00' y='351.88' style='font-size: 11.00px; fill: #545454; font-family: Arial;' textLength='30.57px' lengthAdjust='spacingAndGlyphs'>Group</text></g>
-<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text transform='translate(13.35,216.90) rotate(-90)' style='font-size: 11.00px; fill: #545454; font-family: Arial;' textLength='63.59px' lengthAdjust='spacingAndGlyphs'>Effect Range</text></g>
-<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='33.93' y='14.79' style='font-size: 13.20px; fill: #545454; font-family: Arial;' textLength='81.66px' lengthAdjust='spacingAndGlyphs'>Effect Ranges</text></g>
+<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='278.00' y='351.88' style='font-size: 11.00px; font-family: Arial;' textLength='30.57px' lengthAdjust='spacingAndGlyphs'>Group</text></g>
+<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text transform='translate(13.35,216.90) rotate(-90)' style='font-size: 11.00px; font-family: Arial;' textLength='63.59px' lengthAdjust='spacingAndGlyphs'>Effect Range</text></g>
+<g clip-path='url(#cpMHw1NzZ8MzYwfDA=)'><text x='33.93' y='14.79' style='font-size: 13.20px; font-family: Arial;' textLength='81.66px' lengthAdjust='spacingAndGlyphs'>Effect Ranges</text></g>
 </svg>

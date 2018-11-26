@@ -24,14 +24,14 @@
 
 
 
-<meta name="date" content="2018-10-01">
+<meta name="date" content="2018-11-26">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   
   <link rel="shortcut icon" href="img/R.ico" type="image/x-icon">
-<link rel="prev" href="summary.html">
+<link rel="prev" href="supplemental.html">
 
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -46,9 +46,9 @@
 
 
 
-<script src="libs/htmlwidgets-1.2/htmlwidgets.js"></script>
+<script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
 <link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
-<script src="libs/datatables-binding-0.4/datatables.js"></script>
+<script src="libs/datatables-binding-0.5/datatables.js"></script>
 <link href="libs/dt-core-1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" />
 <link href="libs/dt-core-1.10.16/css/jquery.dataTables.extra.css" rel="stylesheet" />
 <script src="libs/dt-core-1.10.16/js/jquery.dataTables.min.js"></script>
@@ -59,12 +59,15 @@
 <link href="libs/plotly-htmlwidgets-css-1.39.2/plotly-htmlwidgets.css" rel="stylesheet" />
 <script src="libs/plotly-main-1.39.2/plotly-latest.min.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<script src="libs/viz-0.3/viz.js"></script>
+<link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
+<script src="libs/grViz-binding-1.0.0/grViz.js"></script>
 
 
 <style type="text/css">
 a.sourceLine { display: inline-block; line-height: 1.25; }
 a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; position: absolute; }
+a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -77,13 +80,11 @@ code.sourceCode { white-space: pre-wrap; }
 a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
 pre.numberSource a.sourceLine
-  { position: relative; }
-pre.numberSource a.sourceLine:empty
-  { position: absolute; }
+  { position: relative; left: -4em; }
 pre.numberSource a.sourceLine::before
   { content: attr(data-line-number);
-    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all;
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -127,8 +128,8 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
-<link rel="stylesheet" href="css/book.css" type="text/css" />
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" type="text/css" />
+<link rel="stylesheet" href="css\book.css" type="text/css" />
+<link rel="stylesheet" href="https:\\use.fontawesome.com\releases\v5.0.13\css\all.css" type="text/css" />
 </head>
 
 <body>
@@ -212,6 +213,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="further.html"><a href="further.html#connections"><i class="fa fa-check"></i>Connections</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="summary.html"><a href="summary.html"><i class="fa fa-check"></i>Summary</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html"><i class="fa fa-check"></i>Supplemental</a><ul>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#a-comparison-to-latent-growth-curve-models"><i class="fa fa-check"></i>A Comparison to Latent Growth Curve Models</a><ul>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#random-effects-as-latent-variables"><i class="fa fa-check"></i>Random Effects as Latent Variables</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#random-effects-in-sem"><i class="fa fa-check"></i>Random Effects in SEM</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#running-a-growth-curve-model"><i class="fa fa-check"></i>Running a Growth Curve Model</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#random-intercepts"><i class="fa fa-check"></i>Random Intercepts</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#random-intercepts-and-slopes"><i class="fa fa-check"></i>Random Intercepts and Slopes</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#random-effects-with-heterogeneous-variances"><i class="fa fa-check"></i>Random Effects with Heterogeneous Variances</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#other-covariates"><i class="fa fa-check"></i>Other covariates</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#some-differences-between-mixed-models-and-growth-curves"><i class="fa fa-check"></i>Some Differences between Mixed Models and Growth Curves</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#recommended-packages-that-can-do-lgc-models"><i class="fa fa-check"></i>Recommended Packages that can do LGC models</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#summary-3"><i class="fa fa-check"></i>Summary</a></li>
+</ul></li>
+</ul></li>
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i>Appendix</a><ul>
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#data"><i class="fa fa-check"></i>Data</a></li>
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#programming-languages"><i class="fa fa-check"></i>Programming languages</a><ul>
@@ -304,12 +319,12 @@ market segments.</p>
 <div id="python" class="section level3">
 <h3>Python</h3>
 <p>In Python, the <a href="http://www.statsmodels.org/stable/mixed_linear.html">statsmodels</a> module has basic capabilities for mixed models but not too many frills (e.g. no crossed random effects). CSCAR directory Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series <a href="https://github.com/kshedden/Statsmodels-MixedLM">here</a>. The following provides an example.</p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb42-1" data-line-number="1"><span class="im">import</span> pandas <span class="im">as</span> pd</a>
-<a class="sourceLine" id="cb42-2" data-line-number="2"><span class="im">import</span> statsmodels <span class="im">as</span> sm</a>
-<a class="sourceLine" id="cb42-3" data-line-number="3"><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</a>
-<a class="sourceLine" id="cb42-4" data-line-number="4">gpa <span class="op">=</span> pd.read_csv(<span class="st">&#39;data/gpa.csv&#39;</span>)</a>
-<a class="sourceLine" id="cb42-5" data-line-number="5">gpa_py_mixed <span class="op">=</span> smf.mixedlm(<span class="st">&quot;gpa ~ occasion&quot;</span>, gpa, groups<span class="op">=</span>gpa[<span class="st">&quot;student&quot;</span>]).fit()</a>
-<a class="sourceLine" id="cb42-6" data-line-number="6"><span class="bu">print</span>(gpa_py_mixed.summary())</a></code></pre></div>
+<div class="sourceCode" id="cb83"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb83-1" data-line-number="1"><span class="im">import</span> pandas <span class="im">as</span> pd</a>
+<a class="sourceLine" id="cb83-2" data-line-number="2"><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</a>
+<a class="sourceLine" id="cb83-3" data-line-number="3"><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</a>
+<a class="sourceLine" id="cb83-4" data-line-number="4">gpa <span class="op">=</span> pd.read_csv(<span class="st">&#39;data/gpa.csv&#39;</span>)</a>
+<a class="sourceLine" id="cb83-5" data-line-number="5">gpa_py_mixed <span class="op">=</span> smf.mixedlm(<span class="st">&quot;gpa ~ occasion&quot;</span>, gpa, groups<span class="op">=</span>gpa[<span class="st">&quot;student&quot;</span>]).fit()</a>
+<a class="sourceLine" id="cb83-6" data-line-number="6"><span class="bu">print</span>(gpa_py_mixed.summary())</a></code></pre></div>
 <pre><code>         Mixed Linear Model Regression Results
 =======================================================
 Model:            MixedLM Dependent Variable: gpa      
@@ -381,12 +396,16 @@ Group Var    0.064    0.033
 
 
 
+
+
+
+
             </section>
 
           </div>
         </div>
       </div>
-<a href="summary.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="supplemental.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 
     </div>
   </div>
