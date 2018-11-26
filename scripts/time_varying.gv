@@ -16,8 +16,6 @@ digraph growth {
            }
            
            
-           node [width=.75, height=.75, fixedsize=true, shape=square, style='']
-           sex;
 
            node [width=.75, height=.75, fixedsize=true, shape=square, style='']
            subgraph {
@@ -32,6 +30,21 @@ digraph growth {
              V4 [label='GPA@_{sem_4}']; 
              V5 [label='GPA@_{sem_5}']; 
              V6 [label='GPA@_{sem_6}']; 
+           }
+           
+           node [width=.75, height=.75, fixedsize=true, shape=square, style='']
+           subgraph {
+             rankdir = TB;
+             rank=same;
+             node [fontcolor=gray50]
+             node [color='#9467bd']
+             
+             LH_sem_1 [label='LH@_{sem_1}'];
+             LH_sem_2 [label='LH@_{sem_2}']; 
+             LH_sem_3 [label='LH@_{sem_3}']; 
+             LH_sem_4 [label='LH@_{sem_4}']; 
+             LH_sem_5 [label='LH@_{sem_5}']; 
+             LH_sem_6 [label='LH@_{sem_6}']; 
            }
 
            # Initialization of edge attributes
@@ -70,7 +83,20 @@ digraph growth {
            edge [label='5'  color='#ff7f0e' fontcolor='#ff7f0e']
            Occasion -> V6;
            
-           edge [dir=forward headport='n' minlen=1]
-           sex -> Intercept [label = 'b@_{sex}'];
-           sex -> Occasion [label = 'γ'];
+           
+           edge [dir=back headport='c' minlen=1]
+           edge [label='*'  color='#1f77b4' fontcolor='#1f77b4']
+           V1 -> LH_sem_1; 
+           edge [label='*'   color='#1f77b4' fontcolor='#1f77b4']
+           V2 -> LH_sem_2;
+           edge [label='*'  color='#1f77b4' fontcolor='#1f77b4']
+           V3 -> LH_sem_3;
+           edge [label='*'  color='#1f77b4' fontcolor='#1f77b4']
+           V4 -> LH_sem_4;
+           edge [label='*'  color='#1f77b4' fontcolor='#1f77b4']
+           V5 -> LH_sem_5;
+           edge [label='*'  color='#1f77b4' fontcolor='#1f77b4']
+           V6 -> LH_sem_6;
+           
+
 } 

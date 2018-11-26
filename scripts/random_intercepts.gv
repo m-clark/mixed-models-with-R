@@ -11,9 +11,11 @@ digraph growth {
              rank = same;
 
              # using plotly palette with alpha
-             Intercept [label='Inter', fontname=Roboto, fontcolor=white, fixedsize=true, width=1, height=1, fillcolor='#1f77b480' color='#1f77b4'];  
-             Time [fontname=Roboto, fontcolor=white, fixedsize=true, width=.66, height=.66, fillcolor='#ff7f0e80' color='#ff7f0e' shape=square];
+             Intercept [label='Intercept', fontname=Roboto, fontcolor=white, fixedsize=true, width=1, height=1, fillcolor='#1f77b480' color='#1f77b4'];  
+             
            }
+           
+           Time [fontname=Roboto, fontcolor=white, fixedsize=true, width=.66, height=.66, fillcolor='#ff7f0e80' color='#ff7f0e' shape=square];
 
            node [width=.66, height=.66, fixedsize=true, shape=square, style='']
            subgraph {
@@ -32,10 +34,7 @@ digraph growth {
            edge [color = gray50 overlap=false arrowsize=.5]
            
            # Edge statements
-           
-           edge [ fontcolor=gray25 dir=both fontsize='8px']  # labeleangle, labeldistance etc. attributes ignored
-           Intercept -> Time[label='  &rho;\n' minlen=2];
-           
+
            edge [dir=forward headport='c' minlen=1]
            edge [label='1'  color='#1f77b4' fontcolor='#1f77b4']
            Intercept -> V1; 
@@ -46,14 +45,14 @@ digraph growth {
            edge [label='1'  color='#1f77b4' fontcolor='#1f77b4']
            Intercept -> V4;
            
-           edge [dir=forward headport='n' minlen=1]
+           edge [dir=back minlen=1]
            edge [label='0'  color='#ff7f0e' fontcolor='#ff7f0e' labelposition=3]
-           Time -> V1; 
+           V1 -> Time; 
            edge [label='1'  color='#ff7f0e' fontcolor='#ff7f0e']
-           Time -> V2;
+           V2 -> Time;
            edge [label='2'  color='#ff7f0e' fontcolor='#ff7f0e']
-           Time -> V3;
+           V3 -> Time;
            edge [label='3'  color='#ff7f0e' fontcolor='#ff7f0e']
-           Time -> V4;
+           V4 -> Time;
    
 } 
