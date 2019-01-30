@@ -5,11 +5,11 @@
 
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Mixed Models in R</title>
+  <title>Going Further | Mixed Models in R</title>
   <meta name="description" content="This is an introduction to mixed models in R. It covers a many of the most common techniques employed in such models, and relies heavily on the lme4 package. The basics of random intercepts and slopes models, crossed vs. nested models, etc. are covered. Discussion includes extensions into generalized mixed models and realms beyond.">
-  <meta name="generator" content="bookdown 0.7 and GitBook 2.6.7">
+  <meta name="generator" content="bookdown  and GitBook 2.6.7">
 
-  <meta property="og:title" content="Mixed Models in R" />
+  <meta property="og:title" content="Going Further | Mixed Models in R />
   <meta property="og:type" content="book" />
   <meta property="og:url" content="https://m-clark.github.io/mixed-models-with-R/" />
   <meta property="og:image" content="https://m-clark.github.io/mixed-models-with-R/img/nineteeneightyR.png" />
@@ -17,14 +17,14 @@
   <meta name="github-repo" content="m-clark/mixed-models-with-R/" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Mixed Models in R" />
+  <meta name="twitter:title" content="Going Further | Mixed Models in R />
   
   <meta name="twitter:description" content="This is an introduction to mixed models in R. It covers a many of the most common techniques employed in such models, and relies heavily on the lme4 package. The basics of random intercepts and slopes models, crossed vs. nested models, etc. are covered. Discussion includes extensions into generalized mixed models and realms beyond." />
   <meta name="twitter:image" content="https://m-clark.github.io/mixed-models-with-R/img/nineteeneightyR.png" />
 
 
 
-<meta name="date" content="2018-11-27">
+<meta name="date" content="2019-01-30">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -35,6 +35,7 @@
 <link rel="next" href="summary.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
@@ -320,8 +321,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h5>Bayesian</h5>
 <p>With mixed models we’ve been thinking of coefficients as coming from a distribution (normal). While we have what we are calling ‘fixed’ effects, the distinguishing feature of the mixed model is the addition of this random component. Now consider a standard regression model, i.e. no clustering. You can do the same thing, i.e. assume the coefficients are not fixed, but random. In this sense, the goal is to understand that distribution, and focus on it, rather than just the summary of it, e.g. the mean. However, the mean (or other central tendency) of that distribution can be treated like you’ve been doing the fixed effects in your standard models.</p>
 <p>Thus you can use how you’ve been thinking about the random effects in mixed models as a segue to the Bayesian approach, where all parameters are random. Using Bayesian versions of your favorite models takes no more syntactical effort than your standard models. The following is a standard linear regression and a mixed model in the <span class="pack">brms</span> package.</p>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb41-1" data-line-number="1"><span class="kw">brm</span>(gpa <span class="op">~</span><span class="st"> </span>occasion, <span class="dt">data=</span>gpa)</a>
-<a class="sourceLine" id="cb41-2" data-line-number="2"><span class="kw">brm</span>(Reaction <span class="op">~</span><span class="st"> </span>Days <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Days<span class="op">|</span>Subject), <span class="dt">data=</span>sleepstudy)</a></code></pre></div>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(gpa <span class="op">~</span><span class="st"> </span>occasion, <span class="dt">data=</span>gpa)
+<span class="kw">brm</span>(Reaction <span class="op">~</span><span class="st"> </span>Days <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Days<span class="op">|</span>Subject), <span class="dt">data=</span>sleepstudy)</code></pre>
 <p>So running the Bayesian models is not only as easy, the syntax is identical! Furthermore, just like mixed models allowed you to understand your data more deeply, the Bayesian models have the potential to do the same. Even the probabilities and intervals make more sense. With <span class="pack">rstanarm</span> and especially <span class="pack">brms</span>, you can do fairly complex models, taking you further than the standard mixed model packages, all without learning how to code the models explicitly in Stan. However, when you get to that point, the modeling possibilities are only limited by your imagination.</p>
 <p>You will have to learn a new inferential framework, as well as some of the nuances of the Markov Chain Monte Carlo (MCMC) approach. But you may be surprised to find that the basics come more easily than you would anticipate. Using tools like brms and related make it easier than ever to dive into Bayesian data analysis, and you’ve already been in a similar mindset with mixed models, so try it out some time. I have an <a href="https://m-clark.github.io/bayesian-basics/">introduction to Baysian analysis with Stan</a>, and a bit more on the Bayesian approach and mixed models in this <a href="https://m-clark.github.io/docs/mixedModels/mixedModels.html#mixed_model_7:_bayesian_mixed_model">document</a>.</p>
 </div>
@@ -382,9 +383,10 @@ gitbook.start({
 "google": false,
 "linkedin": false,
 "weibo": false,
-"instapper": false,
+"instapaper": false,
 "vk": false,
-"all": ["twitter", "facebook", "google", "weibo", "instapaper"]
+"all": ["twitter", "facebook", "google", "weibo", "instapaper"],
+"instapper": false
 },
 "fontsettings": {
 "theme": "white",
@@ -392,6 +394,10 @@ gitbook.start({
 "size": 2
 },
 "edit": null,
+"history": {
+"link": null,
+"text": null
+},
 "download": null,
 "toc": {
 "collapse": "section",
@@ -411,7 +417,7 @@ gitbook.start({
     var script = document.createElement("script");
     script.type = "text/javascript";
     var src = "true";
-    if (src === "" || src === "true") src = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
     if (location.protocol !== "file:" && /^https?:/.test(src))
       src = src.replace(/^https?:/, '');
     script.src = src;
