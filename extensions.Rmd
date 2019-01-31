@@ -476,9 +476,8 @@ colnames(vc_compare) = str_sub(colnames(vc_compare), start = 6) %>%
   str_replace_all(., 'semester', 'sem')
 
 vc_compare %>% 
-  as_data_frame() %>%  
-  select(sort(colnames(.))) %>% 
-  kable() %>% 
+  as.data.frame() %>%  
+  kable_df() %>% 
   kable_styling()
 ```
 
