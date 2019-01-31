@@ -616,3 +616,165 @@ Latent Growth Curve modeling is an alternative way to do what is very commonly a
 [^multisyntax]: Honestly, for the same types of models I find the multilevel syntax of <span class="pack">Mplus</span> ridiculously complex relative to R packages.
 [^mutlivarre]: Usually we would draw both random effects from a multivariate normal distribution with some covariance.
 [^mplusshortcut]: To be fair, <span class="pack">Mplus</span> (and presumably <span class="pack">lavaan</span> at some point in the future) has shortcuts to make the syntax easier, but it also can make for more esoteric and less understandable syntax.
+
+
+## Bayesian Mixed Models
+
+(IN PROGRESS)
+
+
+With mixed models we've been thinking of coefficients as coming from a distribution (normal).  While we have what we are calling 'fixed' effects, the distinguishing feature of the mixed model is the addition of this random component.  Now consider a standard regression model, i.e. no clustering.  You can do the same thing, i.e. assume the coefficients are not fixed, but random.  In this sense, the goal is to understand that distribution, and focus on it, rather than just the summary of it, e.g. the mean.  However, the mean (or other central tendency) of that distribution can be treated like you've been doing the fixed effects in your standard models.
+
+Thus you can use how you've been thinking about the random effects in mixed models as a natural segue to the Bayesian approach, where all parameters are random.  Using Bayesian versions of your favorite models takes no more syntactical effort than your standard models.  The following is a standard linear regression and a mixed model in the <span class="pack">brms</span> package.
+
+```{r eval=FALSE}
+brm(gpa ~ occasion, data = gpa)
+brm(Reaction ~ Days + (1 + Days | Subject), data = sleepstudy)
+```
+
+So running the Bayesian models is not only as easy, the syntax is identical!  Furthermore, just like mixed models allowed you to understand your data more deeply, the Bayesian models have the potential to do the same. Even the probabilities and intervals make more sense.  With <span class="pack">rstanarm</span> and especially <span class="pack">brms</span>, you can do fairly complex models, taking you further than the standard mixed model packages, all without learning how to code the models explicitly in Stan.  However, when you get to that point, the modeling possibilities are only limited by your imagination.
+
+You will have to learn a new inferential framework, as well as some of the nuances of the Markov Chain Monte Carlo (MCMC) approach.  But you may be surprised to find that the basics come more easily than you would anticipate.  Using tools like <span class="pack">brms</span> and related make it easier than ever to dive into Bayesian data analysis, and you've already been in a similar mindset with mixed models, so try it out some time.  I have an [introduction to Baysian analysis with Stan](https://m-clark.github.io/bayesian-basics/), and a bit more on the Bayesian approach and mixed models in this [document](https://m-clark.github.io/docs/mixedModels/mixedModels.html#mixed_model_7:_bayesian_mixed_model).
+
+
+### Priors
+
+#### Fixed Effects
+
+Normal, t
+
+#### Random Effects
+
+estimated, not predicted
+
+variance: t, historical
+
+
+### Example Models
+
+#### Standard Mixed Models
+
+```{r, eval=FALSE}
+brm(y ~ x + z + (1 | g))
+```
+
+```{r, eval=FALSE}
+brm(y ~ x + z + (1 + x | g))
+```
+
+```{r, eval=FALSE}
+brm(y ~ x + z + (1 | g1)  + (1 | g2))
+```
+
+#### Other Distributional Families
+
+Multiple types of ordinal models including 'generalized' or 'varying coefficients' models that include category specific effects.
+```{r, eval=FALSE}
+brm(y ~ x + z + (1 | g), 
+    family = cumulative)
+```
+
+Multinomial.
+
+```{r, eval=FALSE}
+brm(y ~ x + z + (1 | g), 
+    family = categorical)
+```
+
+Zero-inflated and hurdle models.
+
+```{r, eval=FALSE}
+brm(y ~ x + z + (1 | g), 
+    family = zero_inflated_negbinomial(link='log'))
+brm(y ~ x + z + (1 | g), 
+    family = hurdle_lognormal)
+```
+
+Many more including <span class="emph">weibull</span>, <span class="emph">student t</span>, <span class="emph">beta</span>, <span class="emph">skew normal</span>, <span class="emph">von mises</span>, and more.
+
+#### Residual Structure and Heterogeous Variances
+
+```{r, eval=FALSE}
+brm(y ~  time +  (1 + time | g), 
+    cor_ar(~time|person, p = 2))
+```
+
+We can model the variance just like anything else.
+
+```{r, eval=FALSE}
+brm(y ~ x + z + (1 | g), 
+    sigma ~ x + (1 | g))
+```
+
+We can allow the variance components themselves to vary by some group.  
+
+```{r, eval=FALSE}
+brm(count ~ Trt + (1|gr(g, by = Trt)))
+```
+
+Multi-membership models, where individuals may be long to more than one cluster can also be used.  In the following, g1 and g2 are identical conceptually, but may take on different values for some observations.
+
+```{r, eval=FALSE}
+brm(y ~ 1 + (1 | mm(g1, g2))) 
+```
+
+
+#### Multivariate Mixed Models
+
+For multiple outcomes we can allow random effects to be correlated.  In the following, `ID1` is an arbitrary label that serves to connect the modeled random effects.
+
+```{r, eval=FALSE}
+bf(
+  y1 ~ x + z + (1 | ID1 |g),
+  y2 ~ x + z + (1 | ID1 |g)
+)
+
+```
+
+This would make sense for zero-inflated models for example, where we want random effects for the same clustering to be correlated for both the count model and zero-inflated model.
+
+bf(y ~ x * z + (1+x|ID1|g), zi ~ x + (1|ID1|g))
+
+
+#### Additive Mixed Models
+
+
+```{r, eval=FALSE}
+brm(y ~ s(x) + z + (1 | g))
+```
+
+#### Nonlinear Mixed Models
+
+We can model similar situations where the functional form is known.
+
+```{r, eval=FALSE}
+bf(y ~ a1 - a2^x, 
+   a1 ~ 1, 
+   a2 ~ x + (x|g), 
+   nl = TRUE)
+```
+
+#### Censoring
+
+bf(y | cens(censor_variable) ~ predictors)
+
+
+
+
+
+```{r, eval=FALSE}
+brm(y ~ x + z + (1 | g),)
+```
+
+
+
+```{r, eval=FALSE}
+brm(y ~ me(x, sdx) + z + (1 | g))
+brm(y ~ x + z + (1 | g), family = mixture(gaussian, gaussian))
+
+```
+
+#### Missing Values 
+bf(bmi ~ age * mi(chl)) +
+  bf(chl | mi() ~ age) + 
+  set_rescor(FALSE)

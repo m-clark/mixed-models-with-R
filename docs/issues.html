@@ -24,7 +24,7 @@
 
 
 
-<meta name="date" content="2019-01-30">
+<meta name="date" content="2019-01-31">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -208,6 +208,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#convergence"><i class="fa fa-check"></i>Convergence</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="further.html"><a href="further.html"><i class="fa fa-check"></i>Going Further</a><ul>
+<li class="chapter" data-level="" data-path="further.html"><a href="further.html#bayesian"><i class="fa fa-check"></i>Bayesian</a></li>
 <li class="chapter" data-level="" data-path="further.html"><a href="further.html#other-distributions"><i class="fa fa-check"></i>Other distributions</a></li>
 <li class="chapter" data-level="" data-path="further.html"><a href="further.html#other-contexts"><i class="fa fa-check"></i>Other contexts</a></li>
 <li class="chapter" data-level="" data-path="further.html"><a href="further.html#nonlinear-mixed-effects"><i class="fa fa-check"></i>Nonlinear Mixed Effects</a></li>
@@ -226,6 +227,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#some-differences-between-mixed-models-and-growth-curves"><i class="fa fa-check"></i>Some Differences between Mixed Models and Growth Curves</a></li>
 <li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#recommended-packages-that-can-do-lgc-models"><i class="fa fa-check"></i>Recommended Packages that can do LGC models</a></li>
 <li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#summary-3"><i class="fa fa-check"></i>Summary</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#bayesian-mixed-models"><i class="fa fa-check"></i>Bayesian Mixed Models</a><ul>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#priors"><i class="fa fa-check"></i>Priors</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#example-models"><i class="fa fa-check"></i>Example Models</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i>Appendix</a><ul>
@@ -294,17 +299,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Using cluster-robust standard errors</li>
 <li>Generalized estimating equations (GEE)</li>
 </ul>
-<p>The first two are commonly used by those trained with an econometrics perspective, while you might see GEE more with those of a biostatistics or other perspective. GEE are in fact a generalization of the cluster-robust approach, and extend generalized least squares (GLS) to nonlinear/GLM settings. The nature of fixed effects models allow you to control for, but not actually explore, cluster level effects. This makes them a non-starter for many investigations, as those are typically of prime theoretical interest. GEE approaches allow one to take into account the dependency in the data, but ignore what might be very interesting, i.e. the random effects and associated variance. There are also few tools for GEE in more complicated covariance structures beyond a single clustering variable.</p>
+<p>The first two are commonly used by those trained with an econometrics perspective, while you might see GEE more with those of a biostatistics or other perspective. GEE are in fact a generalization of the cluster-robust approach, and extend generalized least squares (GLS) to nonlinear/GLM settings. The nature of fixed effects models allow you to control for, but not actually explore, cluster level effects. This makes them a non-starter for many investigations, as those are typically of prime theoretical interest. GEE approaches allow one to take into account the dependency in the data, but not actually estimate what might be very interesting, i.e. the random effects and associated variance. There are also few tools for GEE in more complicated covariance structures beyond a single clustering variable.</p>
 <div id="growth-curve-models" class="section level3">
 <h3>Growth curve models</h3>
-<p>With longitudinal data, growth curve models are a latent variable approach that is commonly used in these situations. With appropriate setup, they will duplicate the results of a mixed model. In my opinion, there are few reasons to use a growth curve approach over a mixed model, and many reasons not to, not least of which is that effects which would be simple to interpret in the mixed model approach are now a source of confusion to applied researchers in the growth curve model, even though it’s the same thing. Furthermore, indirect effects, growth mixture models and other extensions common in the latent variable approach are more easily implemented in the mixed model approach. In short, only the most complicated models would perhaps require a growth curve model, but would also bring with it many other complications. See more <a href="https://m-clark.github.io/sem/latent-growth-curves.html">here</a> and <a href="https://m-clark.github.io/mixed-growth-comparison/">here</a>.</p>
+<p>With longitudinal data, growth curve models are a latent variable approach that is commonly used in these situations. With appropriate setup, they will duplicate the results of a mixed model. In my opinion, there are few reasons to use a growth curve approach over a mixed model, and many reasons not to, not least of which is that effects which would be simple to interpret in the mixed model approach are now a source of confusion to applied researchers in the growth curve model, even though it’s the same thing. Furthermore, indirect effects, growth mixture models and other extensions common in the latent variable approach are more easily implemented in the mixed model approach. In short, only the most complicated models would perhaps require a growth curve model, but would also bring with it many other complications. See more <a href="https://m-clark.github.io/sem/latent-growth-curves.html">here</a> and <a href="https://m-clark.github.io/mixed-growth-comparison/">here</a>. The <a href="supplemental.html#supplemental">supplemental</a> section now has a full demonstration of how to equate these models.</p>
 </div>
 </div>
 <div id="sample-sizes" class="section level2">
 <h2>Sample sizes</h2>
 <div id="small-number-of-clusters" class="section level3">
 <h3>Small number of clusters</h3>
-<p>Think about how many values of some variable you’d need before you felt comfortable with statistics based on it, especially standard deviation/variance. That’s at play with mixed models, in the sense you’d like to have enough groups to adequately assess the variance components. Mixed models will run with very small numbers, though the estimates will generally be biased. I have a demo <a href="https://m-clark.github.io/docs/mixedModels/growth_vs_mixed_sim.html">here</a> if interested. One way to deal with this is to move to the Bayesian context, which will automatically induce some regularization in parameter estimates, and better deal with possible variance estimates that are near zero.</p>
+<p>Think about how many values of some variable you’d need before you felt comfortable with statistics based on it, especially standard deviation/variance. That’s at play with mixed models, in the sense you’d like to have enough groups to adequately assess the variance components. Mixed models will run with very small numbers, though the estimates will generally be biased. I have a demo <a href="https://m-clark.github.io/docs/mixedModels/growth_vs_mixed_sim.html">here</a> if interested. One way to deal with this is to move to the Bayesian context, which can be used to induce some regularization in parameter estimates, and better deal with possible variance estimates that are near zero.</p>
 <p>This also speaks to the issue some will have regarding whether they should treat something as a <span class="emph">fixed vs. random</span> effect. Historical definitions would unnecessarily restrict usage of random effects approaches. For example, random effects were defined to be a (random) sample from some population. If this were the case some might take issue when your levels do not deal with a sample, but the whole population, as in the case where your cluster is state and you have all 50 states. This doesn’t matter. If you have enough levels to consider a mixed model approach, feel free to do so.</p>
 </div>
 <div id="small-n-within-cluster" class="section level3">
@@ -341,7 +346,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>If you’re using <span class="pack">lme4</span> you have a couple resources and tools at your disposal.</p>
 <ul>
 <li>Start with <code>?convergence</code>. This comes up so often that there is a help file just for convergence issues.</li>
-<li>Use the (currently) undocumented <span class="func">allFit</span> function. How to do so is noted in the convergence help file. If the results are very similar you can feel better about them.</li>
+<li>Use the <span class="func">allFit</span> function. If the results are very similar across fits you can feel better about them.</li>
 <li>Consult the troubleshooting section of the <a href="https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#troubleshooting">FAQ</a>.</li>
 </ul>
 <p>The main point is that you’ll need to acknowledge the warnings and messages that the packages provide, and be prepared to take necessary steps to deal with these issues when they arise.</p>

@@ -24,7 +24,7 @@
 
 
 
-<meta name="date" content="2019-01-30">
+<meta name="date" content="2019-01-31">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -208,6 +208,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#convergence"><i class="fa fa-check"></i>Convergence</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="further.html"><a href="further.html"><i class="fa fa-check"></i>Going Further</a><ul>
+<li class="chapter" data-level="" data-path="further.html"><a href="further.html#bayesian"><i class="fa fa-check"></i>Bayesian</a></li>
 <li class="chapter" data-level="" data-path="further.html"><a href="further.html#other-distributions"><i class="fa fa-check"></i>Other distributions</a></li>
 <li class="chapter" data-level="" data-path="further.html"><a href="further.html#other-contexts"><i class="fa fa-check"></i>Other contexts</a></li>
 <li class="chapter" data-level="" data-path="further.html"><a href="further.html#nonlinear-mixed-effects"><i class="fa fa-check"></i>Nonlinear Mixed Effects</a></li>
@@ -226,6 +227,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#some-differences-between-mixed-models-and-growth-curves"><i class="fa fa-check"></i>Some Differences between Mixed Models and Growth Curves</a></li>
 <li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#recommended-packages-that-can-do-lgc-models"><i class="fa fa-check"></i>Recommended Packages that can do LGC models</a></li>
 <li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#summary-3"><i class="fa fa-check"></i>Summary</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#bayesian-mixed-models"><i class="fa fa-check"></i>Bayesian Mixed Models</a><ul>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#priors"><i class="fa fa-check"></i>Priors</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#example-models"><i class="fa fa-check"></i>Example Models</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i>Appendix</a><ul>
@@ -1247,9 +1252,11 @@ Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&
 <p>Note that the variances dispalyed for each time point are not conflated with the residual variance. To compare with <span class="pack">nlme</span>, just add the residual variance to those estimates. As with every mixed model package (apparently), it still takes a bit to get the variances in a usable form from the <span class="func">VarCorr</span> object. The following shows how though, and compares to the <span class="pack">nlme</span> result.</p>
 <pre class="sourceCode r"><code class="sourceCode r">vc_glmmtmb =<span class="st"> </span><span class="kw">VarCorr</span>(heterovar_res2)
 vc_glmmtmb =<span class="st"> </span><span class="kw">attr</span>(vc_glmmtmb<span class="op">$</span>cond<span class="op">$</span>student<span class="fl">.1</span>, <span class="st">&#39;stddev&#39;</span>)<span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span><span class="kw">sigma</span>(heterovar_res2)<span class="op">^</span><span class="dv">2</span></code></pre>
-<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<table class="table table" style="width: auto !important; margin-left: auto; margin-right: auto; width: auto !important; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
+<th style="text-align:left;">
+</th>
 <th style="text-align:right;">
 year 1 sem 1
 </th>
@@ -1272,43 +1279,49 @@ year 3 sem 2
 </thead>
 <tbody>
 <tr>
-<td style="text-align:right;">
-0.1378977
+<td style="text-align:left;">
+glmmTMB
 </td>
 <td style="text-align:right;">
-0.0941514
+0.138
 </td>
 <td style="text-align:right;">
-0.0543046
+0.094
 </td>
 <td style="text-align:right;">
-0.0256792
+0.054
 </td>
 <td style="text-align:right;">
-0.0167741
+0.026
 </td>
 <td style="text-align:right;">
-0.0257950
+0.017
+</td>
+<td style="text-align:right;">
+0.026
 </td>
 </tr>
 <tr>
-<td style="text-align:right;">
-0.1381504
+<td style="text-align:left;">
+nlme
 </td>
 <td style="text-align:right;">
-0.0942837
+0.138
 </td>
 <td style="text-align:right;">
-0.0543528
+0.094
 </td>
 <td style="text-align:right;">
-0.0256764
+0.054
 </td>
 <td style="text-align:right;">
-0.0167692
+0.026
 </td>
 <td style="text-align:right;">
-0.0258374
+0.017
+</td>
+<td style="text-align:right;">
+0.026
 </td>
 </tr>
 </tbody>
