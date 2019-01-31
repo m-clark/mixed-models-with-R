@@ -652,26 +652,52 @@ variance: t, historical
 
 ### Example Models
 
+In the following I attempt to show all the types of (mixed) models one could do with <span class="pack">brms</span>.  Typically is shown the modeling function <span class="func">brm</span>, where the syntax is <span class="pack">lme4</span>-like.  Elsewhere I use the specific <span class="func">bf</span> function, which allows one to build a potentially complicated formula as a separate object to be used in the eventual modeling function.  For example.
+
+```{r, eval=FALSE}
+brm(y ~ x, data = mydata, family = gaussian)
+
+f = bf(y ~ x)
+
+brm(f, ...)
+```
+
+
 #### Standard Mixed Models
+
+Random intercept.
 
 ```{r, eval=FALSE}
 brm(y ~ x + z + (1 | g))
 ```
 
+Random intercept and slope (for `x`).
+
 ```{r, eval=FALSE}
 brm(y ~ x + z + (1 + x | g))
 ```
 
+Multiple grouping structure/random effects.
+
 ```{r, eval=FALSE}
 brm(y ~ x + z + (1 | g1)  + (1 | g2))
+brm(y ~ x + z + (1 | g1 + g2))  # same thing
+
+brm(y ~ x + z + (1 | g1)  + (1 | g1:g2))
 ```
 
 #### Other Distributional Families
 
 Multiple types of ordinal models including 'generalized' or 'varying coefficients' models that include category specific effects.
+
 ```{r, eval=FALSE}
 brm(y ~ x + z + (1 | g), 
     family = cumulative)
+
+brm(y ~ cs(x) + z + (1 | g),     # x has category specific effects
+    family = acat)  
+
+# for ordered predictors, see the mo() function.
 ```
 
 Multinomial.
@@ -694,6 +720,8 @@ Many more including <span class="emph">weibull</span>, <span class="emph">studen
 
 #### Residual Structure and Heterogeous Variances
 
+Various functions exist to model temporal, spatial and other residual structure.
+
 ```{r, eval=FALSE}
 brm(y ~  time +  (1 + time | g), 
     cor_ar(~time|person, p = 2))
@@ -706,13 +734,13 @@ brm(y ~ x + z + (1 | g),
     sigma ~ x + (1 | g))
 ```
 
-We can allow the variance components themselves to vary by some group.  
+We can allow the variance components themselves to vary by some group.  In the following we'd have separate variances for male and female.
 
 ```{r, eval=FALSE}
-brm(count ~ Trt + (1|gr(g, by = Trt)))
+brm(count ~ Sex + (1|gr(g, by = Sex)))
 ```
 
-Multi-membership models, where individuals may be long to more than one cluster can also be used.  In the following, g1 and g2 are identical conceptually, but may take on different values for some observations.
+Multi-membership models, where individuals may belong to more than one cluster can also be used.  In the following, `g1` and `g2` are identical conceptually, but may take on different values for some observations.
 
 ```{r, eval=FALSE}
 brm(y ~ 1 + (1 | mm(g1, g2))) 
@@ -721,7 +749,7 @@ brm(y ~ 1 + (1 | mm(g1, g2)))
 
 #### Multivariate Mixed Models
 
-For multiple outcomes we can allow random effects to be correlated.  In the following, `ID1` is an arbitrary label that serves to connect the modeled random effects.
+For multiple outcomes we can allow random effects to be correlated.  In the following, `ID1` is an arbitrary label that serves to connect the modeled random effects across multiple outcomes `y1` and `y2`.
 
 ```{r, eval=FALSE}
 bf(
@@ -733,11 +761,15 @@ bf(
 
 This would make sense for zero-inflated models for example, where we want random effects for the same clustering to be correlated for both the count model and zero-inflated model.
 
-bf(y ~ x * z + (1+x|ID1|g), zi ~ x + (1|ID1|g))
+```{r, eval=FALSE}
+bf(y ~ x * z + (1 + x | ID1 | g), 
+   zi ~ x + (1 | ID1 | g))
+```
 
 
 #### Additive Mixed Models
 
+Much of the basic functionality of <span class="pack">mgcv</span> is incorporated, and works with the same syntax.
 
 ```{r, eval=FALSE}
 brm(y ~ s(x) + z + (1 | g))
@@ -745,36 +777,56 @@ brm(y ~ s(x) + z + (1 | g))
 
 #### Nonlinear Mixed Models
 
-We can model similar situations where the functional form is known.
+We can model similar situations where the functional form is known, as with <span class="pack">nlme</span>.
 
 ```{r, eval=FALSE}
 bf(y ~ a1 - a2^x, 
    a1 ~ 1, 
-   a2 ~ x + (x|g), 
+   a2 ~ x + (x | g), 
    nl = TRUE)
 ```
 
-#### Censoring
+#### Censored and Truncated Outcomes
 
-bf(y | cens(censor_variable) ~ predictors)
-
-
-
-
+For censored data, just supply the censoring variables as you would typically note in a survival/event-history model.
 
 ```{r, eval=FALSE}
-brm(y ~ x + z + (1 | g),)
+bf(y | cens(censor_variable) ~ x + z + (1 | g), family = lognormal)  # frailty
 ```
 
+For truncated models, specify the lower bound, upper bound, or both.
 
+```{r, eval=FALSE}
+brm(count | trunc(ub = 10) ~ x * z + (1 | g), family = poisson)
+```
+
+#### Measurment Error
+
+There may be cases where we know one variable is assumed to be measured with error, such as the mean of several trials, or latent variables estimated by some other means.  In the following, `sdx` is the known standard deviation for x, which may be constant or vary by observation.
 
 ```{r, eval=FALSE}
 brm(y ~ me(x, sdx) + z + (1 | g))
-brm(y ~ x + z + (1 | g), family = mixture(gaussian, gaussian))
-
 ```
 
-#### Missing Values 
-bf(bmi ~ age * mi(chl)) +
-  bf(chl | mi() ~ age) + 
+#### Mixture Models
+
+```{r, eval=FALSE}
+brm(y ~ x + z + (1 | g), 
+    family = mixture(gaussian, gaussian))
+```
+
+#### Missing Values
+
+```{r, eval=FALSE}
+f = 
+  bf(y ~ mi(x) + z + (1 | g)) +
+  bf(x | mi() ~ z + (1 | g)) + 
   set_rescor(FALSE)
+```
+
+
+### Beyond the Model
+
+The development of Stan and packages like rstanarm and brms is rapid, and with the combined powers of those involved, there are a lot of useful tools for exploring the model results.  Even if one found a specialty package for a specific type of mixed model, it is doubtful you would have as many tools for model exploration such as posterior predictive checks, marginal effects, model comparison, basic model diagnostics and more.
+
+### Summary
