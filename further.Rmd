@@ -1,6 +1,12 @@
 # Going Further
 
-This section covers topics that are generally beyond the scope of what would be covered in the workshop, but may be given their section over time.
+This section covers topics that are generally beyond the scope of what would be covered in the workshop, but may be given their own section over time.
+
+
+## Bayesian
+
+See [supplemental][Supplemental].
+
 
 ## Other distributions
 
@@ -41,20 +47,6 @@ Similar to spatial and phylogenetic models, the dependency among the groups/clus
 
 <span class="emph">Gaussian processes</span> are another way to handle dependency in the data, especially over time or space. Some spatial models are in fact a special case. One can think of gaussian processes as adding a 'continuous category' random effect.  Consider the effect of age in many models, could that not also be a source of dependency regarding some outcomes? In *Statistical Rethinking*, McElreath has a nice chapter 'Adventures in Covariance' that gets into this a bit.  
 
-##### Bayesian
-
-With mixed models we've been thinking of coefficients as coming from a distribution (normal).  While we have what we are calling 'fixed' effects, the distinguishing feature of the mixed model is the addition of this random component.  Now consider a standard regression model, i.e. no clustering.  You can do the same thing, i.e. assume the coefficients are not fixed, but random.  In this sense, the goal is to understand that distribution, and focus on it, rather than just the summary of it, e.g. the mean.  However, the mean (or other central tendency) of that distribution can be treated like you've been doing the fixed effects in your standard models.
-
-Thus you can use how you've been thinking about the random effects in mixed models as a segue to the Bayesian approach, where all parameters are random.  Using Bayesian versions of your favorite models takes no more syntactical effort than your standard models.  The following is a standard linear regression and a mixed model in the <span class="pack">brms</span> package.
-
-```{r eval=FALSE}
-brm(gpa ~ occasion, data=gpa)
-brm(Reaction ~ Days + (1 + Days|Subject), data=sleepstudy)
-```
-
-So running the Bayesian models is not only as easy, the syntax is identical!  Furthermore, just like mixed models allowed you to understand your data more deeply, the Bayesian models have the potential to do the same. Even the probabilities and intervals make more sense.  With <span class="pack">rstanarm</span> and especially <span class="pack">brms</span>, you can do fairly complex models, taking you further than the standard mixed model packages, all without learning how to code the models explicitly in Stan.  However, when you get to that point, the modeling possibilities are only limited by your imagination.
-
-You will have to learn a new inferential framework, as well as some of the nuances of the Markov Chain Monte Carlo (MCMC) approach.  But you may be surprised to find that the basics come more easily than you would anticipate.  Using tools like brms and related make it easier than ever to dive into Bayesian data analysis, and you've already been in a similar mindset with mixed models, so try it out some time.  I have an [introduction to Baysian analysis with Stan](https://m-clark.github.io/bayesian-basics/), and a bit more on the Bayesian approach and mixed models in this [document](https://m-clark.github.io/docs/mixedModels/mixedModels.html#mixed_model_7:_bayesian_mixed_model).
 
 ##### Surveys & Mr. P
 
