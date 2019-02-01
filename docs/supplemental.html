@@ -24,7 +24,7 @@
 
 
 
-<meta name="date" content="2019-01-31">
+<meta name="date" content="2019-02-01">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -231,6 +231,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#bayesian-mixed-models"><i class="fa fa-check"></i>Bayesian Mixed Models</a><ul>
 <li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#priors"><i class="fa fa-check"></i>Priors</a></li>
 <li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#example-models"><i class="fa fa-check"></i>Example Models</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#beyond-the-model"><i class="fa fa-check"></i>Beyond the Model</a></li>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#summary-4"><i class="fa fa-check"></i>Summary</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i>Appendix</a><ul>
@@ -1701,7 +1703,7 @@ lib_hours   0.032216   0.002024   15.92</code></pre>
 <div id="bayesian-mixed-models" class="section level2">
 <h2>Bayesian Mixed Models</h2>
 <p>(IN PROGRESS)</p>
-<p>With mixed models we’ve been thinking of coefficients as coming from a distribution (normal). While we have what we are calling ‘fixed’ effects, the distinguishing feature of the mixed model is the addition of this random component. Now consider a standard regression model, i.e. no clustering. You can do the same thing, i.e. assume the coefficients are not fixed, but random. In this sense, the goal is to understand that distribution, and focus on it, rather than just the summary of it, e.g. the mean. However, the mean (or other central tendency) of that distribution can be treated like you’ve been doing the fixed effects in your standard models.</p>
+<p>With mixed models we’ve been thinking of coefficients as coming from a distribution (normal). While we have what we are calling ‘fixed’ effects, the distinguishing feature of the mixed model is the addition of this random component. Now consider a standard regression model, i.e. no clustering. You can actually do the same thing, i.e. assume the coefficients are not fixed, but random. In this sense, the goal is to understand that distribution, and focus on it, rather than just the summary of it, e.g. the mean. However, the mean (or other central tendency) of that distribution can be treated like you’ve been doing the fixed effects in your standard models.</p>
 <p>Thus you can use how you’ve been thinking about the random effects in mixed models as a natural segue to the Bayesian approach, where all parameters are random. Using Bayesian versions of your favorite models takes no more syntactical effort than your standard models. The following is a standard linear regression and a mixed model in the <span class="pack">brms</span> package.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(gpa <span class="op">~</span><span class="st"> </span>occasion, <span class="dt">data =</span> gpa)
 <span class="kw">brm</span>(Reaction <span class="op">~</span><span class="st"> </span>Days <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Days <span class="op">|</span><span class="st"> </span>Subject), <span class="dt">data =</span> sleepstudy)</code></pre>
@@ -1709,29 +1711,48 @@ lib_hours   0.032216   0.002024   15.92</code></pre>
 <p>You will have to learn a new inferential framework, as well as some of the nuances of the Markov Chain Monte Carlo (MCMC) approach. But you may be surprised to find that the basics come more easily than you would anticipate. Using tools like <span class="pack">brms</span> and related make it easier than ever to dive into Bayesian data analysis, and you’ve already been in a similar mindset with mixed models, so try it out some time. I have an <a href="https://m-clark.github.io/bayesian-basics/">introduction to Baysian analysis with Stan</a>, and a bit more on the Bayesian approach and mixed models in this <a href="https://m-clark.github.io/docs/mixedModels/mixedModels.html#mixed_model_7:_bayesian_mixed_model">document</a>.</p>
 <div id="priors" class="section level3">
 <h3>Priors</h3>
+<p>The following information about priors assumes some background knowledge of Bayesian analysis, particularly for regression models. The Stan development group offers recommendations <a href="https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations">here</a>, so refer to it often. Note that Stan does not require conjugacy, unlike tools such as BUGS/JAGS. This frees one up to use other prior distributions as they see fit.</p>
 <div id="fixed-effects-1" class="section level4">
 <h4>Fixed Effects</h4>
-<p>Normal, t</p>
+<p>For fixed effect regression coefficients, normal and student t would be the most common prior distributions, but unfortunately the default brms (and rstanarm) implementation does not specify any, and so defaults to uniform/improper, which is a poor choice. You will want to set this for your models. Note that scaling numeric predictors works here just like it does with lme4, and makes specifying the prior easier as well.</p>
 </div>
 <div id="random-effects-1" class="section level4">
 <h4>Random Effects</h4>
-<p>estimated, not predicted</p>
-<p>variance: t, historical</p>
+<p>estimated, not predicted; show some stan code</p>
+<p>Typically the priors for the variance components are half-t, with truncation at 0.
+variance: t, historical</p>
 </div>
 </div>
 <div id="example-models" class="section level3">
 <h3>Example Models</h3>
+<p>In the following I attempt to show all the types of (mixed) models one could do with <span class="pack">brms</span>. Typically is shown the modeling function <span class="func">brm</span>, where the syntax is <span class="pack">lme4</span>-like. Elsewhere I use the specific <span class="func">bf</span> function, which allows one to build a potentially complicated formula as a separate object to be used in the eventual modeling function. For example.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>x, <span class="dt">data =</span> mydata, <span class="dt">family =</span> gaussian)
+
+f =<span class="st"> </span><span class="kw">bf</span>(y <span class="op">~</span><span class="st"> </span>x)
+
+<span class="kw">brm</span>(f, ...)</code></pre>
 <div id="standard-mixed-models" class="section level4">
 <h4>Standard Mixed Models</h4>
+<p>Random intercept.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g))</code></pre>
+<p>Random intercept and slope (for <code>x</code>).</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>x <span class="op">|</span><span class="st"> </span>g))</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g1)  <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g2))</code></pre>
+<p>Multiple grouping structure/random effects.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g1)  <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g2))
+<span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g1 <span class="op">+</span><span class="st"> </span>g2))  <span class="co"># same thing</span>
+
+<span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g1)  <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g1<span class="op">:</span>g2))</code></pre>
 </div>
 <div id="other-distributional-families" class="section level4">
 <h4>Other Distributional Families</h4>
 <p>Multiple types of ordinal models including ‘generalized’ or ‘varying coefficients’ models that include category specific effects.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g), 
-    <span class="dt">family =</span> cumulative)</code></pre>
+    <span class="dt">family =</span> cumulative)
+
+<span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span><span class="kw">cs</span>(x) <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g),     <span class="co"># x has category specific effects</span>
+    <span class="dt">family =</span> acat)  
+
+<span class="co"># for ordered predictors, see the mo() function.</span></code></pre>
 <p>Multinomial.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g), 
     <span class="dt">family =</span> categorical)</code></pre>
@@ -1744,52 +1765,75 @@ lib_hours   0.032216   0.002024   15.92</code></pre>
 </div>
 <div id="residual-structure-and-heterogeous-variances" class="section level4">
 <h4>Residual Structure and Heterogeous Variances</h4>
+<p>Various functions exist to model temporal, spatial and other residual structure.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(y <span class="op">~</span><span class="st">  </span>time <span class="op">+</span><span class="st">  </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">|</span><span class="st"> </span>g), 
     <span class="kw">cor_ar</span>(<span class="op">~</span>time<span class="op">|</span>person, <span class="dt">p =</span> <span class="dv">2</span>))</code></pre>
 <p>We can model the variance just like anything else.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g), 
     sigma <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g))</code></pre>
-<p>We can allow the variance components themselves to vary by some group.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(count <span class="op">~</span><span class="st"> </span>Trt <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span><span class="kw">gr</span>(g, <span class="dt">by =</span> Trt)))</code></pre>
-<p>Multi-membership models, where individuals may be long to more than one cluster can also be used. In the following, g1 and g2 are identical conceptually, but may take on different values for some observations.</p>
+<p>We can allow the variance components themselves to vary by some group. In the following we’d have separate variances for male and female.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(count <span class="op">~</span><span class="st"> </span>Sex <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span><span class="kw">gr</span>(g, <span class="dt">by =</span> Sex)))</code></pre>
+<p>Multi-membership models, where individuals may belong to more than one cluster can also be used. In the following, <code>g1</code> and <code>g2</code> are identical conceptually, but may take on different values for some observations.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span><span class="kw">mm</span>(g1, g2))) </code></pre>
 </div>
 <div id="multivariate-mixed-models" class="section level4">
 <h4>Multivariate Mixed Models</h4>
-<p>For multiple outcomes we can allow random effects to be correlated. In the following, <code>ID1</code> is an arbitrary label that serves to connect the modeled random effects.</p>
+<p>For multiple outcomes we can allow random effects to be correlated. In the following, <code>ID1</code> is an arbitrary label that serves to connect the modeled random effects across multiple outcomes <code>y1</code> and <code>y2</code>.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">bf</span>(
   y1 <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>ID1 <span class="op">|</span>g),
   y2 <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>ID1 <span class="op">|</span>g)
 )</code></pre>
 <p>This would make sense for zero-inflated models for example, where we want random effects for the same clustering to be correlated for both the count model and zero-inflated model.</p>
-<p>bf(y ~ x * z + (1+x|ID1|g), zi ~ x + (1|ID1|g))</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">bf</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">*</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>x <span class="op">|</span><span class="st"> </span>ID1 <span class="op">|</span><span class="st"> </span>g), 
+   zi <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>ID1 <span class="op">|</span><span class="st"> </span>g))</code></pre>
 </div>
 <div id="additive-mixed-models" class="section level4">
 <h4>Additive Mixed Models</h4>
+<p>Much of the basic functionality of <span class="pack">mgcv</span> is incorporated, and works with the same syntax.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span><span class="kw">s</span>(x) <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g))</code></pre>
 </div>
 <div id="nonlinear-mixed-models" class="section level4">
 <h4>Nonlinear Mixed Models</h4>
-<p>We can model similar situations where the functional form is known.</p>
+<p>We can model similar situations where the functional form is known, as with <span class="pack">nlme</span>.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">bf</span>(y <span class="op">~</span><span class="st"> </span>a1 <span class="op">-</span><span class="st"> </span>a2<span class="op">^</span>x, 
    a1 <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, 
-   a2 <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>(x<span class="op">|</span>g), 
+   a2 <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>(x <span class="op">|</span><span class="st"> </span>g), 
    <span class="dt">nl =</span> <span class="ot">TRUE</span>)</code></pre>
 </div>
-<div id="censoring" class="section level4">
-<h4>Censoring</h4>
-<p>bf(y | cens(censor_variable) ~ predictors)</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g),)</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span><span class="kw">me</span>(x, sdx) <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g))
-<span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g), <span class="dt">family =</span> <span class="kw">mixture</span>(gaussian, gaussian))</code></pre>
+<div id="censored-and-truncated-outcomes" class="section level4">
+<h4>Censored and Truncated Outcomes</h4>
+<p>For censored data, just supply the censoring variables as you would typically note in a survival/event-history model.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">bf</span>(y <span class="op">|</span><span class="st"> </span><span class="kw">cens</span>(censor_variable) <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g), <span class="dt">family =</span> lognormal)  <span class="co"># frailty</span>
+
+<span class="co"># see also stan_jm in the rstanarm package for joint models</span></code></pre>
+<p>For truncated models, specify the lower bound, upper bound, or both.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(count <span class="op">|</span><span class="st"> </span><span class="kw">trunc</span>(<span class="dt">ub =</span> <span class="dv">10</span>) <span class="op">~</span><span class="st"> </span>x <span class="op">*</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g), <span class="dt">family =</span> poisson)</code></pre>
+</div>
+<div id="measurment-error" class="section level4">
+<h4>Measurment Error</h4>
+<p>There may be cases where we know one variable is assumed to be measured with error, such as the mean of several trials, or latent variables estimated by some other means. In the following, <code>sdx</code> is the known standard deviation for x, which may be constant or vary by observation.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span><span class="kw">me</span>(x, sdx) <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g))</code></pre>
+</div>
+<div id="mixture-models" class="section level4">
+<h4>Mixture Models</h4>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g), 
+    <span class="dt">family =</span> <span class="kw">mixture</span>(gaussian, gaussian))</code></pre>
 </div>
 <div id="missing-values" class="section level4">
 <h4>Missing Values</h4>
-<p>bf(bmi ~ age * mi(chl)) +
-bf(chl | mi() ~ age) +
-set_rescor(FALSE)</p>
-
+<pre class="sourceCode r"><code class="sourceCode r">f =<span class="st"> </span>
+<span class="st">  </span><span class="kw">bf</span>(y <span class="op">~</span><span class="st"> </span><span class="kw">mi</span>(x) <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">bf</span>(x <span class="op">|</span><span class="st"> </span><span class="kw">mi</span>() <span class="op">~</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">set_rescor</span>(<span class="ot">FALSE</span>)</code></pre>
 </div>
+</div>
+<div id="beyond-the-model" class="section level3">
+<h3>Beyond the Model</h3>
+<p>The development of Stan and packages like <span class="pack">rstanarm</span> and <span class="pack">brms</span> is rapid, and with the combined powers of those involved, there are a lot of useful tools for exploring the model results. Even if one found a specialty package for a specific type of mixed model, it is doubtful you would have as many tools for model exploration such as posterior predictive checks, marginal effects, model comparison, basic model diagnostics and more.</p>
+</div>
+<div id="summary-4" class="section level3">
+<h3>Summary</h3>
+
 </div>
 </div>
 </div>

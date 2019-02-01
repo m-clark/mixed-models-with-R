@@ -623,7 +623,7 @@ Latent Growth Curve modeling is an alternative way to do what is very commonly a
 (IN PROGRESS)
 
 
-With mixed models we've been thinking of coefficients as coming from a distribution (normal).  While we have what we are calling 'fixed' effects, the distinguishing feature of the mixed model is the addition of this random component.  Now consider a standard regression model, i.e. no clustering.  You can do the same thing, i.e. assume the coefficients are not fixed, but random.  In this sense, the goal is to understand that distribution, and focus on it, rather than just the summary of it, e.g. the mean.  However, the mean (or other central tendency) of that distribution can be treated like you've been doing the fixed effects in your standard models.
+With mixed models we've been thinking of coefficients as coming from a distribution (normal).  While we have what we are calling 'fixed' effects, the distinguishing feature of the mixed model is the addition of this random component.  Now consider a standard regression model, i.e. no clustering.  You can actually do the same thing, i.e. assume the coefficients are not fixed, but random.  In this sense, the goal is to understand that distribution, and focus on it, rather than just the summary of it, e.g. the mean.  However, the mean (or other central tendency) of that distribution can be treated like you've been doing the fixed effects in your standard models.
 
 Thus you can use how you've been thinking about the random effects in mixed models as a natural segue to the Bayesian approach, where all parameters are random.  Using Bayesian versions of your favorite models takes no more syntactical effort than your standard models.  The following is a standard linear regression and a mixed model in the <span class="pack">brms</span> package.
 
@@ -639,14 +639,19 @@ You will have to learn a new inferential framework, as well as some of the nuanc
 
 ### Priors
 
+The following information about priors assumes some background knowledge of Bayesian analysis, particularly for regression models. The Stan development group offers recommendations [here](https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations), so refer to it often.  Note that Stan does not require conjugacy, unlike tools such as BUGS/JAGS.  This frees one up to use other prior distributions as they see fit. 
+
 #### Fixed Effects
 
-Normal, t
+For fixed effect regression coefficients, normal and student t would be the most common prior distributions, but unfortunately the default brms (and rstanarm) implementation does not specify any, and so defaults to uniform/improper, which is a poor choice.  You will want to set this for your models. Note that scaling numeric predictors works here just like it does with lme4, and makes specifying the prior easier as well.
 
 #### Random Effects
 
-estimated, not predicted
 
+
+estimated, not predicted; show some stan code
+
+Typically the priors for the variance components are half-t, with truncation at 0.
 variance: t, historical
 
 
@@ -792,6 +797,8 @@ For censored data, just supply the censoring variables as you would typically no
 
 ```{r, eval=FALSE}
 bf(y | cens(censor_variable) ~ x + z + (1 | g), family = lognormal)  # frailty
+
+# see also stan_jm in the rstanarm package for joint models
 ```
 
 For truncated models, specify the lower bound, upper bound, or both.
@@ -827,6 +834,6 @@ f =
 
 ### Beyond the Model
 
-The development of Stan and packages like rstanarm and brms is rapid, and with the combined powers of those involved, there are a lot of useful tools for exploring the model results.  Even if one found a specialty package for a specific type of mixed model, it is doubtful you would have as many tools for model exploration such as posterior predictive checks, marginal effects, model comparison, basic model diagnostics and more.
+The development of Stan and packages like <span class="pack">rstanarm</span> and <span class="pack">brms</span> is rapid, and with the combined powers of those involved, there are a lot of useful tools for exploring the model results.  Even if one found a specialty package for a specific type of mixed model, it is doubtful you would have as many tools for model exploration such as posterior predictive checks, marginal effects, model comparison, basic model diagnostics and more.
 
 ### Summary
