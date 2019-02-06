@@ -671,14 +671,20 @@ sociometric = soc %>%
 save(sociometric, file='data/sociometric.RData')
 ```
 
-In the following, load the sociometric data and run the following model. You will have three sources of structure to consider:
+To run a mixed model, we will have three sources of structure to consider:
 
 - senders (within group)
 - receivers (within group)
 - group
 
+First, load the sociometric data. 
 
-We will proceed with the following modeling steps. For each, make sure you are creating a separate model object for each one run.
+```{r load_socio}
+load('data/sociometric.RData')
+```
+
+
+To run the model, we will proceed with the following modeling steps. For each, make sure you are creating a separate model object for each model run.
 
 - Model 1: No covariates, only sender and receiver random effects. Note that even though we don't add group yet, still use the nesting approach to specify the effects (e.g. `1|group:receiver`)
 - Model 2: No covariates, add group random effect
@@ -687,11 +693,11 @@ We will proceed with the following modeling steps. For each, make sure you are c
 - Compare models with AIC (see the note about [model comparison][model comparison]), e.g. `AIC(model1)`. A lower value would indicate the model is preferred.
 
 
-```{r socio, echo=1, eval=FALSE}
-load('data/sociometric.RData')
+```{r socio, echo=F, eval=FALSE}
 model1 = lmer(rating ~ (1|group:sender) + (1|group:receiver), 
              data=sociometric)
 summary(model1, correlation=F) 
+
 model2 = lmer(rating ~ (1|group:sender) + (1|group:receiver) + (1|group), 
              data=sociometric)
 summary(model2, correlation=F) 
@@ -699,9 +705,11 @@ summary(model2, correlation=F)
 model3 = lmer(rating ~ sexsend + sexrec + agesend + agerec + grsize + (1|group:sender) + (1|group:receiver) + (1|group), 
              data=sociometric)
 summary(model3, correlation=F)
+
 model4 = lmer(rating ~ sexsend*sexrec + agesend + agerec + grsize + (1|group:sender) + (1|group:receiver) + (1|group), 
              data=sociometric)
 summary(model4, correlation=F)
+
 c(AIC(model1), AIC(model2), AIC(model3), AIC(model4))
 ```
 
@@ -710,7 +718,7 @@ c(AIC(model1), AIC(model2), AIC(model3), AIC(model4))
 
 ### Patents
 
-Do a Poisson mixed effect model using the [patent data][Data].  Predict the number of citations (`ncit`) based on whether there was opposition (`opposition`) and if it was for the biotechnology/pharmaceutical industry (`biopharm`). Use year as a random effect to account for unspecified economic conditions.  
+Do a Poisson mixed effect model using the [patent data][Data].  Model the number of citations (`ncit`) based on whether there was opposition (`opposition`) and if it was for the biotechnology/pharmaceutical industry (`biopharm`). Use year as a random effect to account for unspecified economic conditions.  
 
 ```{r patent_setup, echo=FALSE, eval=FALSE}
 patents0 = readr::read_tsv('data/raw_data/patent.raw')

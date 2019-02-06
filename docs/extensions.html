@@ -24,7 +24,7 @@
 
 
 
-<meta name="date" content="2019-02-01">
+<meta name="date" content="2019-02-05">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1659,13 +1659,15 @@ iid
 <div id="sociometric-data" class="section level3">
 <h3>Sociometric data</h3>
 <p>In the following data, kids are put into different groups and rate each other in terms of how much they would like to share some activity with the others. We have identifying variables for the person doing the rating (sender), the person being rated (receiver), what group they are in, as well as age and sex for both sender and receiver, as well as group size.</p>
-<p>In the following, load the sociometric data and run the following model. You will have three sources of structure to consider:</p>
+<p>To run a mixed model, we will have three sources of structure to consider:</p>
 <ul>
 <li>senders (within group)</li>
 <li>receivers (within group)</li>
 <li>group</li>
 </ul>
-<p>We will proceed with the following modeling steps. For each, make sure you are creating a separate model object for each one run.</p>
+<p>First, load the sociometric data.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">load</span>(<span class="st">&#39;data/sociometric.RData&#39;</span>)</code></pre>
+<p>To run the model, we will proceed with the following modeling steps. For each, make sure you are creating a separate model object for each model run.</p>
 <ul>
 <li>Model 1: No covariates, only sender and receiver random effects. Note that even though we don’t add group yet, still use the nesting approach to specify the effects (e.g. <code>1|group:receiver</code>)</li>
 <li>Model 2: No covariates, add group random effect</li>
@@ -1673,11 +1675,10 @@ iid
 <li>Model 4: In order to examine sex matching effects, add an interaction of the sex variables to the model <code>sexsend:sexrec</code>.</li>
 <li>Compare models with AIC (see the note about <a href="issues.html#model-comparison">model comparison</a>), e.g. <code>AIC(model1)</code>. A lower value would indicate the model is preferred.</li>
 </ul>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">load</span>(<span class="st">&#39;data/sociometric.RData&#39;</span>)</code></pre>
 </div>
 <div id="patents" class="section level3">
 <h3>Patents</h3>
-<p>Do a Poisson mixed effect model using the <a href="appendix.html#data">patent data</a>. Predict the number of citations (<code>ncit</code>) based on whether there was opposition (<code>opposition</code>) and if it was for the biotechnology/pharmaceutical industry (<code>biopharm</code>). Use year as a random effect to account for unspecified economic conditions.</p>
+<p>Do a Poisson mixed effect model using the <a href="appendix.html#data">patent data</a>. Model the number of citations (<code>ncit</code>) based on whether there was opposition (<code>opposition</code>) and if it was for the biotechnology/pharmaceutical industry (<code>biopharm</code>). Use year as a random effect to account for unspecified economic conditions.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">load</span>(<span class="st">&#39;data/patents.RData&#39;</span>)</code></pre>
 <p>Interestingly, one can model overdispersion in a Poisson model by specifying an random intercept for each observation (<code>subject</code> in the data). In other words, no clustering or grouped structure is necessary.</p>
 

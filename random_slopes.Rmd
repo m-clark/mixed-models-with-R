@@ -501,7 +501,7 @@ re_int = rnorm(Ngroups, sd=.75)
 re_slope = rnorm(Ngroups, sd=.25)
 e = rnorm(N, sd=.25)
 x = rnorm(N)
-y = (2 + re_int[groups]) + (.5 + re_slope[groups])*x +  + e
+y = (2 + re_int[groups]) + (.5 + re_slope[groups])*x + e
 
 d = data.frame(x, y, groups)
 ```
