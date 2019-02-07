@@ -9,7 +9,7 @@
   <meta name="description" content="This is an introduction to mixed models in R. It covers a many of the most common techniques employed in such models, and relies heavily on the lme4 package. The basics of random intercepts and slopes models, crossed vs. nested models, etc. are covered. Discussion includes extensions into generalized mixed models and realms beyond.">
   <meta name="generator" content="bookdown  and GitBook 2.6.7">
 
-  <meta property="og:title" content="Supplemental | Mixed Models in R />
+  <meta property="og:title" content="Supplemental | Mixed Models in R" />
   <meta property="og:type" content="book" />
   <meta property="og:url" content="https://m-clark.github.io/mixed-models-with-R/" />
   <meta property="og:image" content="https://m-clark.github.io/mixed-models-with-R/img/nineteeneightyR.png" />
@@ -17,14 +17,14 @@
   <meta name="github-repo" content="m-clark/mixed-models-with-R/" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Supplemental | Mixed Models in R />
+  <meta name="twitter:title" content="Supplemental | Mixed Models in R" />
   
   <meta name="twitter:description" content="This is an introduction to mixed models in R. It covers a many of the most common techniques employed in such models, and relies heavily on the lme4 package. The basics of random intercepts and slopes models, crossed vs. nested models, etc. are covered. Discussion includes extensions into generalized mixed models and realms beyond." />
   <meta name="twitter:image" content="https://m-clark.github.io/mixed-models-with-R/img/nineteeneightyR.png" />
 
 
 
-<meta name="date" content="2019-02-05">
+<meta name="date" content="2019-02-07">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -293,7 +293,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>To best understand a growth curve model, I still think it’s instructive to see it from the mixed model perspective, where things are mostly interpretable from what you know from a standard linear model. We will use our GPA example from before, and one can refer to the <a href="appendix.html#appendix">appendix</a> for more detail.</p>
 <div id="random-effects-as-latent-variables" class="section level3">
 <h3>Random Effects as Latent Variables</h3>
-<p>[As before][random-intercepts-model] we assume the following for the GPA model. As a simple starting point we merely model a trend of time (occasion- 6 semesters) and have random effects due to student for both intercept and occasion. In this setting we are treating time as numeric, but one could treat the occasion variable as categorical<a href="#fn28" class="footnote-ref" id="fnref28"><sup>28</sup></a>.</p>
+<p><a href="random_intercepts.html#random-intercepts-model">As before</a> we assume the following for the GPA model. As a simple starting point we merely model a trend of time (occasion- 6 semesters) and have random effects due to student for both intercept and occasion. In this setting we are treating time as numeric, but one could treat the occasion variable as categorical<a href="#fn28" class="footnote-ref" id="fnref28"><sup>28</sup></a>.</p>
 <p><span class="math display">\[\mathcal{GPA} = (b_{\mathrm{intercept}} + \mathrm{re}_{\mathrm{intercept}}) + (b_{\mathrm{occ}}  + \mathrm{re}_{\mathrm{occasion}})\cdot \mathrm{occasion} +  \epsilon\]</span></p>
 <p><span class="math display">\[\mathrm{re}_{\mathrm{intercept}} \sim \mathcal{N}(0, \tau)\]</span>
 <span class="math display">\[\mathrm{re}_{\mathrm{occasion}} \sim \mathcal{N}(0, \varphi)\]</span>
@@ -669,19 +669,19 @@ REML criterion at convergence: 261
 
 Scaled residuals: 
     Min      1Q  Median      3Q     Max 
--3.2695 -0.5377 -0.0128  0.5326  3.1939 
+-3.2696 -0.5377 -0.0128  0.5326  3.1938 
 
 Random effects:
  Groups   Name        Variance Std.Dev. Corr 
- student  (Intercept) 0.045193 0.21259       
-          occasion    0.004504 0.06711  -0.10
- Residual             0.042388 0.20588       
+ student  (Intercept) 0.045192 0.2126        
+          occasion    0.004503 0.0671   -0.10
+ Residual             0.042389 0.2059        
 Number of obs: 1200, groups:  student, 200
 
 Fixed effects:
             Estimate Std. Error t value
 (Intercept) 2.599214   0.018357  141.59
-occasion    0.106314   0.005885   18.07</code></pre>
+occasion    0.106314   0.005884   18.07</code></pre>
 </div>
 <div id="random-effects" class="section level4">
 <h4>Random Effects</h4>
@@ -703,9 +703,9 @@ Variances:
     occasion          0.003    0.001    5.645    0.000</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">VarCorr</span>(gpa_mixed), <span class="dt">comp=</span><span class="st">&#39;Var&#39;</span>)  <span class="co"># using print to show variance only</span></code></pre>
 <pre><code> Groups   Name        Variance  Corr  
- student  (Intercept) 0.0451934       
-          occasion    0.0045039 -0.098
- Residual             0.0423879       </code></pre>
+ student  (Intercept) 0.0451916       
+          occasion    0.0045031 -0.098
+ Residual             0.0423891       </code></pre>
 </div>
 </div>
 <div id="random-intercepts" class="section level3">
@@ -920,19 +920,19 @@ REML criterion at convergence: 261
 
 Scaled residuals: 
     Min      1Q  Median      3Q     Max 
--3.2695 -0.5377 -0.0128  0.5326  3.1939 
+-3.2696 -0.5377 -0.0128  0.5326  3.1938 
 
 Random effects:
  Groups   Name        Variance Std.Dev. Corr 
- student  (Intercept) 0.045193 0.21259       
-          occasion    0.004504 0.06711  -0.10
- Residual             0.042388 0.20588       
+ student  (Intercept) 0.045192 0.2126        
+          occasion    0.004503 0.0671   -0.10
+ Residual             0.042389 0.2059        
 Number of obs: 1200, groups:  student, 200
 
 Fixed effects:
             Estimate Std. Error t value
 (Intercept) 2.599214   0.018357  141.59
-occasion    0.106314   0.005885   18.07
+occasion    0.106314   0.005884   18.07
 
 Correlation of Fixed Effects:
          (Intr)
@@ -1421,7 +1421,7 @@ Scaled residuals:
 
 Random effects:
  Groups   Name        Variance Std.Dev. Corr 
- student  (Intercept) 0.033135 0.18203       
+ student  (Intercept) 0.033134 0.18203       
           occasion    0.002817 0.05307  -0.13
  Residual             0.037591 0.19388       
 Number of obs: 1200, groups:  student, 200
@@ -1636,7 +1636,7 @@ Scaled residuals:
 
 Random effects:
  Groups   Name        Variance Std.Dev. Corr 
- student  (Intercept) 0.033135 0.18203       
+ student  (Intercept) 0.033134 0.18203       
           occasion    0.002817 0.05307  -0.13
  Residual             0.037591 0.19388       
 Number of obs: 1200, groups:  student, 200

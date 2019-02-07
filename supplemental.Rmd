@@ -10,7 +10,7 @@ To best understand a growth curve model, I still think it's instructive to see i
 
 ### Random Effects as Latent Variables
 
-[As before][random-intercepts-model] we assume the following for the GPA model.  As a simple starting point we merely model a trend of time (occasion- 6 semesters) and have random effects due to student for both intercept and occasion.  In this setting we are treating time as numeric, but one could treat the occasion variable as categorical[^subscript].
+[As before][Random Intercepts model] we assume the following for the GPA model.  As a simple starting point we merely model a trend of time (occasion- 6 semesters) and have random effects due to student for both intercept and occasion.  In this setting we are treating time as numeric, but one could treat the occasion variable as categorical[^subscript].
 
 $$\mathcal{GPA} = (b_{\mathrm{intercept}} + \mathrm{re}_{\mathrm{intercept}}) + (b_{\mathrm{occ}}  + \mathrm{re}_{\mathrm{occasion}})\cdot \mathrm{occasion} +  \epsilon$$
 
