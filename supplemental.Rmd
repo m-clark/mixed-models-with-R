@@ -754,7 +754,7 @@ brm(y ~ 1 + (1 | mm(g1, g2)))
 
 #### Multivariate Mixed Models
 
-For multiple outcomes we can allow random effects to be correlated.  In the following, `ID1` is an arbitrary label that serves to connect the modeled random effects across multiple outcomes `y1` and `y2`.
+For multiple outcomes we can allow random effects to be correlated.  In the following, `ID1` is an arbitrary label that serves to connect/correlate the modeled random effects across multiple outcomes `y1` and `y2`.  In SEM literature this would be akin to a parallel process model if we add a random slope for a time indicator variable.
 
 ```{r, eval=FALSE}
 bf(
@@ -764,7 +764,7 @@ bf(
 
 ```
 
-This would make sense for zero-inflated models for example, where we want random effects for the same clustering to be correlated for both the count model and zero-inflated model.
+Such an approach would also make sense for zero-inflated models for example, where we want random effects for the same clustering to be correlated for both the count model and zero-inflated model.
 
 ```{r, eval=FALSE}
 bf(y ~ x * z + (1 + x | ID1 | g), 
@@ -817,12 +817,25 @@ brm(y ~ me(x, sdx) + z + (1 | g))
 
 #### Mixture Models
 
+Two clusters.
+
 ```{r, eval=FALSE}
 brm(y ~ x + z + (1 | g), 
     family = mixture(gaussian, gaussian))
 ```
 
+A 'growth mixture model'.
+
+```{r, eval=FALSE}
+brm(y ~ time + z + (1 + time | g), 
+    family = mixture(gaussian, gaussian))
+```
+
+
+
 #### Missing Values
+
+We can estimate missing values as follows, including using a mixed model as the imputation model (for `x`).
 
 ```{r, eval=FALSE}
 f = 

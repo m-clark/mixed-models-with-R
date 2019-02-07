@@ -1778,12 +1778,12 @@ f =<span class="st"> </span><span class="kw">bf</span>(y <span class="op">~</spa
 </div>
 <div id="multivariate-mixed-models" class="section level4">
 <h4>Multivariate Mixed Models</h4>
-<p>For multiple outcomes we can allow random effects to be correlated. In the following, <code>ID1</code> is an arbitrary label that serves to connect the modeled random effects across multiple outcomes <code>y1</code> and <code>y2</code>.</p>
+<p>For multiple outcomes we can allow random effects to be correlated. In the following, <code>ID1</code> is an arbitrary label that serves to connect/correlate the modeled random effects across multiple outcomes <code>y1</code> and <code>y2</code>. In SEM literature this would be akin to a parallel process model if we add a random slope for a time indicator variable.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">bf</span>(
   y1 <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>ID1 <span class="op">|</span>g),
   y2 <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>ID1 <span class="op">|</span>g)
 )</code></pre>
-<p>This would make sense for zero-inflated models for example, where we want random effects for the same clustering to be correlated for both the count model and zero-inflated model.</p>
+<p>Such an approach would also make sense for zero-inflated models for example, where we want random effects for the same clustering to be correlated for both the count model and zero-inflated model.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">bf</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">*</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>x <span class="op">|</span><span class="st"> </span>ID1 <span class="op">|</span><span class="st"> </span>g), 
    zi <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>ID1 <span class="op">|</span><span class="st"> </span>g))</code></pre>
 </div>
@@ -1816,11 +1816,16 @@ f =<span class="st"> </span><span class="kw">bf</span>(y <span class="op">~</spa
 </div>
 <div id="mixture-models" class="section level4">
 <h4>Mixture Models</h4>
+<p>Two clusters.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g), 
+    <span class="dt">family =</span> <span class="kw">mixture</span>(gaussian, gaussian))</code></pre>
+<p>A ‘growth mixture model’.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>time <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>time <span class="op">|</span><span class="st"> </span>g), 
     <span class="dt">family =</span> <span class="kw">mixture</span>(gaussian, gaussian))</code></pre>
 </div>
 <div id="missing-values" class="section level4">
 <h4>Missing Values</h4>
+<p>We can estimate missing values as follows, including using a mixed model as the imputation model (for <code>x</code>).</p>
 <pre class="sourceCode r"><code class="sourceCode r">f =<span class="st"> </span>
 <span class="st">  </span><span class="kw">bf</span>(y <span class="op">~</span><span class="st"> </span><span class="kw">mi</span>(x) <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g)) <span class="op">+</span>
 <span class="st">  </span><span class="kw">bf</span>(x <span class="op">|</span><span class="st"> </span><span class="kw">mi</span>() <span class="op">~</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g)) <span class="op">+</span><span class="st"> </span>
