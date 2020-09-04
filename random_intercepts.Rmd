@@ -154,31 +154,40 @@ gpa_lm = lm(gpa ~ occasion, data=gpa)
 # sample_students = gpa %>% filter(student %in% sample(1:200, 10))
 # occasion_sample = gpa$occasion[gpa$student %in% sample_students$student]
 # gpa_sample = gpa$gpa[gpa$student %in% sample_students$student]
-init = gpa %>% 
-  modelr::add_predictions(gpa_lm, var='all') %>% 
+init = gpa %>%
+  modelr::add_predictions(gpa_lm, var = 'all') %>%
   mutate(select = factor(student %in% sample(1:200, 10)),
-         sz = c(.5, 1)[select]) %>% 
+         sz = c(.5, 1)[select]) %>%
   group_by(student, select) 
 
-init %>% 
-  plot_ly %>% 
-  add_lines(x=~occasion, y=~gpa, size=I(.5), 
-            opacity=.35, 
-            color=~select, 
-            size= ~sz, 
-            colors=scico::scico(2, begin = .25), 
-            showlegend=F) %>%
-  add_lines(x=~occasion, y=~gpa, 
-            opacity=.35, 
-            color=~select, 
-            size = I(2),
-            colors=scico::scico(2, begin = .25), 
-            data = filter(init, select==TRUE),
-            showlegend=F) %>%
-  add_lines(x=~occasion, 
-            y=~all, 
-            color=I(palettes$stan_red$stan_red), 
-            opacity=.70) %>% 
+init %>%
+  plot_ly %>%
+  add_lines(
+    x =  ~ occasion,
+    y =  ~ gpa,
+    size = I(.5),
+    opacity = .35,
+    color =  ~ select,
+    size = ~ sz,
+    colors = scico::scico(2, begin = .25),
+    showlegend = F
+  ) %>%
+  add_lines(
+    x =  ~ occasion,
+    y =  ~ gpa,
+    opacity = .35,
+    color =  ~ select,
+    size = I(2),
+    colors = scico::scico(2, begin = .25),
+    data = filter(init, select == TRUE),
+    showlegend = F
+  ) %>%
+  add_lines(
+    x =  ~ occasion,
+    y =  ~ all,
+    color = I(palettes$stan_red$stan_red),
+    opacity = .70
+  ) %>%
   theme_plotly()
 ```
 
@@ -198,9 +207,9 @@ pander::pander(summary(gpa_lm), round=3)
 
 gpa_lm_by_group = gpa %>% 
   split(.$student) %>% 
-  map(~lm(gpa ~ occasion, data=.x)) %>% 
-  map(coef) %>% 
-  do.call(rbind, .) # some day bind_rows will work as advertised
+  map_df(~data.frame(t(coef(lm(gpa ~ occasion, data=.x))))) %>% 
+  rename(Intercept = X.Intercept.)
+
 coef_lm = coef(gpa_lm)
 ```
 
@@ -222,18 +231,15 @@ summary(gpa_mixed)
 ```
 
 ```{r gpa_mixed_pretty, echo=FALSE}
-vcovs = data.frame(VarCorr(gpa_mixed)) %>% 
-  select(vcov)  # for icc later
+vcovs = extract_vc(gpa_mixed, ci_level = 0) %>% 
+  select(variance)  # for icc later
 
-gpa_mixed %>% 
-  tidy('fixed') %>% 
-  kable(digits=3) %>% 
-  kable_styling()
-data.frame(VarCorr(gpa_mixed)) %>% 
-  select(-var1, -var2) %>% 
-  rename(variance=vcov, sd=sdcor) %>%  
-  kable(digits=3) %>% 
-  kable_styling()
+extract_fixed_effects(gpa_mixed) %>% 
+  kable_df()
+
+extract_vc(gpa_mixed, ci_level = 0) %>% 
+  select(-var_prop) %>% 
+  kable_df()
 ```
 
 
@@ -248,15 +254,8 @@ confint(gpa_mixed)
 ```
 
 ```{r gpa_mixed_ci_pretty, echo=FALSE}
-confint(gpa_mixed) %>% 
-  data.frame(rn = rownames(.)) %>% 
-  mutate(rn = c('student', 'residual', 'Intercept', 'occasion')) %>% 
-  select(rn, X2.5.., X97.5..) %>% 
-  rename(' '=rn,
-         `2.5%` = X2.5..,
-         `97.5%` = X97.5..) %>% 
-  kable(align='lrr', digits = 3) %>% 
-  kable_styling()
+extract_vc(gpa_mixed) %>% 
+  kable_df(align = 'lrr', digits = 3)
 ```
 
 ##### Variance components
@@ -273,7 +272,9 @@ After running the model, we can actually get estimates of the student effects[^b
 ranef(gpa_mixed)$student %>% head(5)
 ```
 ```{r randeffs_pretty, echo=FALSE}
-ranef(gpa_mixed)$student %>% head(5) %>% kable(align='r') %>% kable_styling()
+extract_random_effects(gpa_mixed) %>% 
+  head(5) %>% 
+  kable_df(align = 'r')
 ```
 
 ```{r randints, eval=FALSE}
@@ -281,7 +282,9 @@ coef(gpa_mixed)$student %>% head(5)
 ```
 
 ```{r randints_pretty, echo=FALSE}
-coef(gpa_mixed)$student %>% head(5) %>% kable(align='rr') %>% kable_styling()
+extract_random_coefs(gpa_mixed) %>% 
+  head(5) %>% 
+  kable_df(align = 'rr')
 ```
 
 
@@ -297,7 +300,7 @@ plotREsim(REsim(gpa_mixed))  # plot the interval estimates
 ```
 
 
-The following plot is of the estimated random effects for each student and their interval estimate (a modified version of the plot produced by that last line of code[^mertoolsplotlabels]). Recall that the random effects are on average zero, shown by the horizontal line.  Intervals that do not include zero are in bold.
+The following plot is of the estimated random effects for each student and their interval estimate (a modified version of the plot produced by that last line of code[^mertoolsplotlabels]). Recall that the random effects are normally distributed with a mean of zero, shown by the horizontal line.  Intervals that do not include zero are in bold.
 
 ```{r ranef_interval_show, echo=FALSE}
 # library(merTools)  # use implicit or it will load bbmle which will load MASS  
@@ -320,16 +323,19 @@ The following plot is of the estimated random effects for each student and their
 #         panel.background = element_rect(fill='transparent', color=NA),   # apparently all ignored for reasons unknown
 #         plot.background = element_rect(fill='transparent', color=NA),
 #         strip.background =  element_rect(fill='transparent', color=NA)) 
-visibly::plot_coefficients(gpa_mixed, ranef=T, which_ranef='student') + 
+visibly::plot_coefficients(gpa_mixed, ranef = T, which_ranef = 'student') + 
   ggtitle('Plot of Random Effects', subtitle = 'Interval Estimates') +
   labs(x = 'Student') +
-  theme(axis.text.x = element_blank(),
-        axis.ticks.x = element_blank(),
-        strip.text.x = element_blank(),
-        strip.text.y = element_blank(),
-        panel.background = element_rect(fill='transparent', color=NA),   # apparently all ignored for reasons unknown
-        plot.background = element_rect(fill='transparent', color=NA),
-        strip.background =  element_rect(fill='transparent', color=NA)) 
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    strip.text.x = element_blank(),
+    strip.text.y = element_blank(),
+    panel.background = element_rect(fill = 'transparent', color = NA),
+    # apparently all ignored for reasons unknown
+    plot.background = element_rect(fill = 'transparent', color = NA),
+    strip.background =  element_rect(fill = 'transparent', color = NA)
+  ) 
 ```
 
 ##### Prediction
@@ -368,18 +374,38 @@ data_frame(student = as.numeric(gpa$student),
 Depending on the estimated student effect, students will start above or below the estimated intercept for all students. The following visualizes the unconditional prediction vs. the conditional prediction that incorporates the random intercept for the first two students.
 
 ```{r predict_cond_lm_plot, echo=FALSE}
-data_frame(student = as.character(gpa$student),
-           occasion = gpa$occasion,
-           gpa = gpa$gpa,
-           lm = predict_lm, 
-           `lmer no re`=predict_no_re,
-           `lmer with re`=predict_with_re) %>% 
-  filter(student %in% 1:2) %>% 
+# note that plotly will warn because it's plotly 
+data_frame(
+  student = as.character(gpa$student),
+  occasion = gpa$occasion,
+  gpa = gpa$gpa,
+  lm = predict_lm,
+  `lmer no re` = predict_no_re,
+  `lmer with re` = predict_with_re
+) %>%
+  filter(student %in% 1:2) %>%
   group_by(student) %>%
-  plot_ly() %>% 
-  add_markers(x=~occasion, y=~gpa, color=~student, showlegend=F) %>%
-  add_lines(x=~occasion, y=~lm, color=I('#ff5500'), showlegend=T, name='lm') %>%
-  add_lines(x=~occasion, y=~`lmer with re`, color=~student, showlegend=T, name='mixed') %>%
+  plot_ly() %>%
+  add_markers(
+    x =  ~ occasion,
+    y =  ~ gpa,
+    color =  ~ student,
+    showlegend = F
+  ) %>%
+  add_lines(
+    x =  ~ occasion,
+    y =  ~ lm,
+    color = I('#ff5500'),
+    showlegend = T,
+    name = 'lm'
+  ) %>%
+  add_lines(
+    x =  ~ occasion,
+    y =  ~ `lmer with re`,
+    color =  ~ student,
+    showlegend = T,
+    name = 'mixed'
+  ) %>%
   theme_plotly()
 ```
 
@@ -487,7 +513,7 @@ In what follows we'll change various aspects of the data, then rerun the model a
 
 ```{r simMixed3, eval=FALSE}
 re = ranef(model)$groups
-qplot(x=re, geom='density', xlim=c(-3,3))
+qplot(x = re, geom = 'density', xlim = c(-3, 3))
 ```
 
 1. Change the random effect variance/sd and/or the residual variance/sd and note your new estimate of the ICC, and plot the random effect as before.
@@ -507,13 +533,13 @@ qplot(x=re, geom='density', xlim=c(-3,3))
 
 [^fuzzyp]: Note that many common modeling situations involve a fuzzy p setting, but especially penalized regression approaches such as mixed, additive, ridge regression models etc.  Rather than be a bad thing, this usually is a sign you're doing something interesting, or handling complexity in an appropriate way.
 
-[^confint]: See `?confint.merMod` for details and options.
+[^confint]: See `?confint.merMod` for details and options.  The output you see is based on my wrapper `mixedup::extract_vc`.
 
 [^blup]: These are sometimes referred to as BLUPs or EBLUPs, which stands for (empirical) best linear unbiased prediction.  However, they are only BLUP for *linear* mixed effects models.  As such you will also see them referred to as <span class="emph">conditional mode</span>.  Furthermore, in the Bayesian context, the effects are actually estimated as additional model parameters, rather than estimated/predicted after the fact.
 
 [^predinterval]: Note that while <span class="func">predictionInterval</span> does not quite incorporate all sources of uncertainty as does <span class="func">bootMer</span>, it's actually feasible for larger data sets, and on par with the Bayesian results (e.g. with <span class="pack">rstanarm</span>).
 
 
-[^mlevel]: This is why the multilevel depiction is sub-par, and leads many to confusion at times.  You have a target variable and predictor variables based on theory.  Whether they are cluster level variables or if there are interactions doesn't have anything to do with the data structure as much as it does the theoretical motivations.  However, if you choose to depict the model in multilevel fashion, the final model must adhere to the 'plugged in' result.  So if, for example, you posit a cluster level variable for a random slope, you *must* include the implied interaction of the cluster level and observation level covariates. The HLM software goes so far as to even require a separate data set pertaining to cluster level covariates, which is completely unnecessary in R, Stata, SAS etc.
+[^mlevel]: This is why the multilevel depiction is sub-par, and leads many to confusion at times.  You have a target variable and predictor variables based on theory.  Whether they are cluster level variables or if there are interactions doesn't have anything to do with the data structure as much as it does the theoretical motivations.  However, if you choose to depict the model in multilevel fashion, the final model must adhere to the 'plugged in' result.  So if, for example, you posit a cluster level variable for a random slope, you *must* include the implied interaction of the cluster level and observation level covariates.
 
 [^mertoolsplotlabels]: Note that the default plot from <span class="pack">merTools</span> is confusingly labeled for single random effect, because it unnecessarily adds a facet. You'll understand it better by looking the plot in the discussion of [crossed random effects][Cross-classified models] later.  However, the one displayed is from my own package, [visibly](https://m-clark.github.io/visibly).

@@ -1,5 +1,5 @@
  bookdown::gitbook:
-    css: [css/book.css, 'https://use.fontawesome.com/releases/v5.0.13/css/all.css']
+    css: [css/book.css, 'https://use.fontawesome.com/releases/v5.14/css/all.css']
     font-import: https://fonts.googleapis.com/css?family=Roboto|Open+Sans
     font-family: 'Roboto'
     number_sections: false

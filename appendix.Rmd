@@ -51,7 +51,7 @@ R has more mixed modeling capabilities [than anything else out there](https://ww
 
 ### Python
 
-In Python, the [statsmodels](http://www.statsmodels.org/stable/mixed_linear.html) module has basic capabilities for mixed models but not too many frills (e.g. no crossed random effects).  CSCAR directory Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series [here](https://github.com/kshedden/Statsmodels-MixedLM).  The following provides an example.
+In Python, the [statsmodels](http://www.statsmodels.org/stable/mixed_linear.html) module has basic capabilities for mixed models but not too many frills (e.g. no crossed random effects).  CSCAR director Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series [here](https://github.com/kshedden/Statsmodels-MixedLM).  The following provides an example.
 
 ```{r pycheck, echo=FALSE, cache=FALSE}
 pycheck = ifelse(grepl('Windows', sessionInfo()$running), 
@@ -60,7 +60,7 @@ pycheck = ifelse(grepl('Windows', sessionInfo()$running),
 ```
 
 
-```{python gpa_py, engine.path=pycheck}
+```{python gpa_py, engine.path=pycheck, eval=FALSE}
 import pandas as pd
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
@@ -71,26 +71,47 @@ gpa_py_mixed = smf.mixedlm("gpa ~ occasion", gpa, groups=gpa["student"]).fit()
 print(gpa_py_mixed.summary())
 ```
 
+```{r echo=FALSE}
+# until reticulate works with any consistency
+cat('
+             Mixed Linear Model Regression Results
+=======================================================
+Model:            MixedLM Dependent Variable: gpa      
+No. Observations: 1200    Method:             REML     
+No. Groups:       200     Scale:              0.0581   
+Min. group size:  6       Log-Likelihood:     -204.4464
+Max. group size:  6       Converged:          Yes      
+Mean group size:  6.0                                  
+-------------------------------------------------------
+             Coef. Std.Err.    z    P>|z| [0.025 0.975]
+-------------------------------------------------------
+Intercept    2.599    0.022 119.801 0.000  2.557  2.642
+occasion     0.106    0.004  26.096 0.000  0.098  0.114
+Group Var    0.064    0.033                            
+=======================================================
+    ')
+```
+
 
 
 ### Julia
 
-One of the <span class="pack">lme4</span> authors develops a [MixedModels](https://github.com/dmbates/MixedModels.jl) package for Julia. Doug Bates is currently creating some [notebooks](https://github.com/dmbates/MixedModelsinJulia) (and possibly a full book) on implementation of mixed models in Julia.
+One of the <span class="pack">lme4</span> authors develops a [MixedModels](https://github.com/dmbates/MixedModels.jl) package for Julia. Doug Bates has some [notebooks](https://github.com/dmbates/MixedModelsinJulia) on implementation of mixed models in Julia.
 
 ### Proprietary
 
 Among the standard stats packages, I can only recommend **Stata** for both ease of implementation and flexibility in modeling. **SAS** and **SPSS** both have non-intuitive and needlessly verbose syntax, and, while SAS is in fact a fairly good tool for mixed models (from my understanding), I've actually seen SPSS consistently struggle with even simple models, and its GUI interface, the only reason to use SPSS in the first place, is not even remotely intuitive.
 
-**Mplus** has a lot of functionality both for standard mixed models and growth curve models, though between <span class="pack">lavaan</span>, <span class="pack">mediation</span>, and the rest of R, there is little need to use Mplus except for very complicated multilevel SEM, which requires very large samples and a lot of theoretical justification, which most of the people doing SEM are typically lacking in one or the other.
+**Mplus** has a lot of functionality both for standard mixed models and growth curve models, though between <span class="pack">brms</span>, <span class="pack">lavaan</span>, <span class="pack">mediation</span>, and the rest of R, there is little need to use Mplus except for very complicated multilevel SEM, which requires very large samples and a lot of theoretical justification, which most of the people doing SEM are typically lacking in one or the other.
 
 I will also say that there is no reason to use mixed model specific software like HLM.  The days for such hijinks have long since passed.
 
 
 ## Reference texts and other stuff
 
-An excellent modeling book can be found in [Data Analysis Using Regression and Multilevel/Hierarchical Models](http://www.stat.columbia.edu/~gelman/arm/).  You will learn a great deal about statistical modeling in general, as the mixed model stuff only comprises the second part.
+An excellent modeling book can be found in [Data Analysis Using Regression and Multilevel/Hierarchical Models](http://www.stat.columbia.edu/~gelman/arm/).  You will learn a great deal about statistical modeling in general, as the mixed model stuff only comprises the second part.  Gelman has since updated this, or at least the [first part](https://avehtari.github.io/ROS-Examples/), but I can't speak to the content yet.
 
-On the applied side, CSCAR's own Brady West has a book- [Linear Mixed Models: A Practical Guide Using Statistical Software ](http://www-personal.umich.edu/~bwest/almmussp.html). It shows examples in a variety of programming formats while not glossing over the details you need to know.
+On the applied side, former CSCAR consultant Brady West has a book- [Linear Mixed Models: A Practical Guide Using Statistical Software ](http://www-personal.umich.edu/~bwest/almmussp.html). It shows examples in a variety of programming formats while not glossing over the details you need to know.
 
 Two texts come at mixed models from a very broad perspective, which I like. I find Fahrmeier et al. [Regression - Models, Methods and Applications](http://www.springer.com/us/book/9783642343322) to be very good.  It will also tie mixed models to spatial and nonparametric approaches.  [Richly Parameterized Linear Models - Additive, Time Series, and Spatial Models Using Random Effects](https://www.crcpress.com/Richly-Parameterized-Linear-Models-Additive-Time-Series-and-Spatial/Hodges/p/book/9781439866832), does as well, and provides some nice historical context and hits on practical issues you *will* encounter if you play with these models long enough.
 

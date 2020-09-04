@@ -1,17 +1,13 @@
 ---
 title: Mixed Models in R
+subtitle: Getting started with random effects
 author:  |
-  <span class="noem">Michael Clark</span> 
-  https://m-clark.github.io/
-  <img class='arc' src="img/signature-acronym.png" alt="University of Michigan: CSCAR">
-  <img class='cscar' src="img/ARC-acronym-signature.png" alt="University of Michigan: Advanced Research Computing"> 
+  <span class="noem">Michael Clark</span>
+  https://m-clark.github.io/ <span></span>
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 output:
   bookdown::gitbook
-always_allow_html: yes
-font-import: http://fonts.googleapis.com/css?family=Roboto|Open+Sans|Stalemate|Alex+Brush
-font-family: 'Roboto'
 documentclass: book
 bibliography: refs.bib
 biblio-style: apalike
@@ -27,19 +23,53 @@ github-repo:  'm-clark/mixed-models-with-R/'
 
 
 ```{r chunk_setup, include=FALSE, eval=TRUE}
-knitr::opts_chunk$set(echo = T, message=F, warning=F, comment=NA, autodep=F, 
-                      eval=T, cache.rebuild=F, cache=T, R.options=list(width=120), 
-                      fig.width=8, fig.align = 'center', dev.args=list(bg = 'transparent'), dev='svglite')
+knitr::opts_chunk$set(
+  # code
+  echo      = T,
+  message   = F,
+  warning   = F,
+  error     = F,
+  comment   = NA,
+  R.options = list(width = 220),
+  # viz
+  dev.args  = list(bg = 'transparent'),
+  dev       = 'svglite',
+  fig.align = 'center',
+  out.width = '75%',
+  fig.asp   = .75,
+  # cache
+  cache.rebuild = F,
+  cache         = T
+)
+
+kable_df = function(data, digits=3, ...) {
+  kableExtra::kable(
+    data,
+    digits = digits,
+    format = 'html',
+    booktabs = T,
+    # longtable = F,
+    linesep = "",
+    ...,
+  ) %>% 
+    kableExtra::kable_styling(full_width = F)
+}
+
+perc = function(x, digits = 1) paste(rnd(x*100, digits = digits), '%')
 ```
 
 ```{r load_common_packages, echo=FALSE, cache=FALSE, eval=TRUE}
-library(visibly); library(htmltools); library(forcats); library(lme4)
-library(broom); library(plotly); library(tidyverse); library(kableExtra); library(patchwork)
-
-kable_styling = function(..., full_width = FALSE) kableExtra::kable_styling(..., full_width = full_width)
-
-kable_df = function(..., digits =3, full_width = FALSE) 
-  kable(..., digits=digits) %>% kable_styling(full_width = full_width)
+library(visibly)
+library(htmltools)
+library(forcats)
+library(lme4)
+library(broom)
+library(broom.mixed)
+library(mixedup)
+library(plotly)
+library(tidyverse)
+library(kableExtra)
+library(patchwork)
 ```
 
 ####
