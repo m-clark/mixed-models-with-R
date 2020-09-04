@@ -1,6 +1,6 @@
 # More Random Effects
 
-Previously we've looked at random intercepts, but any observation level covariate effect could be allowed to vary by cluster as well.
+Previously we've looked at random intercepts, but any observation or lower level covariate effect could be allowed to vary by cluster as well.
 
 
 ## Application
@@ -57,14 +57,14 @@ gpa_mixed =  lmer(gpa ~ occasion + (1 + occasion|student), data=gpa)
 summary(gpa_mixed)
 ```
 
-Pretty easy huh? Within the parenthesis, to the left of that bar `|` we are simply just positing a model formula as we would do with most modeling functions[^nointneeded]. Let's look at the results.
+Pretty easy huh? Within the parenthesis, to the left of that bar `|` we are just positing a model formula as we would do with most modeling functions[^nointneeded]. Let's look at the results.
 
 
 ```{r random_slope_summary, echo=FALSE}
 gpa_mixed =  lmer(gpa ~ occasion + (1 + occasion | student), data = gpa)
 
 extract_fixed_effects(gpa_mixed) %>% 
-  select(-t:p_value) %>% 
+  select(-(t:p_value)) %>% 
   kable_df()
 
 extract_vc(gpa_mixed, ci_level = 0) %>% 
@@ -147,7 +147,7 @@ gint + gslopes
 Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what would have been the by-group estimate, which would otherwise overfit in this scenario.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models[^pool].  It comes into play largely when we have few observations per group and less estimated variance for the random effects.  In other words, when there is little information in a group, or less group-level variance relative to the observation variance, then the mixed model will produce a group-specific effect that is closer to the overall population effect.  In that sense, the mixed model group coefficients better reflect our ignorance.  Conversely, with more pronounced group effects, our uncertainty about the overall effect increases.  
 
 
-The following shows what would happen to similar data under a variety of settings with simulated data that is based on the results of the GPA model we had above. The are four settings to go along with the original results. The first shows what would happen had we taken many more measurements per student. In the next we add to the intercept and slope variance, and decrease the residual variance, but keep the sample size the same as the original data.  In both cases we have a less regularizing effect of the mixed model. The random coefficients are very similar to the separate regressions results.  Then, we keep the data the same but where we only have 4 observations per student. Finally, we add to the number of occasions per student, but have dropout over time, and so have roughly the same amount of data, but which is imbalanced. 
+The following shows what would happen to similar data under a variety of settings with simulated data that is based on the results of the GPA model we had above. On the far left is the plot just shown, our current data setting. Then there are four settings to go along with the original results. The first shows what would happen had we taken many more measurements per student. In the next, we add to the intercept and slope variance, and decrease the residual variance, but keep the sample size the same as the original data.  In both cases we have a less regularizing effect of the mixed model. The random coefficients are very similar to the separate regressions results.  Then, we keep the data the same but where we only have 4 observations per student, which shows more variability in the per-student results, and thus relatively more shrinkage with the mixed model. Finally, we add to the number of occasions per student (10), but have dropout over time, and so have roughly the same amount of data, but which is imbalanced.  For more on this see topic, see my post [here](https://m-clark.github.io/posts/2019-05-14-shrinkage-in-mixed-models/).
 
 
 
@@ -189,12 +189,12 @@ gint_more_npg = data_frame(
   xlim(c(1, 4)) +
   theme_trueMinimal() +
   theme(
-    axis.text.x     = element_text(size = 6),
-    axis.text.y     = element_blank(),
-    axis.ticks.y    = element_blank(),
-    legend.key.size = unit(2, 'mm'),
-    legend.title    = element_text(size = 8),
-    legend.text     = element_text(size = 8),
+    axis.text.x  = element_text(size = 6),
+    axis.text.y  = element_blank(),
+    axis.ticks.y = element_blank(),
+    legend.key.size    = unit(2, 'mm'),
+    legend.title       = element_text(size = 8),
+    legend.text        = element_text(size = 8),
     legend.box.spacing = unit(0, 'in'),
     legend.position    = c(.75, .75),
     title = element_text(size = 7)
@@ -220,7 +220,7 @@ gslopes_more_npg = data_frame(
     title = element_text(size = 7)
   )
 
-gint_more_npg + gslopes_more_npg
+# gint_more_npg + gslopes_more_npg
 ```
 
 ```{r ranints_vs_separateints_more_re, echo=FALSE}
@@ -265,11 +265,11 @@ gint_more_re = data_frame(
   theme_trueMinimal() +
   theme(
     axis.text.x  = element_text(size = 6),
-    axis.text.y     = element_blank(),
-    axis.ticks.y    = element_blank(),
-    legend.key.size = unit(2, 'mm'),
-    legend.title    = element_text(size = 8),
-    legend.text     = element_text(size = 8),
+    axis.text.y  = element_blank(),
+    axis.ticks.y = element_blank(),
+    legend.key.size    = unit(2, 'mm'),
+    legend.title       = element_text(size = 8),
+    legend.text        = element_text(size = 8),
     legend.box.spacing = unit(0, 'in'),
     legend.position    = c(.75, .75),
     title = element_text(size = 7)
@@ -345,11 +345,11 @@ gint_less_npg = data_frame(
   theme_trueMinimal() +
   theme(
     axis.text.x  = element_text(size = 6),
-    axis.text.y     = element_blank(),
-    axis.ticks.y    = element_blank(),
-    legend.key.size = unit(2, 'mm'),
-    legend.title    = element_text(size = 8),
-    legend.text     = element_text(size = 8),
+    axis.text.y  = element_blank(),
+    axis.ticks.y = element_blank(),
+    legend.key.size    = unit(2, 'mm'),
+    legend.title       = element_text(size = 8),
+    legend.text        = element_text(size = 8),
     legend.box.spacing = unit(0, 'in'),
     legend.position    = c(.75, .75),
     title = element_text(size = 7)
@@ -435,11 +435,11 @@ gint_imbalanced = data_frame(
   theme_trueMinimal() +
   theme(
     axis.text.x  = element_text(size = 6),
-    axis.text.y     = element_blank(),
-    axis.ticks.y    = element_blank(),
-    legend.key.size = unit(2, 'mm'),
-    legend.title    = element_text(size = 8),
-    legend.text     = element_text(size = 8),
+    axis.text.y  = element_blank(),
+    axis.ticks.y = element_blank(),
+    legend.key.size    = unit(2, 'mm'),
+    legend.title       = element_text(size = 8),
+    legend.text        = element_text(size = 8),
     legend.box.spacing = unit(0, 'in'),
     legend.position    = c(.75, .75),
     title = element_text(size = 7)
@@ -484,7 +484,7 @@ gslopes_imbalanced = data_frame(
 
 ## Visualization of effects
 
-Let's compare our predictions visually. First there is the linear regression fit. We assume the same trend for everyone.  If we add the conditional predictions that include the subject specific effects from the mixed model, we now can also make subject specific predictions, greatly enhancing the practical use of the model.  
+Now let's compare our predictions visually. First there is the linear regression fit. We assume the same starting point and trend for everyone.  If we add the conditional predictions that include the subject specific effects from the mixed model, we now can also make subject specific predictions, greatly enhancing the practical use of the model.  
 
 ```{r visualize_mixed_fit, echo=F, eval=-1}
 going_down_now = factor(rep(coef(gpa_mixed)$student[, 'occasion'] < 0, e =6), 
@@ -515,7 +515,7 @@ gpa %>%
 
 <br>
 
-By contrast, the by-group approach is more noisy due to treating everyone independently.  Many more students are expected to have downward or flat trends relative to the mixed model. The mixed model meanwhile only had `r sum(coef(gpa_mixed)$student[,'occasion']<0)` trends estimated to be negative.
+In contrast, the by-group approach is more noisy due to treating everyone independently.  Many more students are expected to have downward or flat trends relative to the mixed model. The mixed model meanwhile only had `r sum(coef(gpa_mixed)$student[,'occasion']<0)` trends estimated to be negative.
 
 ```{r visualize_bygroup_fit, echo=FALSE, cache=FALSE}
 gpa_lm_fits_by_group = gpa %>% 
@@ -572,7 +572,7 @@ data("sleepstudy")
 
 In the following, replace <span class="objclass">model</span> with the name of your model object. Run each line, inspecting the result of each as you go along. 
 
-```{r, eval=FALSE}
+```{r ex-sleep, eval=FALSE}
 re = ranef(model)$Subject
 fe = fixef(model)
 apply(re, 1, function(x) x + fe) %>% t
@@ -623,7 +623,7 @@ Compare model fit using the <span class="func">AIC</span> function, e.g. `AIC(mo
 
 [^nocorr]: I personally have not come across a situation where I'd do this in practice.  Even if the simpler model with no correlation was a slightly better fit, there isn't much to be gained by it.
 
-[^fe_comparison]: This is just one issue with a fixed effects approach. You would have to estimate 400 parameters, but without anything (inherently) to guard against overfitting.  The so-called 'fixed effects model' from the econometrics perspective gets around this by demeaning variables that vary within groups, i.e. subtracting the per group mean. This is also equivalent to a model adding a dummy variable for the groups, though it's a computationally more viable model to fit, as one no longer includes the grouping variable in the model (not really a concern with data FE models are actually applied to and it being what year it is).  But while it controls for group level effects, we still cannot estimate them. Traditional approaches to fixed effects models also do not have any way to incorporate group-specific slopes, except perhaps by way of an interaction of a covariate with the cluster, which brings you back to square one of having to estimate a lot of parameters.  For more about FE models and their issues, see my document on [clustered data approaches](https://m-clark.github.io/clustered-data/fixed-effects-models.html), and Bell et al. (2016). Fixed and Random effects: making an informed choice.
+[^fe_comparison]: This is just one issue with a fixed effects approach. You would have to estimate 400 parameters, but without anything (inherently) to guard against overfitting.  The so-called *fixed effects model* from the econometrics perspective gets around this by demeaning variables that vary within groups, i.e. subtracting the per group mean. This is also equivalent to a model adding a dummy variable for the groups, though it's a computationally more viable model to fit, as one no longer includes the grouping variable in the model (not really a concern with data FE models are actually applied to and it being what year it is).  But while it controls for group level effects, we still cannot estimate them. Traditional approaches to fixed effects models also do not have any way to incorporate group-specific slopes, except perhaps by way of an interaction of a covariate with the cluster, which brings you back to square one of having to estimate a lot of parameters.  For more about FE models and their issues, see my document on [clustered data approaches](https://m-clark.github.io/clustered-data/fixed-effects-models.html), and Bell et al. (2016). Fixed and Random effects: making an informed choice.
 
 ```{r plm, echo=FALSE, eval=FALSE}
 plm_model = plm::plm(gpa ~ occasion, model = 'within', data=gpa)
