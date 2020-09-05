@@ -5,10 +5,10 @@ Previously we've looked at random intercepts, but any observation or lower level
 
 ## Application
 
-Returning to the GPA data, recall the visualization from before.
+Returning to the GPA data, recall the visualization from before.  I've animated it to highlight the differences among students.
 
 
-```{r spaghetti2, echo=FALSE}
+```{r spaghetti2-old, echo=FALSE, eval=FALSE}
 set.seed(1234)
 gpa_lm = lm(gpa ~ occasion, data = gpa)
 
@@ -48,6 +48,35 @@ init %>%
   ) %>%
   theme_plotly()
 ```
+
+```{r spaghetti2-anim, echo=FALSE, eval=FALSE}
+options(gganimate.dev_args = list(bg = '#fffff8'))
+gpa %>%
+  slice(1:120) %>%   # if you don't want to wait
+  ggplot(aes(x = occasion, y = gpa)) +
+  geom_path(aes(group = student, alpha = occasion),
+            color = '#ff5500',
+            arrow = arrow(type = 'closed',
+                          angle = 45,
+                          length = unit(2, 'points')),
+            show.legend = F) +
+  # geom_smooth(
+  #   aes(alpha = occasion),
+  #   se = F,
+  #   color = 'darkred',
+  #   show.legend = F
+  # ) +
+  transition_time(as.integer(student)) +
+  shadow_mark(colour = 'gray50', size = 0.25) +
+  theme_clean()
+
+anim_save('img/gpa_anim.gif')
+```
+
+```{r spaghetti2-anim-show, echo=F, out.width='50%'}
+knitr::include_graphics('img/gpa_anim.gif')
+```
+
 
 <br>
 Let us now assume that the trend over time is allowed to vary by student in addition to the intercepts.  Using <span class="pack">lme4</span>, this is quite straightforward.
