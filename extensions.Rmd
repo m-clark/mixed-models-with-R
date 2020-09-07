@@ -21,7 +21,7 @@ crossing(Person=1:20, Image=letters[1:10]) %>%
 <br>
 <br>
 
-In such a case we have observations clustered within both person and image, but person and image are not nested within one another- all participants see all 10 images.  Such a situation is typically referred to as one in which there are <span class="emph">crossed</span> random effects, which just means non-nested.  In the situations we'll look at next, we will have multiple sources variances to consider.
+In these situations, we have observations clustered within both person and image, but person and image are not nested within one another- all participants see all 10 images.  Such a situation is typically referred to as one in which there are <span class="emph">crossed</span> random effects, which just means non-nested.  In the situations we'll look at next, we will have multiple sources variances to consider.
 
 
 #### Example: Student achievement
@@ -30,41 +30,50 @@ For our own demonstration we'll look at achievement scores for students.  The so
 
 
 ```{r pupil_nurses_setup, echo=FALSE, eval=FALSE}
-pupils = read_sav('data/raw_data/joop_hox_data2/9 CrossClass/pupcross.sav') %>% 
-  as_factor() %>% 
+pupils = read_sav('data/raw_data/joop_hox_data2/9 CrossClass/pupcross.sav') %>%
+  as_factor() %>%
   mutate(ACHIEV = as.numeric(as.character(ACHIEV)),
-         PUPSEX = factor(PUPSEX, labels=c('male', 'female')) ) %>% 
-  rename(achievement = ACHIEV,
-         primary_school_id = PSCHOOL,
-         secondary_school_id = SSCHOOL,
-         sex = PUPSEX,
-         ses = PUPSES,
-         primary_denominational=PDENOM,
-         secondary_denominational=SDENOM)  
+         PUPSEX = factor(PUPSEX, labels = c('male', 'female'))) %>%
+  rename(
+    achievement = ACHIEV,
+    primary_school_id = PSCHOOL,
+    secondary_school_id = SSCHOOL,
+    sex = PUPSEX,
+    ses = PUPSES,
+    primary_denominational = PDENOM,
+    secondary_denominational = SDENOM
+  )  
+
 save(pupils, file='data/pupils.RData')
 
-nurses = read_sav('data/raw_data/joop_hox_data2/2 Basic Model/nurses.sav') %>% 
-  as_factor() %>% 
+nurses = read_sav('data/raw_data/joop_hox_data2/2 Basic Model/nurses.sav') %>%
+  as_factor() %>%
   rename(experience = experien,
          treatment = expcon,
-         sex = gender) %>% 
-  mutate(treatment = factor(treatment, labels=c('Ctrl', 'Training')),
-         age = as.numeric(as.character(age)),
-         sex = factor(sex, labels=c('Male', 'Female'))) %>% 
-  select(-starts_with('Z'), -starts_with('C'))
-save(nurses, file='data/nurses.RData')
+         sex = gender) %>%
+  mutate(
+    treatment = factor(treatment, labels = c('Ctrl', 'Training')),
+    age = as.numeric(as.character(age)),
+    sex = factor(sex, labels = c('Male', 'Female'))
+  ) %>%
+  select(-starts_with('Z'),-starts_with('C'))
+
+save(nurses, file = 'data/nurses.RData')
 ```
 
 
 ```{r examine_pupil_data, echo=1}
 load('data/pupils.RData')
-DT::datatable(pupils, 
-              options=list(dom='tp', 
-                           scrollX=T,  
-                           autoWidth=T),
-                           # columnDefs = list(list(width = '150px', targets = 1),
-                           #                   list(width = '100px', targets = 3))), 
-              rownames=F)
+
+DT::datatable(pupils,
+              options = list(
+                dom = 'tp',
+                scrollX = T,
+                autoWidth = T
+              ),
+              # columnDefs = list(list(width = '150px', targets = 1),
+              #                   list(width = '100px', targets = 3))),
+              rownames = F)
 ```
 <br>
 <br>
@@ -72,35 +81,35 @@ DT::datatable(pupils,
 For our mixed model we'll look at the effects for `sex` and socioeconomic status, `ses`, a six level variable from low to high, on scholastic achievement.  The range of achievement scores is roughly `r round(min(pupils$achievement))` to `r round(max(pupils$achievement))`, with mean of `r round(mean(pupils$achievement), 1)` and standard deviation `r round(sd(pupils$achievement), 1)`.  We'll take into account the clustering at primary school and secondary school.  To incorporate the additional structure in <span class="pack">lme4</span> syntax is very easy, we just do as we did before, though now for both grouping factors[^crossed_notation].
 
 ```{r cross_classified, eval=1}
-pupils_crossed = lmer(achievement ~ sex + ses 
-                      + (1|primary_school_id) + (1|secondary_school_id), 
-                      data = pupils)
-summary(pupils_crossed, correlation=F)
+pupils_crossed = lmer(
+  achievement ~ sex + ses 
+  + (1|primary_school_id) + (1|secondary_school_id),
+  data = pupils
+)
+
+summary(pupils_crossed, correlation = FALSE)
 ```
 
 
 ```{r cross_classified_fixed, echo=FALSE}
 pupils_crossed %>% 
-  tidy('fixed', conf.int=T) %>% 
-  kable(digits=3) %>% 
+  extract_fixed_effects() %>% 
+  select(-(t:p_value)) %>% 
+  kable(digits = 3) %>% 
   kable_styling()
 ```
 
 The fixed effects tell us there is a positive effect of being female on achievement, and in general, relative to lowest SES category, being in the upper categories of SES also has a positive effect.
 
 ```{r  cross_classified_random, echo=FALSE}
-# note tidy doesn't work with multiple random effects and conf.int
-crossed_var_cor = data.frame(VarCorr(pupils_crossed)) %>% 
-  select(-var2) %>% 
-  rename(variance=vcov, sd=sdcor)
+crossed_var_cor = extract_vc(pupils_crossed, ci_level = 0) 
 
-crossed_var_cor %>%  
-  mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
-  kable(digits=2) %>% 
+crossed_var_cor %>%
+  kable(digits = 2) %>% 
   kable_styling()
 ```
 
-When we look at the variance components we see that primary and secondary school contributes about `r round(sum(crossed_var_cor$variance[1:2])/sum(crossed_var_cor$variance)*100)`% of the total variance.  Most of the variance attributable to school comes from the primary school.
+When we look at the variance components we see that primary and secondary school contributes about `r perc(sum(crossed_var_cor$variance[1:2])/sum(crossed_var_cor$variance), digits = 0)` of the total variance.  Most of the variance attributable to school comes from the primary school.
 
 If we inspect the random effects, we can see that we now have two sets of effects- `r n_distinct(pupils$primary_school_id)` for the primary schools, and `r n_distinct(pupils$secondary_school_id)` for the secondary.  Both would be incorporated into any pupil-specific prediction.
 
@@ -136,7 +145,7 @@ Note that we have the usual extensions here if desired.  As an example, we could
 
 ### Hierarchical Structure
 
-Now that we have looked at cross-classified models, we can examine hierarchical cluster structuring.  In this situation we have clusters nested within other clusters, which may be nested within still other clusters.  A typical example might be cities within counties, and counties within states.
+Now that we have looked at cross-classified models, we can proceed to examine hierarchical cluster structuring.  In this situation we have clusters nested within other clusters, which may be nested within still other clusters.  A typical example might be cities within counties, and counties within states.
 
 #### Example: Nurses and Stress
 
@@ -144,13 +153,16 @@ For our demonstration we'll use the nurses data set. Here we are interested in t
 
 ```{r nurses_data, echo=1}
 load('data/nurses.RData')
-DT::datatable(nurses, 
-              options=list(dom='tp', 
-                           scrollX=T,  
-                           autoWidth=T),
-                           # columnDefs = list(list(width = '150px', targets = 1),
-                           #                   list(width = '100px', targets = 3))), 
-              rownames=F)
+
+DT::datatable(nurses,
+              options = list(
+                dom = 'tp',
+                scrollX = T,
+                autoWidth = T
+              ),
+              # columnDefs = list(list(width = '150px', targets = 1),
+              #                   list(width = '100px', targets = 3))),
+              rownames = F)
 ```
 
 <br>
@@ -159,22 +171,27 @@ DT::datatable(nurses,
 For the model we examine effects of the treatment as well as several other covariates, at least one at each of the nurse, ward, and hospital levels. Again, when it comes to the fixed effects portion, you can simply think about that part as you would any standard regression, we just add covariates as theory/exploration would suggest.  To incorporate this type of random effects structure is not too different from the cross-classified approach, but does have a slight change to the syntax.
 
 ```{r hierarchical, eval=1}
-nurses_hierarchical = lmer(stress ~ age + sex + experience 
-                           + treatment + wardtype + hospsize 
-                           + (1|hospital) + (1|hospital:ward), 
-                           data = nurses)
-nurses_hierarchical = lmer(stress ~ age  + sex + experience 
-                           + treatment + wardtype + hospsize 
-                           + (1|hospital/ward), 
-                           data = nurses) # same thing!
-summary(nurses_hierarchical, correlation=F)
+nurses_hierarchical = lmer(
+  stress ~ age + sex + experience + treatment + wardtype + hospsize
+  + (1 | hospital) + (1 | hospital:ward),
+  data = nurses
+)
+
+# same thing!
+nurses_hierarchical = lmer(
+  stress ~ age  + sex + experience + treatment + wardtype + hospsize 
+  + (1|hospital/ward), 
+  data = nurses
+) 
+
+summary(nurses_hierarchical, correlation = F)
 ```
 
 ```{r hierarchical_fixed, echo=FALSE}
 nurses_hierarchical %>% 
-  tidy('fixed', conf.int=T) %>% 
-  kable(align='lrrrrr', digits=2) %>% 
-  kable_styling()
+  extract_fixed_effects() %>% 
+  select(-(t:p_value)) %>% 
+  kable_df()
 ```
 
 <br>
@@ -185,14 +202,10 @@ As far as the fixed effects go, about the only thing that doesn't have a statist
 
 ```{r hierarchical_random, echo=FALSE}
 # note tidy doesn't work with multiple random effects and conf.int
-hierarch_var_cor = data.frame(VarCorr(nurses_hierarchical)) %>% 
-  select(-var2) %>% 
-  rename(variance=vcov, sd=sdcor)
+hierarch_var_cor = extract_vc(nurses_hierarchical, ci_level = 0)
 
-hierarch_var_cor %>%  
-  mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
-  kable(align='lcrr', digits=3) %>% 
-  kable_styling()
+hierarch_var_cor %>%
+  kable_df()
 ```
 
 Concerning the random effects, there appears to be quite a bit of variability from ward to ward especially, but also hospital.  Recall that stress is a 7 point scale, so from ward to ward we can expect scores to bounce around about half a  point on average, which is quite dramatic in my opinion. Again we inspect it visually.
@@ -209,27 +222,25 @@ p
 The following shows the difference in the results from treating ward as a nested (within hospital) vs. crossed random effect. What do you notice is different?
 
 ```{r crossed_vs_nested, echo=1:3}
-nurses_hierarchical = lmer(stress ~ age  + sex + experience 
-                           + treatment + wardtype + hospsize 
-                           + (1|hospital) + (1|hospital:wardid), data = nurses)
+nurses_hierarchical = lmer(
+  stress ~ age  + sex + experience + treatment + wardtype + hospsize 
+  + (1|hospital) + (1|hospital:wardid), 
+  data = nurses
+)
 
-nurses_crossed = lmer(stress ~ age  + sex + experience 
-                           + treatment + wardtype + hospsize 
-                           + (1|hospital) + (1|wardid), data = nurses)
+nurses_crossed = lmer(
+  stress ~ age  + sex + experience + treatment + wardtype + hospsize 
+  + (1|hospital) + (1|wardid),
+  data = nurses
+)
 
 hierarch_var_cor %>%  
-  mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
-  kable(align='lcrr', digits = 3) %>% 
-  kable_styling()
+  kable_df()
 
-crossed_var_cor = data.frame(VarCorr(nurses_crossed)) %>% 
-  select(-var2) %>%
-  rename(variance=vcov, sd=sdcor)
+crossed_var_cor = extract_vc(nurses_crossed, ci_level = 0)
 
 crossed_var_cor %>%  
-  mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
-  kable(align='lcrr', digits = 3) %>% 
-  kable_styling()
+  kable_df()
 ```
 
 
@@ -255,13 +266,14 @@ You might have noticed that we were using `wardid` rather than the `ward` groupi
 What would have happened had we used that variable as a crossed random effect?
 
 ```{r bad_cross, echo=1}
-nurses_crossed_bad_data = lmer(stress ~ age  + sex + experience 
-                               + treatment + wardtype + hospsize 
-                               + (1|hospital) + (1|ward), data = nurses)
+nurses_crossed_bad_data = lmer(
+  stress ~ age  + sex + experience + treatment + wardtype + hospsize 
+  + (1|hospital) + (1|ward), 
+  data = nurses
+)
 
-data.frame(VarCorr(nurses_crossed_bad_data)) %>% 
-  select(-var2) %>%
-  rename(variance=vcov, sd=sdcor)
+extract_vc(nurses_crossed_bad_data, ci_level = 0) %>%
+  kable_df()
 ```
 
 This is certainly not the result we want. The variance in `ward` is already captured by treatment and type. However, as demonstrated, this can be avoided with the proper syntax, or proper labeling in the data to allow unique clusters to have unique identifiers.
@@ -320,13 +332,12 @@ rc1[1:30, 1:30] %>%
 Each block represents the covariance matrix pertaining to observations within an individual. Within the person there are variances on the diagonal and covariances on the off-diagonal.  When considering the whole data, we can see that observations from one person have no covariance with another person (gray). Furthermore, the covariance within a person is a constant value, the variance is also a constant value.  Where did those values come from?
 
 ```{r residual_varcov2, echo=F}
-vc = data.frame(VarCorr(gpa_vis_cov))
-totvar = sum(vc$vcov)
-data.frame(VarCorr(gpa_vis_cov)) %>% 
-  select(-var1, -var2) %>% 
-  rename(variance=vcov, sd=sdcor) %>%  
-  kable(digits=3) %>% 
-  kable_styling()
+vc = extract_vc(gpa_vis_cov, ci_level = 0)
+
+totvar = sum(vc$variance)
+
+vc %>%  
+  kable_df()
 ```
 
 Remember that there are two sources of variance in this model, the residual observation level variance, and that pertaining to person. Combined they provide the total residual variance that we aren't already capturing with our covariates.  In this case, it's about `r round(totvar, 2)`, the value displayed on our diagonal. The off-diagonal is the variance attributable to student, which we alternately interpreted as an intraclass correlation (dividing by the total variance converts it to the correlation metric).
@@ -336,14 +347,18 @@ More generically, and referring to previous notation for our estimated variances
 $$\Sigma = 
 \left[
 \begin{array}{ccc} 
-\sigma^2 + \tau^2 & \tau^2   & \tau^2   \\
-\tau^2   & \sigma^2 + \tau^2 & \tau^2   \\
-\tau^2   & \tau^2   & \sigma^2 + \tau^2 \\
+\color{orange}{\sigma^2 + \tau^2} & \tau^2   & \tau^2  & \tau^2 & \tau^2 & \tau^2   \\
+\tau^2   & \color{orange}{\sigma^2 + \tau^2} & \tau^2 & \tau^2 & \tau^2 & \tau^2    \\
+\tau^2   & \tau^2   & \color{orange}{\sigma^2 + \tau^2} & \tau^2 & \tau^2 & \tau^2  \\
+\tau^2   & \tau^2   & \tau^2 & \color{orange}{\sigma^2 + \tau^2} & \tau^2 & \tau^2\\
+\tau^2   & \tau^2   & \tau^2  & \tau^2 & \color{orange}{\sigma^2 + \tau^2}  & \tau^2 \\
+\tau^2   & \tau^2   & \tau^2  & \tau^2   & \tau^2  & \color{orange}{\sigma^2 + \tau^2} \\
 \end{array}\right]$$
+<br>
 
 This represents a covariance structure of <span class="emph">compound symmetry</span>. It is the default in most mixed model settings, and the same as what is shown visually above. Now let's start to think about other types of covariance structures. 
 
-Consider the following model for an individual and three time points.
+Consider the following model for an individual and just three time points to keep things simpler to show.
 
 $$\boldsymbol{y} \sim \mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\Sigma})$$
 
@@ -353,7 +368,7 @@ $$\mu = b_0 + b_1\cdot \mathrm{time} + b_2\cdot x_1 ...$$
 
 However, instead of just plopping an $\epsilon$ at the end, we want to go further in defining the entire residual variance/covariance structure for all three time points.
 
-In the simplest setting of standard regression, we have constant variance and no covariance.
+In the simplest setting of a standard linear regression model, we have constant variance and no covariance.
 
 $$\Sigma = 
 \left[
@@ -363,7 +378,7 @@ $$\Sigma =
 0   & 0   & \sigma^2 \\
 \end{array}\right]$$
 
-Next, we can relax the assumption of equal variances, and estimate each separately.
+Next, we can relax the assumption of equal variances, and estimate each separately. In this case of heterogeneous variances, we might see more or less variance over time, for example.
 
 $$\Sigma = 
 \left[
@@ -413,7 +428,7 @@ $$\Sigma = \sigma^2
 
 Again, the main point is that points further apart in time are assumed to have less correlation. 
 
-Know that there are many patterns and possibilities to potentially consider, and that they are not limited to the repeated measures scenario.  For example, the correlation could represent spatial structure, where units closer together geographically would be more correlated.  And as noted we could also have variances that are different at each time point[^residstruct].  We'll start with that for the next example.
+Know that there are many patterns and possibilities to potentially consider, and that they are not limited to the repeated measures scenario.  For example, the correlation could represent spatial structure, where units closer together geographically would be more correlated.  And as noted, we could also have variances that are different at each time point[^residstruct].  We'll start with that for the next example.
 
 ### Heterogeneous Variance
 
@@ -422,25 +437,24 @@ Unfortunately, <span class="pack">lme4</span> does not provide the ability to mo
 The <span class="pack">nlme</span> package will have a different random effect specification, though not *too* different.  In addition, to estimate heterogeneous variances, we'll need to use an additional `weights` argument.  The following will allow each time point of occasion to have a unique estimate.
 
 
-```{r heterovar, echo=1:3, eval=-3}
+```{r heterovar, echo=1:5, eval=-5}
 library(nlme)
-heterovar_res = lme(gpa ~ occasion, 
-                    data = gpa,
-                    random = ~1|student, 
-                    weights = varIdent(form = ~1|occasion))
-summary(heterovar_res)
-heterovar_res %>% 
-  tidy('fixed') %>% 
-  kable(digits = 3) %>% 
-  kable_styling()
 
-vc = VarCorr(heterovar_res) # christ lme objects are the worst
-cbind(rownames(vc), vc[,1:2]) %>% 
-  as_data_frame() %>% 
-  rename(' ' = V1) %>% 
-  mutate_at(-1, as.numeric) %>% 
-  kable(digits = 3) %>% 
-  kable_styling()
+heterovar_res = lme(
+  gpa ~ occasion,
+  data = gpa,
+  random = ~ 1 | student,
+  weights = varIdent(form = ~ 1 | occasion)
+)
+
+summary(heterovar_res)
+
+extract_fixed_effects(heterovar_res) %>% 
+  kable_df()
+
+vc = extract_vc(heterovar_res, ci_level = 0)
+vc %>% 
+  kable_df()
 ```
 
 
@@ -456,29 +470,51 @@ Relative values are fine, I guess, but what we'd want are the actual estimates. 
 (c(1.0000000, coef(heterovar_res$modelStruct$varStruct, unconstrained=F))*heterovar_res$sigma)^2
 ```
 
-Yeah.  You'll have to look this up every time you want to do it, or just make your own function that takes the model input.  A newer alternative to keep in mind is <span class="pack">glmmTMB</span>.  It would allow one to stay more in the <span class="pack">lme4</span> style and output.
+Yeah.  You'll have to look this up every time you want to do it, or just make your own function that takes the model input.  Here is how my function would extract the information.
+
+```{r mixedup-extract_het_var}
+mixedup::extract_het_var(heterovar_res, scale = 'var')
+```
+
+A newer alternative to keep in mind is <span class="pack">glmmTMB</span>.  It would allow one to stay more in the <span class="pack">lme4</span> style and output.
 
 ```{r glmmTMB_hetero}
 library(glmmTMB)
-heterovar_res2 = glmmTMB(gpa ~ occasion + (1|student) + diag(0 + occas |student), 
-                         data = gpa)
+
+heterovar_res2 = glmmTMB(
+  gpa ~ occasion + (1|student) + diag(0 + occas |student), 
+  data = gpa
+)
+
 summary(heterovar_res2)
 ```
 
-Note that the variances dispalyed for each time point are not conflated with the residual variance. To compare with <span class="pack">nlme</span>, just add the residual variance to those estimates.  As with every mixed model package (apparently), it still takes a bit to get the variances in a usable form from the <span class="func">VarCorr</span> object. The following shows how though, and compares to the <span class="pack">nlme</span> result.
+Note that the variances displayed for each time point are not conflated with the residual variance. To compare with <span class="pack">nlme</span>, just add the residual variance to those estimates.  As with every mixed model package (apparently), it still takes a bit to get the variances in a usable form from the <span class="func">VarCorr</span> object. The following shows how though, and compares to the <span class="pack">nlme</span> result.
 
-```{r glmmTMB_hetero_compare_nlme, echo=1:2}
+```{r extract-het-var-glmmtmb, eval = FALSE}
 vc_glmmtmb = VarCorr(heterovar_res2)
 vc_glmmtmb = attr(vc_glmmtmb$cond$student.1, 'stddev')^2 + sigma(heterovar_res2)^2
-vc_nlme = lazerhawk::extract_nlme_variances(heterovar_res)
-vc_compare = rbind(glmmTMB=vc_glmmtmb, nlme=vc_nlme) 
-colnames(vc_compare) = str_sub(colnames(vc_compare), start = 6) %>% 
-  str_replace_all(., 'semester', 'sem')
+```
+
+Here is the output from my function:
+
+```{r mixedup-extract_het_var-tmb}
+mixedup::extract_het_var(heterovar_res2, scale = 'var')
+```
+
+In any case, putting these together shows we get the same result.
+
+```{r glmmTMB_hetero_compare_nlme, echo=F}
+vc_glmmtmb = extract_het_var(heterovar_res2, scale = 'var')[-1] # remove group id
+vc_nlme = extract_het_var(heterovar_res, scale = 'var')
+
+names(vc_glmmtmb) = names(vc_nlme) = 
+  unite(expand_grid(paste('year', 1:3), paste('sem', 1:2)), 'x', everything(), sep = ' ')$x
+
+vc_compare = rbind(glmmTMB = vc_glmmtmb, nlme = vc_nlme) 
 
 vc_compare %>% 
-  as.data.frame() %>%  
-  kable_df() %>% 
-  kable_styling()
+  kable_df()
 ```
 
 
@@ -488,30 +524,53 @@ vc_compare %>%
 
 The following example shows the same basic model, but with the autocorrelation structure we described previously. In <span class="pack">nlme</span> we use the built-in <span class="func">corAR1</span> function and `correlation` argument similar to how we did with the weights argument.  
 
-```{r corr_residual, echo=1:3, eval=-3}
+```{r corr_residual, echo=1:5, eval=-5}
 library(nlme)
-corr_res = lme(gpa ~ occasion, 
-               data = gpa,
-               random = ~1|student, 
-               correlation = corAR1(form = ~occasion))
+
+corr_res = lme(
+  gpa ~ occasion,
+  data = gpa,
+  random = ~ 1 | student,
+  correlation = corAR1(form = ~ occasion)
+)
+
 summary(corr_res)
 
-corr_res %>% 
-  tidy('fixed') %>% 
-  kable(digits = 3) %>% 
-  kable_styling()
+extract_fixed_effects(corr_res) %>% 
+  kable_df()
 
-vc = VarCorr(corr_res) # christ lme objects are the worst
-cbind(rownames(vc), vc[,1:2]) %>% 
-  as_data_frame() %>% 
-  rename(' ' = V1) %>% 
-  mutate_at(-1, as.numeric) %>% 
-  kable(digits = 3) %>% 
-  kable_styling()
+vc = extract_vc(corr_res, ci_level = 0)
+vc %>% 
+  kable_df()
 ```
 <br>
 
 Notice first that the fixed effect for occasion is the same as [before][Mixed model]. The variance estimates have changed slightly along with the variances of the fixed effects (i.e. the standard errors). The main thing is that we have a new parameter called `Phi` in the <span class="pack">nlme</span> output that represents our autocorrelation, `Phi`, with value of `r round(coef(corr_res$model$corStruct, unconstrained = F), 3)`. This suggests at least some correlation exists among the residuals for observations next to each other in time, though it diminishes quickly as observations grow further apart.
+
+Note that glmmTMB will analyze such structure as well. Note that we need the factor form for occasion for this specification, and also note how it is part of model formula, like another random effect. More on this in the [supplemental section][Correlation Structure Revisited].
+
+```{r corr_residual_glmmTMB, eval=FALSE, echo=1:3}
+corr_res_tmb = glmmTMB(
+  gpa ~ occasion +  ar1(0 + occas | student) + (1 | student),
+  data = gpa
+)
+
+corr_res_brm = brms::brm(
+  gpa ~ occasion +  ar(occasion, student) + (1 | student),
+  data = gpa,
+  cores = 4
+)
+
+summarise_model(corr_res)
+summary(corr_res_tmb)
+summarise_model(corr_res_brm)
+
+extract_cor_structure(corr_res_tmb, which_cor = 'ar1')
+extract_cor_structure(corr_res_brm)
+extract_cor_structure(corr_res)
+```
+
+
 
 ```{r glmmTMB_autocor, eval=FALSE, echo=FALSE}
 # currently as of 2018-2 there is a bug in VarCorr at the end where it calls
@@ -521,42 +580,66 @@ Notice first that the fixed effect for occasion is the same as [before][Mixed mo
 # https://bbolker.github.io/mixedmodels-misc/notes/corr_braindump.html and brms
 # gets .83
 
-simCor1 <- function(phi=0.8,sdgrp=2,sdres=1,
-                    npergrp=20,ngrp=20,
-                    seed=NULL,
-                    ## set linkinv/simfun for GLMM sims
-                    linkinv=identity,
-                    simfun=identity) {
-    if (!is.null(seed)) set.seed(seed)
-    cmat <- sdres*phi^abs(outer(0:(npergrp-1),0:(npergrp-1),"-"))
-    errs <- MASS::mvrnorm(ngrp,mu=rep(0,npergrp),Sigma=cmat)
-    ranef <- rnorm(ngrp,mean=0,sd=sdgrp)
-    d <- data.frame(f=rep(1:ngrp,each=npergrp))
-    eta <- ranef[as.numeric(d$f)] + c(t(errs)) ## unpack errors by row
-    mu <- linkinv(eta)
-    d$y <- simfun(mu)
-    d$tt <- factor(rep(1:npergrp,ngrp))
-    return(d)
+# update 2020-09  brms and nlme are notably closer with gpa data using brms new approach to ar structure, while glmmTMB estimates no student variance and correlation value almost double the others with the gpa data
+
+simCor1 <- function(
+  phi = 0.8,
+  sdgrp = 2,
+  sdres = 1,
+  npergrp = 20,
+  ngrp = 20,
+  seed = NULL,
+  ## set linkinv/simfun for GLMM sims
+  linkinv = identity,
+  simfun = identity
+) {
+  
+  if (!is.null(seed))
+    set.seed(seed)
+  cmat <- sdres * phi ^ abs(outer(0:(npergrp - 1), 0:(npergrp - 1), "-"))
+  errs <- MASS::mvrnorm(ngrp, mu = rep(0, npergrp), Sigma = cmat)
+  ranef <- rnorm(ngrp, mean = 0, sd = sdgrp)
+  d <- data.frame(f = rep(1:ngrp, each = npergrp))
+  eta <-
+    ranef[as.numeric(d$f)] + c(t(errs)) ## unpack errors by row
+  mu <- linkinv(eta)
+  d$y <- simfun(mu)
+  d$tt <- factor(rep(1:npergrp, ngrp))
+  return(d)
 }
 
-d <- simCor1(phi=0.8,sdgrp=2,sdres=1,seed=101)
+d <- simCor1(
+  phi = 0.8,
+  sdgrp = 2,
+  sdres = 1,
+  seed = 101
+)
 
-corr_res2 = glmmTMB(gpa ~ occasion + (1|student) + ar1(0 + occasion |student), 
-                         data = gpa)
+corr_res2 = glmmTMB(gpa ~ occasion + (1 | student) + ar1(0 + occasion | student),
+                    data = gpa)
 summary(corr_res2)
-VarCorr(corr_res2, sigma=.16707)
+VarCorr(corr_res2, sigma = .16707)
 corr_res2$obj$env$report(corr_res2$fit$parfull)$corr[[2]]
 
-test = brm(gpa ~ occasion + (1|student), 
-           data = gpa,
-           autocor = cor_ar(form = ~occas), cores=4)
+test = brm(
+  gpa ~ occasion + (1 | student),
+  data = gpa,
+  autocor = cor_ar(form = ~ occas),
+  cores = 4
+)
 
-(lme_simple_fit <- lme(y~1,random=~1|f,data=d,correlation=corAR1()))
-glmmTMB_simple_fit <- glmmTMB(y~1 + (1|f) + ar1(tt-1|f), data=d,family=gaussian)
+(lme_simple_fit <- lme(
+  y ~ 1,
+  random =  ~ 1 | f,
+  data = d,
+  correlation = corAR1()
+))
+glmmTMB_simple_fit <-
+  glmmTMB(y ~ 1 + (1 | f) + ar1(tt - 1 | f), data = d, family = gaussian)
 glmmTMB_simple_fit
 
-glmmTMB_simple_fit$obj$env$report(glmmTMB_simple_fit$fit$parfull)$corr[[2]][2,1]
-corr_res2$obj$env$report(corr_res2$fit$parfull)$corr[[2]][2,1]
+glmmTMB_simple_fit$obj$env$report(glmmTMB_simple_fit$fit$parfull)$corr[[2]][2, 1]
+corr_res2$obj$env$report(corr_res2$fit$parfull)$corr[[2]][2, 1]
 ```
 
 
@@ -571,37 +654,44 @@ Our target variable is whether the participant would be willing to date the pers
 
 ```{r speed_dating, echo=FALSE, eval=FALSE}
 speed_dating0 = readr::read_csv('data/raw_data/ARM_Data/Speed Dating Data.csv')
-speed_dating = speed_dating0 %>% 
-  select(1:17, attr, sinc, intel, fun, amb, shar, dec) %>% 
-  rename(id_win_wave=id,
-         sex = gender,
-         partner_id=pid,
-         n_met_in_wave=round,
-         partner_age = age_o,
-         partner_race = race_o,
-         attractive = attr, 
-         sincere = sinc, 
-         intelligent = intel, 
-         fun = fun, 
-         ambitious = amb, 
-         shared_interests = shar,
-         decision=dec) %>% 
-  mutate(decision = factor(decision, labels=c('No', 'Yes')),
-         sex = factor(sex, labels=c('Female', 'Male')),
-         samerace = factor(samerace, labels=c('No', 'Yes')),
-         attractive_sc=scale(attractive, scale=.5)[,1],
-         sincere_sc=scale(sincere, scale=.5)[,1],
-         intelligent_sc=scale(intelligent, scale=.5)[,1],
-         fun_sc=scale(fun, scale=.5)[,1],
-         ambitious_sc=scale(ambitious, scale=.5)[,1],
-         shared_interests_sc=scale(shared_interests, scale=.5)[,1]) %>% 
-  group_by(iid) %>% 
-  mutate(never_always = if_else(all(decision=='Yes') | all(decision=='No'), 1, 0)) %>% 
-  ungroup() %>% 
+
+speed_dating = speed_dating0 %>%
+  select(1:17, attr, sinc, intel, fun, amb, shar, dec) %>%
+  rename(
+    id_win_wave = id,
+    sex = gender,
+    partner_id = pid,
+    n_met_in_wave = round,
+    partner_age = age_o,
+    partner_race = race_o,
+    attractive = attr,
+    sincere = sinc,
+    intelligent = intel,
+    fun = fun,
+    ambitious = amb,
+    shared_interests = shar,
+    decision = dec
+  ) %>%
+  mutate(
+    decision = factor(decision, labels = c('No', 'Yes')),
+    sex = factor(sex, labels = c('Female', 'Male')),
+    samerace = factor(samerace, labels = c('No', 'Yes')),
+    attractive_sc = scale(attractive, scale = .5)[, 1],
+    sincere_sc = scale(sincere, scale = .5)[, 1],
+    intelligent_sc = scale(intelligent, scale = .5)[, 1],
+    fun_sc = scale(fun, scale = .5)[, 1],
+    ambitious_sc = scale(ambitious, scale = .5)[, 1],
+    shared_interests_sc = scale(shared_interests, scale = .5)[, 1]
+  ) %>%
+  group_by(iid) %>%
+  mutate(never_always = if_else(all(decision == 'Yes') |
+                                  all(decision == 'No'), 1, 0)) %>%
+  ungroup() %>%
   filter(never_always == 0) %>%  # as in Fahrmeier
   select(-never_always)
 # describeAll(speed_dating)
-save(speed_dating, file='data/speed_dating.RData')
+
+save(speed_dating, file = 'data/speed_dating.RData')
 ```
 
 ```{r glmm_init, eval=FALSE, echo=FALSE}
@@ -609,41 +699,51 @@ save(speed_dating, file='data/speed_dating.RData')
 # sd_model = glmer(decision ~ sex*attractive_sc + sex*shared_interests_sc
 #                  + (1|iid), data=speed_dating, family=binomial)   
 load('data/speed_dating.RData')
-sd_model = glmer(decision ~ sex + samerace + attractive_sc + sincere_sc
-                 + intelligent_sc 
-                 + (1|iid), data=speed_dating, family=binomial)
-summary(sd_model, correlation=F)
+sd_model = glmer(
+  decision ~ sex + samerace + attractive_sc + sincere_sc
+  + intelligent_sc
+  + (1 | iid),
+  data = speed_dating,
+  family = binomial
+)
+summary(sd_model, correlation = F)
 glmm_var_cor = tidy(VarCorr(sd_model)) %>%   # because for some reason knitr can't find an object it just used in the previous chunk.
-  select(-var2) %>% 
-  rename(variance=vcov, sd=sdcor) %>%  
-  mutate_if(is.numeric, arm::fround, digits=2) 
-save(sd_model, glmm_var_cor, file='data/speed_dating_model.RData')
+  select(-var2) %>%
+  rename(variance = vcov, sd = sdcor) %>%
+  mutate_if(is.numeric, arm::fround, digits = 2)
+save(sd_model, glmm_var_cor, file = 'data/speed_dating_model.RData')
 ```
 
 ```{r glmm_speed_dating, eval=FALSE}
 load('data/speed_dating.RData')
-sd_model = glmer(decision ~ sex + samerace + attractive_sc + sincere_sc
-                 + intelligent_sc 
-                 + (1|iid), data=speed_dating, family=binomial)
-summary(sd_model, correlation=F)
+
+sd_model = glmer(
+  decision ~ sex + samerace + attractive_sc + sincere_sc + intelligent_sc
+  + (1 | iid),
+  data   = speed_dating,
+  family = binomial
+)
+
+summary(sd_model, correlation = FALSE)
 ```
 
 
 ```{r glmm_fixed, echo=FALSE}
 load('data/speed_dating_model.RData')
-sd_model %>% 
-  tidy('fixed', conf.int=T) %>% 
-  kable(align='lrrrrrr', digits=2) %>% 
-  kable_styling()
+
+extract_fixed_effects(sd_model) %>% 
+  kable_df()
 ```
 <br>
 
-The fixed effects results are as expected for the attributes, with attractiveness being a very strong effect in particular.  In addition, having a partner of the same race had a positive effect while sex of the participant was statistically negligible.  You are free to exponentiate the coefficients to get the odds ratios if desired, just as you would with standard logistic regression.
+The fixed effects results are as expected for the attributes, with attractiveness being a very strong effect in particular.  In addition, having a partner of the same race had a positive effect, while sex of the participant was statistically negligible.  You are free to exponentiate the coefficients to get the odds ratios if desired, just as you would with standard logistic regression.
 
 <br>
 
 ```{r glmm_random, echo=FALSE, eval=TRUE}
-kable(glmm_var_cor) %>% kable_styling()
+extract_vc(sd_model, ci_level = 0) %>% 
+  select(-var_prop) %>% 
+  kable_df()
 ```
 
 <br>
@@ -665,8 +765,8 @@ glimpse(soc)
 
 
 sociometric = soc %>% 
-  mutate(sexsend = factor(sexsend, labels=c('Male', 'Female')),  # from text 0 male, 1 female
-         sexrec = factor(sexrec, labels=c('Male', 'Female')))
+  mutate(sexsend = factor(sexsend, labels = c('Male', 'Female')),  # from text 0 male, 1 female
+         sexrec = factor(sexrec, labels = c('Male', 'Female')))
 
 save(sociometric, file='data/sociometric.RData')
 ```
@@ -695,20 +795,22 @@ To run the model, we will proceed with the following modeling steps. For each, m
 
 ```{r socio, echo=F, eval=FALSE}
 model1 = lmer(rating ~ (1|group:sender) + (1|group:receiver), 
-             data=sociometric)
-summary(model1, correlation=F) 
+              data = sociometric)
+summary(model1, correlation = FALSE) 
 
 model2 = lmer(rating ~ (1|group:sender) + (1|group:receiver) + (1|group), 
-             data=sociometric)
-summary(model2, correlation=F) 
+              data = sociometric)
+summary(model2, correlation = F) 
 
 model3 = lmer(rating ~ sexsend + sexrec + agesend + agerec + grsize + (1|group:sender) + (1|group:receiver) + (1|group), 
-             data=sociometric)
-summary(model3, correlation=F)
+             data = sociometric)
+summary(model3, correlation = FALSE)
 
-model4 = lmer(rating ~ sexsend*sexrec + agesend + agerec + grsize + (1|group:sender) + (1|group:receiver) + (1|group), 
-             data=sociometric)
-summary(model4, correlation=F)
+model4 = lmer(
+  rating ~ sexsend*sexrec + agesend + agerec + grsize +
+    (1|group:sender) + (1|group:receiver) + (1|group), 
+  data = sociometric)
+summary(model4, correlation = FALSE)
 
 c(AIC(model1), AIC(model2), AIC(model3), AIC(model4))
 ```
@@ -734,16 +836,19 @@ load('data/patents.RData')
 ```
 
 
-Interestingly, one can model overdispersion in a Poisson model by specifying an random intercept for each observation (`subject` in the data).  In other words, no clustering or grouped structure is necessary.
+Interestingly, one can model overdispersion in a Poisson model by specifying an random intercept for each observation (`subject` in the data).  In other words, no specific clustering or grouped structure is necessary, but we can use the random effect approach to get at the extra variance.
+
+
+
 
 [^residstruct]: One reason to do so would be that you expect variability to decrease over time, e.g. due to experience.  You might also allow that variance to be different due to some other grouping factor entirely (e.g. due to treatment group membership).
 
-[^lmerho]: This feature request has been made by its users for over a decade at this point- it's not gonna happen.  The issue is that the way <span class="pack">lmer</span> works by default uses a method that won't allow it (this is why it is faster and better performing than other packages). Unfortunately the only response to this issue is 'use <span class="pack">nlme</span>'.  However many other packages work with <span class="pack">lme4</span> rather than <span class="pack">nlme</span>, and if you aren't going to use <span class="pack">lme4</span> for mixed models you might as well go Bayesian with <span class="pack">rstanarm</span> or <span class="pack">brms</span> instead of <span class="pack">nlme.</span>  I would even prefer <span class="pack">mgcv</span> to <span class="pack">nlme</span> (though it can use <span class="pack">nlme</span> under the hood) because of the other capabilities it provides, and the objects created are easier to work with in my opinion.
+[^lmerho]: This feature request has been made by its users for over a decade at this point- it's not gonna happen.  The issue is that the way <span class="pack">lmer</span> works by default employs a method that won't allow it (this is why it is faster and better performing than other packages). Unfortunately the common response to this issue is 'use <span class="pack">nlme</span>'.  However many other packages work with <span class="pack">lme4</span> rather than <span class="pack">nlme</span>, and if you aren't going to use <span class="pack">lme4</span> for mixed models you might as well go Bayesian with <span class="pack">rstanarm</span> or <span class="pack">brms</span> instead of <span class="pack">nlme</span>.  I would even prefer <span class="pack">mgcv</span> to <span class="pack">nlme</span> (though it can use <span class="pack">nlme</span> under the hood) because of the other capabilities it provides, and the objects created are easier to work with in my opinion.
 
-[^crossed_notation]: I don't show the formal model here as we did before, but this is why depicting mixed models solely as 'multilevel' becomes a bit problematic in my opinion. In the standard mixed model notation it's straightforward though, you just add an addition random effect term, just as we do in the actual model syntax.
+[^crossed_notation]: I don't show the formal model here as we did before, but this is why depicting mixed models solely as 'multilevel' becomes a bit problematic in my opinion. In the standard mixed model notation it's straightforward though, you just add an additional random effect term, just as we do in the actual model syntax.
 
 [^signflip]: Setting aside our discussion to take a turn regarding regression modeling more generally, this is a good example of 'surprising' effects not being so surprising when you consider them more closely.  Take a look at the effect of experience. More experience means less stress, this is probably not surprising.  Now look at the age effect. It's positive! But wouldn't older nurses have more experience? What's going on here? When interpreting experience, it is with age *held constant*, thus more experience helps with lowering stress no matter what your age.  With age, we're holding experience constant.  If experience doesn't matter, being older is affiliated with more stress, which might be expected given the type of very busy and high pressure work often being done (the mean age is `r median(nurses$age)`).  A good way to better understand this specifically is to look at predicted values when age is young, middle, and older vs. experience levels at low, middle, and high experience, possibly explicitly including the interaction of the two in the model.  Also note that if you take experience out of the model, the age effect is negative, which is expected, as it captures experience also.
 
-[^crossnest]: Note that it *does* matter if you label your data inappropriately.  For example, if in the nesting situation you start your id variable at 1 for each nested group, then you have to use the nested notation in <span class="pack">lme4</span>, otherwise, e.g. it won't know that id = 1 in group 1 is different from id 1 in group 2.  In our hospital example, this would be akin to using `ward` instead of `wardid` as we did.  Again though, this wouldn't be an issue if one practices good data habits.  Note also the `:` syntax. In other modeling contexts in R this denotes an interaction, and that is no different here.  In some contexts, typically due to experimental designs, one would want to explore random effects of the sort 1|A, 1|B and 1|A:B.  However, this is relatively rare.
+[^crossnest]: Just a reminder, it *does* matter if you label your data in a less than optimal fashion.  For example, if in the nesting situation you start your id variable at 1 for each nested group, then you have to use the nested notation in <span class="pack">lme4</span>, otherwise, e.g. it won't know that id = 1 in group 1 is different from id 1 in group 2.  In our hospital example, this would be akin to using `ward` instead of `wardid` as we did.  Again though, this wouldn't be an issue if one practices good data habits.  Note also the `:` syntax. In other modeling contexts in R this denotes an interaction, and that is no different here.  In some contexts, typically due to experimental designs, one would want to explore random effects of the sort 1|A, 1|B and 1|A:B.  However, this is relatively rare.
 
 [^scalecontbin]:  Note that for a balanced binary variable, the mean `p=.5` and standard deviation is `sqrt(p*(1-p)) = .5`

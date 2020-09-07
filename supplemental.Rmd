@@ -307,17 +307,19 @@ We have demonstrated heterogeneous variances [previously][Heterogeneous Variance
 ```{r mixed_heterogenous, echo=1:5}
 library(nlme)
 
-mixed_ran_int_ran_slope_hetero_var = lme(gpa ~ occasion,
-                                         random = ~ 1 + occasion | student,
-                                         data = gpa,
-                                         weights = varIdent(form = ~1|occasion))
+mixed_ran_int_ran_slope_hetero_var = lme(
+  gpa ~ occasion,
+  random = ~ 1 + occasion | student,
+  data = gpa,
+  weights = varIdent(form = ~1|occasion)
+)
 
 summary(mixed_ran_int_ran_slope_hetero_var)
 
-res_var = lazerhawk::extract_nlme_variances(mixed_ran_int_ran_slope_hetero_var)
+res_var = mixedup::extract_het_var(mixed_ran_int_ran_slope_hetero_var)
 data_frame(
   Semester = 0:5,
-  Variance = res_var
+  Variance = t(res_var)
   ) %>% 
   kable_df(caption='Residual variance at each time point')
 ```
@@ -850,3 +852,5 @@ f =
 The development of Stan and packages like <span class="pack">rstanarm</span> and <span class="pack">brms</span> is rapid, and with the combined powers of those involved, there are a lot of useful tools for exploring the model results.  Even if one found a specialty package for a specific type of mixed model, it is doubtful you would have as many tools for model exploration such as posterior predictive checks, marginal effects, model comparison, basic model diagnostics and more.
 
 ### Summary
+
+## Correlation Structure Revisited

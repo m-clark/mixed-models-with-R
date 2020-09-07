@@ -55,7 +55,7 @@ kable_df = function(data, digits=3, ...) {
     kableExtra::kable_styling(full_width = F)
 }
 
-perc = function(x, digits = 1) paste(rnd(x*100, digits = digits), '%')
+perc = function(x, digits = 1) paste0(tidyext::rnd(x*100, digits = digits), '%')
 ```
 
 ```{r load_common_packages, echo=FALSE, cache=FALSE, eval=TRUE}
