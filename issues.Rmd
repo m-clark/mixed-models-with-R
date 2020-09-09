@@ -1,14 +1,17 @@
 # Issues
 
-This section just more or less talks about things that might come up, or at least regularly do so for those who use mixed models.
+This section just discusses common things that might come up when implementing mixed models.
 
-## Variance accounted for
 
-People really love the R-squared value that comes from standard regression.  Never mind that it is inherently biased, nor does it matter that there is no way to state what would be a 'good' result for a given data situation, nor that many of these same people actually don't know how to interpret it, nor does it even matter that the same kinds of folks have no qualms about dropping it from a report at the first sign of trouble.
+## Variance Accounted For
 
-Suffice it to say that when there are multiple sources of 'variance', talking about *variance accounted for* is not straightforward.  Still, many have tried. You might look at [this package](https://cran.r-project.org/web/packages/r2glmm/) and the references noted in the description.  See also the [GLMM FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#how-do-i-compute-a-coefficient-of-determination-r2-or-an-analogue-for-glmms).  I would suggest not even bothering beyond the standard linear mixed model.
+People really love the R-squared value that comes from standard regression.  Never mind that it is inherently biased, nor does it matter that there is no way to state what would be a 'good' result for a given data situation, nor that many actually don't know how to interpret it, nor does it even matter that many have no qualms about dropping it from a report at the first sign of trouble.
 
-## Alternative approaches to mixed models
+Suffice it to say that when there are multiple sources of 'variance', talking about *variance accounted for* is not straightforward.  Still, many have tried. You might look at the [r2glmm](https://cran.r-project.org/web/packages/r2glmm/) package and the references noted in the description, or the <span class="func" style = "">r2</span> function in <span class="pack" style = "">performance</span>.  See also the [GLMM FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#how-do-i-compute-a-coefficient-of-determination-r2-or-an-analogue-for-glmms).  I would suggest not even bothering beyond the standard linear mixed model.
+
+
+
+## Common Alternatives to Mixed Models
 
 I have a [document](https://m-clark.github.io/docs/clustered/) that goes into more detail about many approaches to dealing with clustered data, but we can briefly talk about some here. Common alternatives used in clustered data situations include:
 
@@ -16,25 +19,27 @@ I have a [document](https://m-clark.github.io/docs/clustered/) that goes into mo
 - Using cluster-robust standard errors
 - Generalized estimating equations (GEE)
 
-The first two are commonly used by those trained with an econometrics perspective, while you might see GEE more with those of a biostatistics or other perspective. GEE are in fact a generalization of the cluster-robust approach, and extend generalized least squares (GLS) to nonlinear/GLM settings.  The nature of fixed effects models allow you to control for, but not actually explore, cluster level effects.  This makes them a non-starter for many investigations, as those are typically of prime theoretical interest.  GEE approaches allow one to take into account the dependency in the data, but not actually estimate what might be very interesting, i.e. the random effects and associated variance. There are also few tools for GEE in more complicated covariance structures beyond a single clustering variable.
+The first two are commonly used by those trained with an econometrics perspective, while you might see GEE more with those of a biostatistics or other perspective. GEE are in fact a generalization of the cluster-robust approach, and extend generalized least squares (GLS) to nonlinear/GLM settings.   GEE approaches allow one to take into account the dependency in the data, but not actually estimate what might be very interesting, i.e. the random effects and associated variance. There are also fewer tools for GEE in more complicated covariance structures beyond a single clustering variable.
+
+The nature of fixed effects models allow you to control for, but not actually explore, cluster level effects.  This makes them a non-starter for many investigations, as those are typically of prime theoretical interest. In addition, the main concern econometricians have that leads them to prefer such models is easily accommodated in standard mixed models, so there is very little reason to employ them, as they are special cases of the more flexible mixed model.
 
 
 ### Growth curve models
 
-With longitudinal data, growth curve models are a latent variable approach that is commonly used in these situations. With appropriate setup, they will duplicate the results of a mixed model.  In my opinion, there are few reasons to use a growth curve approach over a mixed model, and many reasons not to, not least of which is that effects which would be simple to interpret in the mixed model approach are now a source of confusion to applied researchers in the growth curve model, even though it's the same thing.  Furthermore, indirect effects, growth mixture models and other extensions common in the latent variable approach are more easily implemented in the mixed model approach.  In short, only the most complicated models would perhaps require a growth curve model, but would also bring with it many other complications.  See more [here](https://m-clark.github.io/sem/latent-growth-curves.html) and [here](https://m-clark.github.io/mixed-growth-comparison/). The [supplemental][Supplemental] section now has a full demonstration of how to equate these models.
+With longitudinal data, growth curve models are a latent variable approach that is commonly used in these situations. With appropriate setup, they will duplicate the results of a mixed model.  In my opinion, there are few reasons to use a growth curve approach over a mixed model, and many reasons not to, not least of which is that effects which would be simple to interpret in the mixed model approach are now a source of confusion to applied researchers in the growth curve model, even though it's the same thing.  Furthermore, indirect effects, growth mixture models and other extensions common in the latent variable approach are more easily implemented in the mixed model approach.  In short, only the most complicated models would perhaps require using structural equation modeling, but as such, would also bring with them  many other issues.  See more [here](https://m-clark.github.io/sem/latent-growth-curves.html) and [here](https://m-clark.github.io/mixed-growth-comparison/). The [supplemental][Supplemental] section has a full demonstration of how to equate these models.
 
 
 
-## Sample sizes
+## Sample Sizes
 
 ### Small number of clusters
 
 Think about how many values of some variable you'd need before you felt comfortable with statistics based on it, especially standard deviation/variance.  That's at play with mixed models, in the sense you'd like to have enough groups to adequately assess the variance components. Mixed models will run with very small numbers, though the estimates will generally be biased.  I have a demo [here](https://m-clark.github.io/docs/mixedModels/growth_vs_mixed_sim.html) if interested.  One way to deal with this is to move to the Bayesian context, which can be used to induce some regularization in parameter estimates, and better deal with possible variance estimates that are near zero.
 
-This also speaks to the issue some will have regarding whether they should treat something as a <span class="emph">fixed vs. random</span> effect.  Historical definitions would unnecessarily restrict usage of random effects approaches.  For example, random effects were defined to be a (random) sample from some population.  If this were the case some might take issue when your levels do not deal with a sample, but the whole population, as in the case where your cluster is state and you have all 50 states.  This doesn't matter.  If you have enough levels to consider a mixed model approach, feel free to do so.
+This also speaks to the issue some will have regarding whether they should treat something as a <span class="emph">fixed vs. random</span> effect.  Historical definitions would unnecessarily restrict usage of random effects approaches.  For example, random effects were defined to be a (random) sample from some population.  If this were the case, some might take issue when your levels do not deal with a sample, but the whole population, as in the case where your cluster is state and you have all 50 states.  This doesn't matter.  If you have enough levels to consider a mixed model approach, feel free to do so.
 
 
-### Small N within cluster
+### Small number of observations within clusters
 
 Mixed models work even with no more than two in each cluster and some singletons. Even in the simple case of pre-post design, mixed models are entirely applicable, though limited (e.g. you can't have random slopes with just pre-post).  So whenever you have clustering of some kind, you should consider mixed models.
 
@@ -43,15 +48,19 @@ Mixed models work even with no more than two in each cluster and some singletons
 
 We've primarily been looking at <span class="emph">balanced</span> data, where each cluster has the same number of observations within them.  There is no requirement for this, and in many cases we wouldn't even expect it, e.g. people within geographical units.
 
-However, if data is only missing on the outcome, or a mix of variables, we essentially have the same issue as with typical data situations, and will have the same considerations for dealing with missingness.  If you don't lose much data, the practical gain by ignoring missingness generally outweighs the complexities that can come with, for example, multiple imputation[^mi], even in the best of settings. By default, mixed models assume missing at random.  On the other hand, longitudinal data has special considerations, as there is typically increasing dropout over time.
+However, if data is only missing on the outcome, or a mix of variables, we essentially have the same issue as with typical data situations, and will have the same considerations for dealing with missingness.  If you don't lose much data, the practical gain by ignoring missingness generally outweighs the complexities that can come with, for example, multiple imputation[^mi], even in the best of settings. By default, mixed models assume missing at random (MAR).  On the other hand, longitudinal data has special considerations, as there is typically increasing dropout over time.
 
 Having dealt with missingness in a variety of contexts with different approaches (FIML, MI, Bayesian), the end result is usually that you spend vast amounts more time dealing with the missing data than you do understanding your primary models of interest, and yet don't feel any better about the results.  Unless the missingness would make you lose a large chunk of the data, and/or you actually know something about the underlying mechanism attributing to missing data, it's probably best just to leave that to the limitations section of your report[^missingreviewer].  If you do deal with it, under less than ideal circumstances, I'd perhaps suggest an approach that is essentially a one-off imputation (e.g. with <span class="pack">missForest</span>) to be compared to the data that ignores the missingness, but still allows you to do everything you want.  While you may not incorporate all sources of uncertainty in doing so, it seems to me a viable compromise.
 
 ### Big Data
 
-Mixed model packages are often not so great with largish data, e.g. thousands, coupled with anything beyond random intercepts.  However, I've used <span class="pack">lme4</span> with millions and simple structure, and 10s of thousands with complicated structure, and it does very well (at least for the gaussian case). For truly big data you're not going to have a lot of options though.  Furthermore, common techniques in machine learning have no implementation for the inclusion of something like random effects.  While papers have been written, tools are practically non-existent (but see [here](https://github.com/patr1ckm/mvtboost), <span class="func">mebt</span> specifically, and [here](http://pages.stern.nyu.edu/~jsimonof/REEMtree/)).  Most approaches in the ML world will simply throw the clustering variable in along with everything else, possibly even as a lower dimensional word emedding, or have enough data to do by-cluster approaches, but this may not be interesting to those doing mixed models. 
+Mixed model packages are often not so great with largish data, e.g. thousands, coupled with anything beyond random intercepts.  However, I've used <span class="pack">lme4</span> with millions and simple structure, and 100s of thousands with complicated structure, and it does very well (at least for the gaussian case). For truly big data you're not going to have a lot of options though, but you'd need a lot.  [I did some testing of lme4, mgcv, and glmmTMB](https://m-clark.github.io/posts/2019-10-20-big-mixed-models/), for up to a million cases with two random effects, and generally even then you may only have to wait seconds to a couple minutes. In applied work with Medicare data of hundreds of thousands, and two random effects with thousands of levels each, those packages were still viable.
 
-On the plus side, if you're willing to wait, tools like the Stan family will likely do just fine.  Furthermore, the <span class="pack">mgcv</span> package has a big data implementation that might be useful for some models if <span class="pack">lme4</span> doesn't quite fit the modeling situation.  So while massive data may still be problematic, you may be fine with very large data.
+
+Common techniques in machine learning have no special implementation for the inclusion of something like random effects.  There has been some effort with trees/forests [here](https://github.com/patr1ckm/mvtboost) (<span class="func">mebt</span> specifically),  [here](http://pages.stern.nyu.edu/~jsimonof/REEMtree/), and also [vcrpart](https://cran.r-project.org/web/packages/vcrpart/)). However, most approaches in the ML world will simply throw the clustering variable in along with everything else, possibly even as a lower dimensional word embedding, or have enough data to do by-cluster approaches.  While this may be fine predictively, it may not be theoretically interesting to those doing mixed models. 
+
+On the plus side, if you're willing to wait, tools like the Stan family will likely do just fine with bigger data as well, eventually.  So while massive data may still be problematic, you may be fine with very large data.
+
 
 
 ## Model Comparison
@@ -60,11 +69,13 @@ Model comparison takes place in the usual way in the sense of potentially having
 
 In my opinion, model selection involves considerations of theory, parsimony, and prediction, and those tests do not. I'm not partial to such tests even in the standard setting, and would use AIC here to potentially aid (not make) a model choice if I thought it was necessary, as I would there[^lrtest]. In general though, trying to determine a 'best' model with one set of data is a problematic endeavor at best, and at worst, completely misguided.  I think it's very useful to build models of increasing complexity, and select one to focus on based on the available evidence.  Just don't get hung up on choosing one based solely on the outcome of a single statistic.  If you have a lot of data, you should consider some sort of explicit validation approach if you really want to compare competing models, but that is not without complication given the dependency in the data.
 
+
+
 ## Convergence
 
-Data is as data does.  It is not unlikely that you will have issues in conducting mixed models, such as lack of convergence, estimates of zero for the random effects variance, warnings about scaling variables etc.  These are not easy models to estimate (at least outside of the Bayesian context), so don't be surprised if all doesn't go smoothly.
+Data is as data does.  It is likely that you will eventually have issues in conducting mixed models, such as lack of convergence, estimates of zero for the random effects variance, warnings about scaling variables etc.  These are not easy models to estimate (at least outside of the Bayesian context), so don't be surprised if all doesn't go smoothly.
 
-A few common issues[^richparam] I see are:
+I have a more [detailed overview](https://m-clark.github.io/posts/2020-03-16-convergence/), but we can talk briefly about typical problems and solutions. A few common issues[^richparam] I see are:
 
 - Lack of centering/standardizing will often result in scaling warnings for <span class="pack">lme4</span>.  It makes sense to do it anyway, so the same goes for mixed models as any other.  A very common convergence problem in my experience results from time-based variables, such as incorporating a yearly trend.  At the very least, it's useful to have a meaningful zero value, for example, by starting the time at  zero, rather than say, year 2008.  You may need to standardize the trend variable also to get the model to converge, but can revert back to raw form for interpretation.
 
@@ -91,6 +102,6 @@ The main point is that you'll need to acknowledge the warnings and messages that
 
 [^lrtest]: If you really want them see the <span class="pack">lmertest</span> package.  Note also that AIC [does not come with a free lunch](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#can-i-use-aic-for-mixed-models-how-do-i-count-the-number-of-degrees-of-freedom-for-a-random-effect).  See the <span class="pack">cAIC4</span> package and references therein.
 
-[^missingreviewer]:  Just note that in some disciplines, reviewers, who will rarely do this themselves for the same reasons, nevertheless will make a big deal about the missing data because it's an easy point for them to make.  This is similar to econometrically trained reviewers who shout 'endogeneity!' at every turn, but won't bother to tell you where to get the instrument in the first place, admit that IV analysis is problematic in its own right, or what specifically the approach should be in complex model settings such as mixed models with nonlinear, spatial effects, multiple levels of clustering etc.  I've even had a reviewer say that one should conduct a test for whether data is missing at random vs. not, then proceed accordingly.  That was the entirety of their suggestion. Aside from the fact that there is no such test, because it would require the very data one doesn't have, declaring a type of missingness doesn't tell you which of dozens of approaches one should take.
+[^missingreviewer]:  Just note that in some disciplines, reviewers, who will rarely do this themselves for the same reasons, nevertheless will make a big deal about the missing data because it's an easy point for them to make.  This is similar to econometrically trained reviewers who shout 'endogeneity!' at every turn, but won't bother to tell you where to get the instrument in the first place, admit that IV analysis is problematic in its own right, or what specifically the approach should be in complex model settings such as mixed models with nonlinear, spatial effects, multiple levels of clustering etc.  I've even seen a reviewer say that one 'should conduct a test for whether data is missing at random vs. not, then proceed accordingly'.  That was the entirety of their suggestion. Aside from the fact that there technically is no such test, because it would require the very data one doesn't have, declaring a type of missingness doesn't tell you which of dozens of approaches one should take.
 
 [^richparam]: The *Richly Parameterized Linear Models* text discusses convergence and other issues probably more than any other text I've come across.  Most don't treat the subject at all.

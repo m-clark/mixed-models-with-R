@@ -1,21 +1,16 @@
 # Going Further
 
-This section covers topics that are generally beyond the scope of what would be covered in the workshop, but may be given their own section over time.
+This section covers topics that are generally beyond the scope of what would be covered in this introductory document, but may be given their own section over time.
 
 
-## Bayesian
+## Other Distributions
 
-See [supplemental][Supplemental].
-
-
-## Other distributions
-
-As noted in the GLMM section, we are not held to use only GLM family distributions regarding the target variable.  Unfortunately, the tools you have available to do so will quickly diminish.  However, a couple packages could help in this regard with simpler random effects structures.  For example, the <span class="pack">mgcv</span> package allows one access to a variety of response distributions, such as $t$, negative binomial, beta, zero-inflated Poisson and more.  If you only have random intercepts you might try it.  If you're willing to go Bayesian, you'll have even more options with <span class="pack">rstanarm</span> and <span class="pack">brms</span>.  I've personally had success with ordinal, beta, truncated normal and more with <span class="pack">brms</span> in particular.
+As noted in the GLMM section, we are not held to use only GLM family distributions regarding the target variable.  Unfortunately, the tools you have available to do so will quickly diminish.  However, a couple packages could help in this regard with simpler random effects structures.  For example, the <span class="pack">mgcv</span> package allows one access to a variety of response distributions, such as student t, negative binomial, beta, zero-inflated Poisson and more.   If you're willing to go Bayesian, you'll have even more options with <span class="pack">rstanarm</span> and <span class="pack">brms</span>.  I've personally had success with ordinal, beta, truncated normal and more with <span class="pack">brms</span> in particular.
 
 Note also that nothing says that the random effects must come from a normal distribution either.  You probably are going to need some notably strong theoretical reasons for trying something else, but it does come up for some folks.  You'll almost certainly need to use a specialized approach, as most mixed model tools do not offer such functionality out of the box.
 
 
-## Other contexts
+## Other Contexts
 
 Here is a list of some other contexts in which you can find random effects models, or extensions of mixed models into other situations.
 
@@ -25,11 +20,11 @@ It is often the case we want to take into account the geography of a situation. 
 
 ##### Survival models
 
-Random effects models in the survival context are typically referred to as <span class="emph">frailty models</span>.  As a starting point, the <span class="pack">survival</span> package that comes with R can do such models.
+Random effects models in the survival context are typically referred to as <span class="emph">frailty models</span>.  As a starting point, the <span class="pack">survival</span> package that comes with base R can do such models.
 
 ##### Item Response Theory
 
-<span class="emph">Item response theory</span> models are often used with scholastic and other testing data, but far more general than that. Some IRT models can be estimated as a mixed model, or otherwise thought of as incorporating random effects. See Boeck et al. (2011) The Estimation of Item Response Models with the <span class="func">lmer</span> function from the <span class="pack">lme4</span> Package in R. I also have some brief demonstration [here](http://m-clark.github.io/sem/item-response-theory.html). 
+<span class="emph">Item response theory</span> models are often used with scholastic and other testing data, but far more general than that. Some IRT models can be estimated as a mixed model, or otherwise thought of as incorporating random effects. See Boeck et al. (2011) The Estimation of Item Response Models with the <span class="func">lmer</span> Function from the <span class="pack">lme4</span> Package in R. I also have some brief demonstration [here](http://m-clark.github.io/sem/item-response-theory.html). 
 
 ##### Multi-membership
 
@@ -45,12 +40,12 @@ Similar to spatial and phylogenetic models, the dependency among the groups/clus
 
 ##### Gaussian Processes
 
-<span class="emph">Gaussian processes</span> are another way to handle dependency in the data, especially over time or space. Some spatial models are in fact a special case. One can think of gaussian processes as adding a 'continuous category' random effect.  Consider the effect of age in many models, could that not also be a source of dependency regarding some outcomes? In *Statistical Rethinking*, McElreath has a nice chapter 'Adventures in Covariance' that gets into this a bit.  
+<span class="emph">Gaussian processes</span> are another way to handle dependency in the data, especially over time or space. Some spatial models are in fact a special case of these. One can think of gaussian processes as adding a 'continuous category' random effect.  Consider the effect of age in many models, could that not also be a source of dependency regarding some outcomes? In *Statistical Rethinking*, McElreath has a nice chapter 'Adventures in Covariance' that gets into this a bit.  
 
 
 ##### Surveys & Mr. P
 
-Clustering is often a result of sampling design.  Often one would use a survey design approach for proper inference in such situations.  However, <span class="emph">multi-level regression with post-stratification</span>, or Mr. P, is an alternative mixed model approach that can potentially lead to better results in the same setting. One might even be able to [generalize from a sample of Xbox players](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/04/forecasting-with-nonrepresentative-polls.pdf) to the national level!
+Clustering is often a result of sampling design.  Often one would use a survey design approach for proper inference in such situations, and you can use mixed models with survey weights.  However, <span class="emph">multi-level regression with post-stratification</span>, or Mr. P, is an alternative mixed model approach that can potentially lead to better results in the same setting without weighting. One might even be able to [generalize from a sample of Xbox players](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/04/forecasting-with-nonrepresentative-polls.pdf) to the national level!
 
 ##### Post-hoc comparisons and multiple testing 
 
@@ -58,10 +53,10 @@ This is not an issue I'm personally all that concerned with, but a lot of folks 
 
 ##### Growth mixture models
 
-Often people will assume *latent* clusters of individuals within the data, with model effects differing by these latent groups also. Sometimes called <span class="emph">latent trajectory models</span>, these are conceptually adding a cluster analysis to the mixed model setting.  While common in structural equation modeling, packages like <span class="pack">flexmix</span> can keep you in the standard model setting, which would be preferable.
+Often people will assume *latent* clusters of individuals within the data, with model effects differing by these latent groups also. Sometimes called <span class="emph">latent trajectory models</span>, these are conceptually adding a cluster analysis to the mixed model setting.  While common in structural equation modeling, packages like <span class="pack">flexmix</span> can keep you in the standard model setting, which might be preferable.
 
 
-## Nonlinear Mixed Effects
+## Nonlinear Mixed Effects Models
 
 Earlier we used the <span class="pack">nlme</span> package.  The acronym stands for **nonlinear** mixed effects models.  In this case, we are assuming a specific functional form for a predictor.  A common example is a logistic growth curve[^lgc], and one could use a function like <span class="func">SSlogis</span>.
 

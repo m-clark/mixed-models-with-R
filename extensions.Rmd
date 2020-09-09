@@ -10,12 +10,20 @@
 Oftentimes there will be additional sources of variance beyond one grouping factor. Consider as an example, a visual perception experiment where there are multiple trials for each individual, along with specific images displayed.  Such data might look like this.
 
 ```{r demodata_crossed, echo=FALSE}
-crossing(Person=1:20, Image=letters[1:10]) %>% 
-  mutate(score=sample(1:10, 200, replace=T)) %>% 
-  DT::datatable(options=list(dom='tp', autoWidth=F, 
-                             columnDefs=list(
-                               list(width='10px', targets=0:2),
-                               list(className = 'dt-center', targets = 0:2))), rownames = F, width=250)
+crossing(Person = 1:20, Image = letters[1:10]) %>%
+  mutate(score = sample(1:10, 200, replace = T)) %>%
+  DT::datatable(
+    options = list(
+      dom = 'tp',
+      autoWidth = F,
+      columnDefs = list(
+        list(width = '10px', targets = 0:2),
+        list(className = 'dt-center', targets = 0:2)
+      )
+    ),
+    rownames = F,
+    width = 250
+  )
 ```
 
 <br>

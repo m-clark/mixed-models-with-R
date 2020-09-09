@@ -21,11 +21,13 @@ You will have to learn a new inferential framework, as well as some of the nuanc
 
 ## Priors
 
-The following information about priors assumes some background knowledge of Bayesian analysis, particularly for regression models. The Stan development group offers recommendations [here](https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations), so refer to it often.  Note that Stan does not require conjugacy, in contrast to tools such as BUGS/JAGS.  This frees one up to use other prior distributions as they see fit. Generally though, using some normal distribution for the fixed effects and the package defaults for variance components should suffice for the standard models we've been discussing.
+The following information about priors assumes some background knowledge of Bayesian analysis, particularly for regression models. The Stan development group offers recommendations [here](https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations), so refer to it often.  Note that Stan does not require conjugacy, in contrast to tools such as BUGS/JAGS.  This frees one up to use other prior distributions as they see fit. Generally though, using some normal distribution for the fixed effects, and the package defaults for variance components, should suffice for the standard models we've been discussing.
+
 
 ### Fixed effects
 
 For fixed effect regression coefficients, normal and student t would be the most common prior distributions, but the default <span class="pack">brms</span> (and <span class="pack">rstanarm</span>) implementation does not specify any, and so defaults to a uniform/improper prior, which is a poor choice.  You will want to set this for your models. Note that scaling numeric predictors benefits here just like it does with <span class="pack">lme4</span>, and makes specifying the prior easier as well.
+
 
 ### Variance components
 
