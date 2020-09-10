@@ -1,5 +1,5 @@
  bookdown::gitbook:
-    css: [css/book.css, 'https://use.fontawesome.com/releases/v5.14/css/all.css']
+    css: [css/book.css, 'https://use.fontawesome.com/releases/v5.14.0/css/all.css']
     font-import: https://fonts.googleapis.com/css?family=Roboto|Open+Sans
     font-family: 'Roboto'
     number_sections: false
@@ -7,7 +7,7 @@
     config:
       df_print: kable
       highlight: pygments
-      edit : null
+      edit: https://github.com/m-clark/mixed-models-with-R/blob/master/%s
       download: null
       search: yes
       sharing:
@@ -17,7 +17,7 @@
         weibo: no
         instapper: no
         vk: no
-        all: ['twitter', 'facebook', 'google', 'weibo', 'instapaper']
+        all: ['twitter', 'facebook', 'linkedin', 'google', 'weibo', 'instapaper']
       toc:
         depth: 2
         collapse: section
@@ -46,13 +46,22 @@
                </a>
             </div>
          </li>
-#      edit:
-#        link: https://github.com/m-clark/workshops/
-#      highlight: pygments
 
 # bookdown::pdf_book:
 #   includes:
 #     in_header: preamble.tex
 #   latex_engine: xelatex
 #   citation_package: natbib
-# bookdown::epub_book: default
+
+# have to do this separately; but pretty useless as use of any html image will render entire chapter empty.
+# bookdown::epub_book:
+#    fig_width: 5
+#    fig_height: 4
+#    # dev: "svglite"
+#    fig_caption : TRUE
+#    number_sections : FALSE
+#    toc: TRUE
+#    toc_depth : 2
+#    stylesheet : 'css/book.css'
+#    cover_image : 'img/198R.png'
+#    chapter_level : 1

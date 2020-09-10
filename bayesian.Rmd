@@ -1,6 +1,6 @@
 # Bayesian Approaches
 
-
+<img src="img/priorpost.png" style="display:block; margin: 0 auto; width:50%">
 
 With mixed models we've been thinking of coefficients as coming from a distribution (normal).  While we have what we are calling 'fixed' effects, the distinguishing feature of the mixed model is the addition of this random component.  Now consider a standard regression model, i.e. no clustering.  You can actually do the same thing, i.e. assume the coefficients are not fixed, but random.  In this sense, the goal is to understand that distribution, and focus on it, rather than just the summary of it, e.g. the mean.  However, the mean (or other central tendency) of that distribution can be treated like you've been doing the fixed effects in your standard models.
 
@@ -49,20 +49,23 @@ The priors in the model would regard the correlation matrix, and the estimated r
 
 Let's return to our GPA model. I will add the priors for the fixed effects, and an option to speed computation by parallelizing the chains.
 
-```{r brms-gpa}
+```{r brms-gpa, results='hide'}
 library(brms)
 
 pr = prior(normal(0, 1), class = 'b')
 
 bayesian_mixed = brm(
   gpa ~ occasion + (1 + occasion | student), 
-  data = gpa,
+  data  = gpa,
   prior = pr,
   cores = 4
-  )
+)
+```
 
+```{r brms-gpa-summary}
 summary(bayesian_mixed)
 ```
+
 
 Compare to our previous results.
 
@@ -73,15 +76,15 @@ summary(gpa_mixed, cor= F)
 Aside from additional diagnostic information, the Bayesian results are essentially the same, but now we can continue to explore the model. The <span class="pack" style = "">brms</span> package tries to use the same function names as <span class="pack" style = "">lme4</span> where possible, so <span class="func" style = "">ranef</span>, <span class="func" style = "">fixef</span>, <span class="func" style = "">VarCorr</span>, etc. are still in play.  However, you can still use my functions for standard models, which will return tidy data frames.
 
 ```{r brms-ranef}
-ranef(model)$student[,,'occasion'] %>% head()
-# mixedup::extract_random_effects(model)
+ranef(bayesian_mixed)$student[,,'occasion'] %>% head()
+# mixedup::extract_random_effects(bayesian_mixed)
 ```
 
 However, we also have some nice plotting functions.  Here I plot the occasion effect, as well as the estimated predictions from the model vs. our observed GPA values.
 
 ```{r brms-cond-pp}
-conditional_effects(model)
-pp_check(model)
+conditional_effects(bayesian_mixed)
+pp_check(bayesian_mixed)
 ```
 
 There is a lot more modeling we can do here as we'll see shortly, but it's important to know you can do the basics easily.  
@@ -196,7 +199,7 @@ bf(
 Such an approach would also make sense for zero-inflated models for example, where we want random effects for the same clustering to be correlated for both the count model and zero-inflated model.
 
 ```{r brms-mv-zero, eval=FALSE}
-bf(y ~ x * z + (1 + x | ID1 | g), 
+bf(y  ~ x * z + (1 + x | ID1 | g), 
    zi ~ x + (1 | ID1 | g))
 ```
 
@@ -215,7 +218,7 @@ We can model similar situations where the functional form is known, as with <spa
 
 ```{r, eval=FALSE}
 bf(
-  y ~ a1 - a2^x, 
+  y  ~ a1 - a2^x, 
   a1 ~ 1, 
   a2 ~ x + (x | g), 
   nl = TRUE
@@ -261,10 +264,9 @@ brm(y ~ time + z + (1 + time | g), family = mixture(gaussian, gaussian))
 ```
 
 
-
 #### Missing Values
 
-We can estimate missing values as follows, including using a mixed model as the imputation model (for `x`).
+We can construct the model formula for missing values as follows, including using a mixed model as the imputation model (for `x`).
 
 ```{r, eval=FALSE}
 f = 

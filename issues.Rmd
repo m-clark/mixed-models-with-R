@@ -1,6 +1,12 @@
 # Issues
 
-This section just discusses common things that might come up when implementing mixed models.
+<div style = 'text-align: center'>
+<i class="fas fa-exclamation-triangle fa-5x" style = 'color:#990024'></i><span class="">
+</div>
+
+<br>
+
+This section discusses common issues, conundrums, and other things that might come up when implementing mixed models.
 
 
 ## Variance Accounted For

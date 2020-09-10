@@ -584,7 +584,7 @@ gpa %>%
 ```
 
 
-## Summary
+## Summary of Random Slopes
 
 At this point it might be clearer why some would call these *richly parameterized linear models*. Relative to a standard regression we get extra variance parameters that add to our understanding of the sources of uncertainty in the model, we can get the subjects specific effects, and their correlation, and use that information to obtain far better predictions.  What's not to like?
 
@@ -668,23 +668,32 @@ summary(lm(gpa_demean ~ occasion_demean - 1, gpa))
 # gpa_mixed = lmer(gpa ~ occasion + (1|student), data=gpa)
 # head(cbind(gpa_lm_by_group[,1], wi, coef(gpa_mixed)[[1]]))
 
-data_frame(`Mixed model`=coef(gpa_mixed)$student[,1], 
-           `Fixed effects model`=wi, 
-           `LM by group`=ints_fixed) %>% 
-  gather(key=Model, value=Intercept) %>% 
-  ggplot(aes(x=Intercept)) +
-  geom_density(aes(color=Model, fill=Model), alpha=.25) +
-  scale_fill_manual(values=c(palettes$orange$orange, palettes$orange$complementary[2], palettes$orange$tetradic[3])) +
+data_frame(
+  `Mixed model` = coef(gpa_mixed)$student[, 1],
+  `Fixed effects model` = wi,
+  `LM by group` = ints_fixed
+) %>%
+  gather(key = Model, value = Intercept) %>%
+  ggplot(aes(x = Intercept)) +
+  geom_density(aes(color = Model, fill = Model), alpha = .25) +
+  scale_fill_manual(
+    values = c(
+      palettes$orange$orange,
+      palettes$orange$complementary[2],
+      palettes$orange$tetradic[3]
+    )
+  ) +
   ggtitle('Intercepts') +
-  labs(x='', y='') +
-  xlim(c(1.5,4)) +
+  labs(x = '', y = '') +
+  xlim(c(1.5, 4)) +
   theme_trueMinimal() +
   theme(
-    legend.key.size=unit(2, 'mm'),
-    legend.title=element_text(size=8),
-    legend.text=element_text(size=8),
-    legend.box.spacing=unit(0, 'in'),
-    legend.position=c(.75,.75))
+    legend.key.size = unit(2, 'mm'),
+    legend.title = element_text(size = 8),
+    legend.text = element_text(size = 8),
+    legend.box.spacing = unit(0, 'in'),
+    legend.position = c(.75, .75)
+  )
 ```
 
 

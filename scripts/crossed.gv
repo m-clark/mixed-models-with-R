@@ -1,0 +1,84 @@
+digraph Factor  {
+  
+  graph [rankdir=TB  bgcolor=transparent splines='line']
+
+  subgraph cluster0 {
+    style=invis
+    node [shape=circle width=.5 fontcolor='#fffff8' color='transparent' 
+    fillcolor='#00aaff80' style=filled fontsize=12];
+
+    Q [label = ''  fillcolor='#396A57'];
+
+    node [shape=square width=.25 fontcolor='#990024' color='#990024' fillcolor='#ffffff' style=filled fontsize=12, label=''];
+    edge [fontname='Roboto' fontsize=10 fontcolor=gray50 color='#00aaff80' arrowsize=0];
+
+    Q1;
+    Q2;
+    Q3;
+    
+    Q -> Q1, Q2, Q3; 
+
+
+  }
+  
+  subgraph cluster1 {
+    style=invis
+    node [shape=circle width=.5 fontcolor='#fffff8' color='transparent' 
+    fillcolor='#00aaff80' style=filled fontsize=12];
+
+    X [label = '' fillcolor='#667A3E'];
+
+    node [shape=square width=.25 fontcolor='#990024' color='#990024' fillcolor='#ffffff' style=filled fontsize=12, label=''];
+    edge [fontname='Roboto' fontsize=10 fontcolor=gray50 color='#00aaff80' arrowsize=0];
+
+    X1;
+    X2;
+    X3;
+    
+    X -> X1, X2, X3; 
+
+  }
+  subgraph cluster2 {
+    style=invis
+    node [shape=circle width=.5 fontcolor='#fffff8' color='transparent' 
+    fillcolor='#00aaff80' style=filled fontsize=12];
+    
+    Y [label = '' fillcolor='#9C882D'];
+
+    node [shape=triangle width=.25 fontcolor='#990024' color='#990024' fillcolor='#ffffff' style=filled fontsize=12, label=''];
+    edge [fontname='Roboto' fontsize=10 fontcolor=gray50 color='#00aaff80' arrowsize=0];
+
+    Y1;
+    Y2;
+    Y3;
+    
+    Y -> Y1, Y2, Y3; 
+
+  }
+  
+  subgraph cluster3 {
+    style=invis
+    node [shape=circle width=.5 fontcolor='#fffff8' color='transparent' 
+    fillcolor='#00aaff80' style=filled fontsize=12];
+    
+    Z [label = ''  fillcolor='#DA954D'];
+
+    node [shape=diamond width=.25 fontcolor='#990024' color='#990024' fillcolor='#ffffff' style=filled fontsize=12 label = ''];
+    edge [fontname='Roboto' fontsize=10 fontcolor=gray50 color='#00aaff80' arrowsize=0];
+
+    Z1;
+    Z2;
+    Z3;
+    
+    Z -> Z1, Z2, Z3; 
+  }
+  
+  node [shape=star width=.5 fontcolor='#fffff8' color='transparent' fillcolor='#00aaff80' style=filled fontsize=12];
+  edge [fontname='Roboto' fontsize=10 fontcolor=gray50 color='#00aaff80' arrowsize=0dir = 'back'];
+  
+  A [label = '' fillcolor='#184E60'];
+  B [label = '' fillcolor='#FCA68C'];
+  
+  Q1, X2, Q3, Y1, Z2, Y3 -> A;
+  X1, Q2, X3, Z1, Y2, Z3 -> B;
+}

@@ -1,5 +1,21 @@
 # Mixed Models
 
+<br>
+
+```{r top-plot-ri, echo=FALSE, cache.rebuild=TRUE}
+tags$div(
+  style = "width:50%; margin:auto auto; font-size:50%",
+  DiagrammeR::grViz(
+    'scripts/multilevel.gv', 
+    width = '100%', 
+    height = '33%'
+  )
+)
+```
+
+<br>
+
+
 Mixed models have been around a long time in the statistical realm. For example, standard ANOVA methods can be seen as special cases of a mixed model.  More recently, mixed models have a variety of applications and extensions, allowing them to encompass a diverse range of data situations.  They can be seen as a first step in expanding one's tool set beyond the generalized linear model.
 
 ## Terminology

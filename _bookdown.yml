@@ -14,9 +14,10 @@ rmd_files: [
   'random_slopes.Rmd',
 
 
-  # Part II: E
+  # Part II: Extensions & Issues
   'extensions.Rmd',
   'issues.Rmd',
+  'bayesian.Rmd',
   'further.Rmd',
   
   # Part III: Conclusion

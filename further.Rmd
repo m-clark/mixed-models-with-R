@@ -1,5 +1,11 @@
 # Going Further
 
+<div style = 'text-align: center'>
+<i class="fas fa-rocket fa-5x" style = 'color:#990024;'></i>
+</div>
+
+<br>
+
 This section covers topics that are generally beyond the scope of what would be covered in this introductory document, but may be given their own section over time.
 
 

@@ -1,5 +1,5 @@
 ---
-title: Mixed Models in R
+title: Mixed Models with R
 subtitle: Getting started with random effects
 author:  |
   <span class="noem">Michael Clark</span>
@@ -11,6 +11,7 @@ output:
 documentclass: book
 bibliography: refs.bib
 biblio-style: apalike
+always_allow_html: true
 link-citations: yes
 description: "This is an introduction to mixed models in R. It covers a many of the most common techniques employed in such models, and relies heavily on the lme4 package.  The basics of random intercepts and slopes models, crossed vs. nested models, etc. are covered. Discussion includes extensions into generalized mixed models and realms beyond. "
 cover-image: 'img/nineteeneightyR.png'
@@ -41,21 +42,6 @@ knitr::opts_chunk$set(
   cache.rebuild = F,
   cache         = T
 )
-
-kable_df = function(data, digits=3, ...) {
-  kableExtra::kable(
-    data,
-    digits = digits,
-    format = 'html',
-    booktabs = T,
-    # longtable = F,
-    linesep = "",
-    ...,
-  ) %>% 
-    kableExtra::kable_styling(full_width = F)
-}
-
-perc = function(x, digits = 1) paste0(tidyext::rnd(x*100, digits = digits), '%')
 ```
 
 ```{r load_common_packages, echo=FALSE, cache=FALSE, eval=TRUE}
@@ -70,6 +56,21 @@ library(plotly)
 library(tidyverse)
 library(kableExtra)
 library(patchwork)
+
+kable_df = function(data, digits=3, ...) {
+  kableExtra::kable(
+    data,
+    digits = digits,
+    format = 'html',
+    booktabs = T,
+    # longtable = F,
+    linesep = "", 
+    ...,
+  ) %>% 
+    kableExtra::kable_styling(full_width = F)
+}
+
+perc = function(x, digits = 1) paste0(tidyext::rnd(x*100, digits = digits), '%')
 ```
 
 ####

@@ -729,7 +729,7 @@ We recover our estimates. The `ar1` value is very close to the true value of `r 
 
 Likewise, <span class="pack" style = "">brms</span> has similar syntax in that we add the AR component to the formula.
 
-```{r ar-brms}
+```{r ar-brms, results = 'hide'}
 library(brms)
 
 model_brm = brm(
@@ -738,7 +738,9 @@ model_brm = brm(
   cores = 4,
   seed = 1234
 )
+```
 
+```{r ar-brms-summary}
 summary(model_brm)
 ```
 

@@ -113,9 +113,9 @@ More specifically, we'll have a latent variable representing the random intercep
 
 ```{r growth_graph, echo=FALSE}
 ## note to self Diagrammer is difficult at best for multifactor loading situations, mostly because there is no control over label placement
-tags$div(style="width:50%; margin:auto auto; font-size:50%",
-         DiagrammeR::grViz('scripts/growth.gv', width='100%', height='25%')
-)
+tags$div(style = "width:50%; margin:auto auto; font-size:50%",
+         DiagrammeR::grViz('scripts/growth.gv', width = '100%', height =
+                             '25%'))
 ```
 
 
