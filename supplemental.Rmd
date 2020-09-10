@@ -20,7 +20,7 @@ $$\epsilon \sim \mathcal{N}(0, \sigma)$$
 
 Thus the student effects for the intercept and slope are random, and specifically are normally distributed with mean of zero and some estimated standard deviation ($\tau$, $\varphi$ respectively)[^mutlivarre]. We consider these effects as coming from unspecified, or <span class="emph">latent</span>, causes due to student.  In addition, we have the usual residual error $\epsilon$, which can also be thought of as a per-observation random effect due to all other unknown causes.
 
-The 'multi-level model' version might look like the following, but it is identical.
+The 'multilevel model' version might look like the following, but it is identical.
 
 $$\mathcal{GPA} = b_{\mathrm{int\_student}} + b_{\mathrm{occ\_student}}\cdot \mathrm{occasion} + \epsilon$$
 
@@ -43,25 +43,20 @@ mixed_init = lmer(gpa ~ occasion + (1 + occasion|student), data = gpa)
 I show a simplified output below, so make sure you can match the results to the <span class="func">summary</span> printout.  The fixed (population-average) effects are the $b_{\mathrm{intercept}}$ and $b_{\mathrm{occ}}$ in the previous model depiction.  The standard deviations of the random effects are the $\tau$, $\varphi$ and $\epsilon$. 
 
 ```{r mixed_init_varcomp, echo=FALSE}
-broom.mixed::tidy(mixed_init) %>% 
-  # mutate_all(function(x) ifelse(is.na(x), '', as.character(x))) %>% 
+extract_fixed_effects(mixed_init) %>% 
+  select(-t, -p_value) %>% 
   kable_df(digits = 2)
-
-# test %>% kable_df()  # somehow chokes pandoc for mysterious reasons due to kable_styling()
-# test %>% kable(digits=3) %>% kable_styling(full_width = F)
 ```
 
 We can also get estimates of the student level effects. These are the $re_{intercept}$ and $re_{occasion}$ from before.
 
-```{r mixed_init_re_show, eval=FALSE}
-ranef(mixed_init)
+
+```{r mixed-init-re, echo=FALSE}
+extract_random_effects(mixed_init) %>% 
+  head() %>%
+  kable_df(caption = 'Per-student random effects (sample)')
 ```
-```{r mixed_init_re_tell, echo=FALSE}
-head(ranef(mixed_init)$student) %>% 
-  rowid_to_column(var = 'student') %>% 
-  select(student, everything()) %>% 
-  kable_df(caption='Per-student random effects')
-```
+
 
 
 ### Random Effects in SEM
@@ -100,10 +95,10 @@ tags$div(style="width:50%; margin:auto auto; font-size:50%",
 Given the above visualization, for the LGC our data needs to be in *wide* format, where each row represents the unit of interest, and we have separate columns for each time point of the target variable, as well as any other variable that varies over time.  This is contrasted with the *long* format we use for the mixed model, where rows represent observations at a given time point.  We can use the <span class="func">spread</span> function from <span class="pack">tidyr</span> to help with that. We end up with a data frame of two-hundred observations and columns for each semester gpa (0 through 5 for six semesters)  denoted by `gpa_*`. 
 
 
-```{r gpa_wide, echo=-3}
+```{r gpa_wide, echo=1}
 gpa_wide = gpa %>% 
   select(student, sex, highgpa, occasion, gpa) %>% 
-  spread(key = occasion, value = gpa) %>% 
+  pivot_wider(names_from = occasion, values_from = gpa) %>% 
   rename_at(vars(`0`,`1`,`2`,`3`,`4`,`5`), function(x) glue::glue('gpa_{x}')) %>% 
   mutate(female = as.numeric(sex)-1)   # convert to binary 0 = male 1 = female to be used later
 
@@ -147,11 +142,17 @@ Intercepts:
     occasion          0.106    0.005   20.338    0.000
 ```
 
-It might be odd to call your fixed effects 'intercepts', but it makes sense if we are thinking of it as a multilevel model as depicted [previously][random effects as latent variables], where we actually broke out the random effects as a separate model. These are the population average of the random intercepts and slopes for occasion.  The estimates here are pretty much spot on with our mixed model estimates.
+It might be odd to call your fixed effects 'intercepts', but it makes sense if we are thinking of it as a multilevel model as depicted [previously][random effects as latent variables], where we actually broke out the random effects as a separate model. These are the population average of the random intercepts and slopes for occasion.  The estimates here are pretty much spot on with our mixed model estimates. To make the estimation approach as similar as possible, I've switched to standard maximum likelihood via `REML = FALSE`.
 
 ```{r fixefs}
 library(lme4)
-gpa_mixed = lmer(gpa ~ occasion + (1 + occasion | student), data=gpa)
+
+gpa_mixed = lmer(
+  gpa ~ occasion + (1 + occasion | student), 
+  data = gpa, 
+  REML = FALSE
+)
+
 summary(gpa_mixed, cor=F)
 ```
 
@@ -178,7 +179,7 @@ Variances:
 ```
 
 ```{r gpa_mixed_var_comp}
-print(VarCorr(gpa_mixed), comp='Var')  # using print to show variance only
+print(VarCorr(gpa_mixed), comp = 'Var')  # using print to show variance
 ```
 
 
@@ -188,14 +189,17 @@ How can we put these models on the same footing? Let's take a step back and do a
 
 ```{r growth_graph_int_only, echo=FALSE}
 ## note to self Diagrammer is difficult at best for multifactor loading situations, mostly because there is no control over label placement
-tags$div(style="width:50%; margin:auto auto; font-size:50%",
-         DiagrammeR::grViz('scripts/random_intercepts.gv', width='100%', height='25%')
+tags$div(
+  style = "width:50%; margin:auto auto; font-size:50%",
+  DiagrammeR::grViz(
+    'scripts/random_intercepts.gv',
+    width = '100%',
+    height = '25%'
+  )
 )
-
 ```
 
 We can do this by fixing the slope 'factor' to have zero variance.  However, note also that in the LGC, at each time point of the gpa outcome, we have a unique (residual) variance associated with it.  Conversely, this is constant in the mixed model setting, i.e. we only have one estimate for the residual variance that does not vary by occasion.  We deal with this in the LGC by giving the parameter an arbitrary name, `resid`, and then applying it to each time point.
-
 
 
 ```{r lgc_ran_int_model}
@@ -222,15 +226,17 @@ Now each time point will have one variance estimate.  Let's run the LGC.
 
 ```{r lgc_ran_int}
 lgc_ran_int = growth(lgc_ran_int_model, data = gpa_wide)
-summary(lgc_ran_int, nd=4)  # increase the number of digits shown
+
+# increase the number of digits shown, remove some output unnecessary to demo
+summary(lgc_ran_int, nd = 4, header = FALSE)  
 ```
 
 
 Compare it to the corresponding mixed model.
 
-```{r mixed_ran_int, echo=-(3:4)}
-mixed_ran_int = lmer(gpa ~ occasion + (1|student), data=gpa)
-summary(mixed_ran_int, cor=F)
+```{r mixed_ran_int, echo=1:2}
+mixed_ran_int = lmer(gpa ~ occasion + (1 | student), data = gpa, REML = FALSE)
+summary(mixed_ran_int, cor = FALSE)
 # 
 # mixed_ran_int %>% 
 #   broom.mixed::tidy(comp='var') %>% 
@@ -268,33 +274,46 @@ lgc_ran_int_ran_slope_model = '
 
 ```{r lgc_ran_int_ran_slope_constant_var}
 lgc_ran_int_ran_slope = growth(lgc_ran_int_ran_slope_model, data = gpa_wide)
-summary(lgc_ran_int_ran_slope, nd=4)  # increase the number of digits shown
+summary(lgc_ran_int_ran_slope, nd = 4, header = FALSE)  
 ```
 
 Again, we compare the mixed model to show identical output.
 
 ```{r mixed_ran_int_ran_slope_constant_var}
-mixed_ran_int_ran_slope = lmer(gpa ~ occasion + (1 + occasion|student), data=gpa)
-summary(mixed_ran_int_ran_slope)
+mixed_ran_int_ran_slope = lmer(gpa ~ occasion + (1 + occasion|student), data = gpa)
+summary(mixed_ran_int_ran_slope, cor = FALSE)
 ```
 
 In addition, the estimated random coefficients estimates from the mixed model perfectly correlate with those of the latent variables.
 
 ```{r compare_random_effects, echo=FALSE}
-ranefLatent = data.frame(coef(mixed_ran_int_ran_slope)[[1]], lavPredict(lgc_ran_int_ran_slope)) %>%
-   rownames_to_column(var = 'student') %>% 
-  rename(Int_mixed = X.Intercept.,
-         Slope_mixed = occasion,
-         Int_LGC = intercept,
-         Slope_LGC = slope)
-ranefLatent %>% head() %>% kable_df()
+ranefLatent = data.frame(coef(mixed_ran_int_ran_slope)[[1]],
+                         lavPredict(lgc_ran_int_ran_slope)) %>%
+  rownames_to_column(var = 'student') %>%
+  rename(
+    Int_mixed = X.Intercept.,
+    Slope_mixed = occasion,
+    Int_LGC = intercept,
+    Slope_LGC = slope
+  )
+
+ranefLatent %>% 
+  head() %>%
+  kable_df()
 ```
 
 
-Note that the intercept-slope relationship in the LGC is expressed as a covariance. If we want correlation, we just ask for standardized output.
+Note that the intercept-slope relationship in the LGC is expressed as a covariance. If we want correlation, we just ask for standardized output.  I show only the line output of interest.
 
-```{r show_re_cor_in_lgc}
-summary(lgc_ran_int_ran_slope, nd=4, std=T)
+```{r show_re_cor_in_lgc, eval=FALSE}
+summary(lgc_ran_int_ran_slope, nd = 4, std = TRUE, header = FALSE)
+```
+
+```
+Covariances:
+                    Estimate   Std.Err   z-value   P(>|z|)    Std.lv   Std.all
+  intercept ~~                                                                
+    slope            -0.0014    0.0016   -0.8337    0.4045   -0.0963   -0.0963
 ```
 
 The `std.all` is what we typically will look at.
@@ -304,7 +323,7 @@ The `std.all` is what we typically will look at.
 
 We have demonstrated heterogeneous variances [previously][Heterogeneous Variance].  But to revisit here, <span class="pack">lme4</span> does not provide an easy way to have separate variance at each time point, sacrificing various model complexities for computational advantages.  However, <span class="pack">nlme</span> provides an easy, though not straightforward way to get at these estimates.  See the previous section for details.
 
-```{r mixed_heterogenous, echo=1:5}
+```{r mixed-heterogenous, echo=1:5, message=T}
 library(nlme)
 
 mixed_ran_int_ran_slope_hetero_var = lme(
@@ -314,9 +333,9 @@ mixed_ran_int_ran_slope_hetero_var = lme(
   weights = varIdent(form = ~1|occasion)
 )
 
-summary(mixed_ran_int_ran_slope_hetero_var)
+mixedup::summarise_model(mixed_ran_int_ran_slope_hetero_var)
 
-res_var = mixedup::extract_het_var(mixed_ran_int_ran_slope_hetero_var)
+res_var = mixedup::extract_het_var(mixed_ran_int_ran_slope_hetero_var, scale = 'var')
 data_frame(
   Semester = 0:5,
   Variance = t(res_var)
@@ -403,8 +422,13 @@ The fixed effects are in red, while the random effects are in blue. Focusing on 
 
 ```{r growth_graph_cluster_level_covariate, echo=FALSE}
 ## note to self Diagrammer is difficult at best for multifactor loading situations, mostly because there is no control over label placement
-tags$div(style="width:50%; margin:auto auto; font-size:50%",
-         DiagrammeR::grViz('scripts/growth_cluster_level_covariate.gv', width='100%', height='25%')
+tags$div(
+  style = "width:50%; margin:auto auto; font-size:50%",
+  DiagrammeR::grViz(
+    'scripts/growth_cluster_level_covariate.gv',
+    width = '100%',
+    height = '25%'
+  )
 )
 ```
 
@@ -430,7 +454,7 @@ lgc_cluster_level_model <- '
 '
 
 lgc_cluster_level = growth(lgc_cluster_level_model, data = gpa_wide)
-summary(lgc_cluster_level, std=T)
+summary(lgc_cluster_level, std = TRUE, header = FALSE)
 ```
 
 
@@ -440,8 +464,12 @@ Applied researchers commonly have difficulty interpreting the model due to past 
 This is the corresponding mixed model for comparison:
 
 ```{r mixed_cluterLevelVar2}
-mixed_cluster_level_cov = lmer(gpa ~ sex + occasion + sex:occasion + (1 + occasion|student), data = gpa)
-summary(mixed_cluster_level_cov, cor=F)
+mixed_cluster_level_cov = lmer(
+  gpa ~ sex + occasion + sex:occasion + (1 + occasion|student), 
+  data = gpa
+  )
+
+summary(mixed_cluster_level_cov, cor = FALSE)
 ```
 
 
@@ -451,17 +479,17 @@ summary(mixed_cluster_level_cov, cor=F)
 
 ##### Mixed Model
 
-If we had a <span class="emph">time varying covariate</span>, it'd look like the following.  The `gpa` data doesn't really come with a useful time-varying covariate, so I've added one for demonstration, *average weekly hours spent in the library* (`lib_hours`).
+If we had a <span class="emph">time varying covariate</span>, it'd look like the following.  The `gpa` data doesn't really come with a useful time-varying covariate, so I've added one just for demonstration, average weekly hours spent in the library (`lib_hours`).
 
 ```{r timevaryingVar, echo=-(1:4), eval=T}
 set.seed(1234)
-gpa = gpa %>% 
-  group_by(student) %>% 
-  mutate(lib_hours = rpois(6, exp(2*log(gpa)))) %>% 
+gpa = gpa %>%
+  group_by(student) %>%
+  mutate(lib_hours = rpois(6, exp(2 * log(gpa)))) %>%
   ungroup()
   
 gpa_mixed_tvc = lmer(gpa ~ occasion + lib_hours + (1 + occasion|student), data = gpa)
-summary(gpa_mixed_tvc, cor=F)
+summary(gpa_mixed_tvc, cor = FALSE)
 ```
 
 Note that we could have a random slope for library hours if we wanted.  The fixed effect for the covariate is still as it would be for standard regression interpretation.
@@ -474,7 +502,7 @@ With time varying covariates, the syntax starts to get tedious for the LGC.  Her
 ```{r gpa_wide_add_timeVar, echo=-1}
 gpa_wide = gpa %>%
   select(student, occasion, lib_hours) %>% 
-  spread(key=occasion, value=lib_hours) %>% 
+  pivot_wider(names_from = occasion, values_from = lib_hours) %>% 
   rename_at(vars(`0`,`1`,`2`,`3`,`4`,`5`), function(x) glue::glue('lib_hours_{x}')) %>% 
   right_join(gpa_wide)
 ```
@@ -503,8 +531,8 @@ lgc_tvc_model <- '
   
 '
 
-lgc_tvc <- growth(lgc_tvc_model, data=gpa_wide)
-summary(lgc_tvc)
+lgc_tvc <- growth(lgc_tvc_model, data = gpa_wide)
+summary(lgc_tvc, header = FALSE)
 ```
 
 However, this result is not the same as our mixed model. Here is the corresponding graphical model. The `*` represents a coefficient that is freely estimated.
@@ -512,12 +540,15 @@ However, this result is not the same as our mixed model. Here is the correspondi
 
 ```{r growth_graph_tvc, echo=FALSE}
 ## note to self Diagrammer is difficult at best for multifactor loading situations, mostly because there is no control over label placement
-tags$div(style="width:50%; margin:auto auto; font-size:50%",
-         DiagrammeR::grViz('scripts/time_varying.gv', width='100%', height='25%')
-)
+tags$div(style = "width:50%; margin:auto auto; font-size:50%",
+         DiagrammeR::grViz(
+           'scripts/time_varying.gv',
+           width = '100%',
+           height = '25%'
+         ))
 ```
 
-The problem here is similar to that seen with the residual variances. Unless we fix the coefficient to be constant, this is akin to having an interaction of the time-varying covariate with a *categorical form of time*.  So in the same model we flip from considering time as a numeric and linear effect on the outcome, to one that is categorical.  This is rarely done in typical mixed or other regression models, though for some reason is the standard for the LGC setting.  The following will get us back to the comparable mixed model.
+The problem here is similar to that seen with the residual variances. Unless we fix the coefficient to be constant, this is akin to having an interaction of the time-varying covariate with a categorical form of time.  So in the same model, we flip from considering time as a numeric and linear effect on the outcome, to one that is categorical.  This is rarely done in typical mixed or other regression models, though for some reason is the standard for the LGC setting.  The following will get us back to the comparable mixed model.
 
 ```{r lgc_timeVar2}
 lgc_tvc_model <- '
@@ -543,13 +574,13 @@ lgc_tvc_model <- '
 '
 
 lgc_tvc <- growth(lgc_tvc_model, data=gpa_wide)
-summary(lgc_tvc)
+summary(lgc_tvc, header = FALSE)
 ```
 
 Compare again to the mixed model result.
 
 ```{r lgc_v_mixed_tvc}
-summary(gpa_mixed_tvc, cor=F)
+summary(gpa_mixed_tvc, cor = FALSE)
 ```
 
 
@@ -571,11 +602,11 @@ One difference seen in comparing LGC models vs. mixed models is that in the form
 
 #### Other random effects
 
-Just about any LGC you come across in the wild has only one clustering level of interest.  However, it's very common to have multiple random effects structure or additional random effects beyond the time covariate.  In our example, these might include school, district, or other complicated structure, or the library hours from the time-varying covariate example.  Tools like <span class="pack">lme4</span> handle random effects and complicated structure easily.  SEM tools do not do this easily, and resort to the multilevel (long-format) approach, which more or less defeats the purpose of using them, as they merely mimic the standard mixed model approach, albeit with yet another and different type of syntax[^multisyntax].  However, if you have other latent variables or complicated indirect effects, this may be the way to go. 
+Just about any LGC you come across in the wild has only one clustering level of interest.  However, it's very common to have multiple and non-hierarchical random effects structure or additional random effects beyond the time covariate.  In our example, these might include school, district, or other complicated structure, or the library hours from the time-varying covariate example.  Tools like <span class="pack">lme4</span> handle random effects and complicated structure easily.  SEM tools do not do this easily, and resort to the multilevel (long-format) approach, which more or less defeats the purpose of using them, as they merely mimic the standard mixed model approach, albeit with yet another and different type of syntax[^multisyntax].  However, if you have other latent variables or complicated indirect effects, this may be the way to go. 
 
 #### Sample size
 
-SEM is inherently a large sample technique.  The growth curve model does not require as much for standard approaches, but may require a lot more depending on the model one tries to estimate.  In [my own simulations](https://m-clark.github.io/docs/gpa_mixeds/growth_vs_mixed_sim.html), I haven't seen too much difference compared to mixed models even for notably small sample sizes, but those were for very simple models.
+SEM is inherently a large sample technique.  The growth curve model does not require as much for standard approaches, but may require a lot more depending on the model one tries to estimate.  In [my own simulations](https://m-clark.github.io/docs/mixedModels/growth_vs_mixed_sim.html), I haven't seen too much difference compared to mixed models even for notably small sample sizes, but those were for very simple models.
 
 #### Number of time points
 
@@ -583,7 +614,7 @@ A basic growth curve model requires four time points to incorporate the flexibil
 
 #### Balance
 
-Mixed models can run even if some clusters have a single value. SEM requires balanced data and so one will always have to estimate missing values or drop them.  Whether this missingness can be ignored in the standard mixed model framework is a matter of some debate.  Most disciplines ignore the missingness, which for mixed models means assuming the observations are *missing at random* (MAR).  With the LGC, the default is simply to drop any observation with missing, and so the assumption there is *missing completely at random* (MCAR), a stronger assumption.
+Mixed models can run even if some clusters have a single value. SEM requires balanced data and so one will always have to estimate missing values or drop them.  Whether this missingness can be ignored in the standard mixed model framework is a matter of some debate.  Most disciplines typically ignore the missingness, which for mixed models means assuming the observations are *missing at random* (MAR).  With the LGC, the default is simply to drop any observation with missing, and so the assumption there is *missing completely at random* (MCAR), a stronger assumption.
 
 #### Numbering the time points
 
@@ -592,15 +623,15 @@ Numbering your time from zero makes sense in both worlds.  This leads to the nat
 
 ### Recommended Packages that can do LGC models
 
-Between <span class="pack">lme4</span> and <span class="pack">nlme</span>, you can do any standard LGC.  Besides that, various packages provide functionality that some might think is only done with SEM software.  One package I highly recommend is <span class="pack">brms</span>, as it builds on many other packages that incorporate a mixed model approach in the Bayesian framework.  The others are ones that come to mind off the top of my head, so in some cases should be seen as a starting point only.
+Between <span class="pack">lme4</span> and <span class="pack">nlme</span> or <span class="pack">glmmTMB</span>, you can do any standard LGC.  Besides that, various packages provide functionality that some might think is only done with SEM software.  One package I highly recommend is <span class="pack">brms</span>, as it builds on many other packages that incorporate a mixed model approach in the Bayesian framework.  The others are ones that come to mind off the top of my head, so in some cases should be seen as a starting point only.
 
 - Standard LGC, including alternative distributions (e.g. robust t, beta, count, zero-inflated): <span class="pack">nlme</span>, <span class="pack">lavaan</span>, <span class="pack">lme4</span>, <span class="pack">mgcv</span>, <span class="pack">brms</span>, many others
 - Multilevel SEM: <span class="pack">lavaan</span>
 - Flexible nonlinear relationships: <span class="pack">nlme</span>, <span class="pack">mgcv</span>, <span class="pack">brms</span>
-- Missing data: <span class="pack">mice</span>, <span class="pack">lavaan</span>, <span class="pack">brms</span>
-- Multivariate/Parallel Process/Correlated random effects: <span class="pack">brms</span>
-- Mediation: <span class="pack">mediation</span>, <span class="pack">brms</span>
-- Growth Mixture Models: <span class="pack">flexmix</span>
+- Missing data: <span class="pack">lavaan</span>, <span class="pack">brms</span>, <span class="pack">mice</span> applied to other packages
+- Multivariate/Parallel Process/Correlated random effects: <span class="pack">lavaan</span>, <span class="pack">brms</span>
+- Mediation: <span class="pack">lavaan</span>, <span class="pack">mediation</span>, <span class="pack">brms</span>
+- Growth Mixture Models: <span class="pack">brms</span>, <span class="pack">flexmix</span>
 
 In short, you'd need a very complicated growth model to require moving from the mixed model framework to SEM-specific software or beyond R, in other words, one that combines potentially already complex modeling situations. Note also, unless you are incorporating latent variables, e.g. from scale measurements, there is little need to use something like <span class="pack">lavaan</span> or <span class="pack">Mplus</span> for standard mixed/multilevel modeling (i.e. in the long data framework), though they have such functionality.  The <span class="pack">Mplus</span> manual also lumps survival and standard time series in the chapter on longitudinal and related models.  However, I personally can't see a scenario where I would use <span class="pack">Mplus</span> for survival or time series given the multitude of easier to use, more flexible, and more powerful options in R.
 
@@ -608,9 +639,231 @@ In short, you'd need a very complicated growth model to require moving from the 
 
 
 
-### Summary
+### Summary of LGC
 
-Latent Growth Curve modeling is an alternative way to do what is very commonly accomplished through mixed models, and allow for more complex models than typically seen for standard mixed models.  One's default should probably be to use the more commonly used, and probably more flexible (in most situations), mixed modeling tools, where there are packages in R that could handle nonlinear effects, mediation and multivariate outcomes for mixed models. I have other documents regarding mixed models on my [website](https://m-clark.github.io/documents) and code at [GitHub](https://github.com/m-clark/Miscellaneous-R-Code), including a document that does [more comparison to growth curve models](http://m-clark.github.io/mixed-growth-comparison/). However, the latent variable approach may provide what you need, and at the very least gives you a fresh take on the standard mixed model perspective.
+Latent Growth Curve modeling is an alternative way to do what is very commonly accomplished through mixed models, and allow for more complex models than typically seen for standard mixed models.  One's default should probably be to use the far more commonly used, and probably more flexible (in most situations), mixed modeling tools, where there are packages in R that could handle nonlinear effects, mediation and multivariate outcomes for mixed models. I have other documents regarding mixed models on my [website](https://m-clark.github.io/documents) and code at [GitHub](https://github.com/m-clark/Miscellaneous-R-Code), including a document that does [more comparison to growth curve models](http://m-clark.github.io/mixed-growth-comparison/). However, the latent variable approach may provide what you need in some circumstances, and at the very least gives you a fresh take on the standard mixed model perspective.
+
+
+
+
+## Correlation Structure Revisited
+
+Let's revisit the notion of autocorrelation/autoregressive (AR) residual structure.  We'll start by recalling the AR structure we noted before, with $\rho$ our estimate of the covariance/correlation. For the following depiction, we have three observations per cluster, and observations are correlated in time.  However the residual correlation decreases the further in time the observations are apart from one another.
+
+
+$$\Sigma = \sigma^2
+\left[
+\begin{array}{cccc} 
+1 & \rho     & \rho^2   & \rho^3   \\
+\rho     & 1 & \rho     & \rho^2   \\
+\rho^2   & \rho     & 1 & \rho     \\
+\rho^3   & \rho^2   & \rho     & 1 \\
+\end{array}\right]$$
+
+How does this get into our model? We can find out via simulation.  The next bit of code follows <span class="pack" style = "">lme4</span> developer [Ben Bolker's example](https://cran.r-project.org/web/packages/glmmTMB/vignettes/covstruct.html).  Here we create a variable which is a multivariate draw with the specified correlational structure.  In addition, we'll have a single covariate, call it `x`.  The linear predictor is based on an intercept value of 5 and a coefficient for `x` of .5.
+
+
+```{r sim-ar-group}
+simGroup <- function(g, n = 5, rho = 0.7, sigma = .5) {
+  # create time points and group id
+  times <- factor(1:n)
+  group <- factor(rep(g, n))
+  
+  # create the ar structure
+  cor_struct <- rho^as.matrix(dist(1:n))   
+  
+  # if you want to play around with the estimated variance of glmmTMB you can,
+  # but this will change what the expected correlation should be; use cov2cor on
+  # cor_struct after adding the diagonal to see that value
+  # diag(cor_struct) = 2.5
+  
+  # Simulate the process
+  x_ar <- MASS::mvrnorm(mu = rep(0, n), Sigma = cor_struct) 
+  
+  # add another covariate
+  x <- rnorm(n)
+  
+  # linear predictor
+  mu <- 5 + .5*x
+  
+  # Add measurement noise and create target variable
+  y <-  mu + x_ar + rnorm(n, sd = sigma)                      
+  
+  data.frame(y, times, x, group)
+}
+
+simGroup(1)
+```
+
+```{r ar-settings, echo=FALSE}
+ng = 500
+n = 10
+rho = .8
+sigma = 1.5
+```
+
+
+Now let's do this for `r ng` groups or clusters, each with `r n` observations, sigma equal to `r sigma` and $\rho$ set at `r rho`. 
+
+```{r sim-ar-many-groups}
+set.seed(1234)
+
+test_df = map_df(1:500, simGroup, n = 10, rho = .8, sigma = 1.5) 
+
+head(test_df)
+```
+
+
+Now we run and summarize the model with <span class="pack" style = "">glmmTMB</span>.  
+
+
+```{r ar-tmb}
+library(glmmTMB)
+
+model_tmb = glmmTMB(y ~ x + ar1(times + 0 | group), data = test_df)
+
+summary(model_tmb)
+```
+
+We recover our estimates. The `ar1` value is very close to the true value of `r rho` we specified, while the residual standard deviation is close to `r sigma`, and our fixed effects are also as expected.  We have an additional value approaching 1 for the `times1` variance, which is the diagonal of the AR correlation matrix, which in our code is separate from what we draw for the observation level residual variance.  
+
+Likewise, <span class="pack" style = "">brms</span> has similar syntax in that we add the AR component to the formula.
+
+```{r ar-brms}
+library(brms)
+
+model_brm = brm(
+  y ~ x + ar(times, group),
+  data = test_df,
+  cores = 4,
+  seed = 1234
+)
+
+summary(model_brm)
+```
+
+
+```{r tmb-brms-reconcile, echo=FALSE}
+ar_brm = round(extract_cor_structure(model_brm, which_cor = 'ar1', digits = 4)$value, 4)
+ar_tmb = round(extract_cor_structure(model_tmb, which_cor = 'ar1', digits = 4)[2], 4)$group # this is kind of a bug to have in the 'group' column so check in future
+
+ar_var_tmb = round(extract_vc(model_tmb, digits = 4)$variance[1], 4)
+res_var_tmb = round(sigma(model_tmb)^2, 4)
+res_var_brms =  round(extract_vc(model_brm, digits = 4)$variance, 4)
+```
+
+It may seem at first blush that <span class="pack" style = "">glmmTMB</span> and <span class="pack" style = "">brms</span> have come to different conclusions about the correlation and variance estimates.  However close inspection reveals they are in fact providing the same information from different viewpoints.  The simulation code shows how we start with our linear predictor which includes the fixed effects, then adds the random effect with autoregressive structure, and finally add our residual variance.  But the way <span class="pack" style = "">brms</span> is estimating it is how we've shown it in the matrix formulation above, as a single residual/random effect.
+
+
+<br>
+
+$$\Sigma_{brms} = \sigma^2_{brms}
+\left[
+\begin{array}{cccc} 
+1 & \rho_{brms}     & \rho_{brms}^2   & \rho_{brms}^3   \\
+\rho_{brms}     & 1 & \rho_{brms}     & \rho_{brms}^2   \\
+\rho_{brms}^2   & \rho_{brms}     & 1 & \rho_{brms}     \\
+\rho_{brms}^3   & \rho_{brms}^2   & \rho_{brms}     & 1 \\
+\end{array}\right]$$
+
+<br>
+
+$$\Sigma_{tmb} = 
+\left[
+\begin{array}{cccc} 
+\sigma^2_{ar} & \rho_{tmb}     & \rho_{tmb}^2   & \rho_{tmb}^3   \\
+\rho_{tmb}     & \sigma^2_{ar} & \rho_{tmb}     & \rho_{tmb}^2   \\
+\rho_{tmb}^2   & \rho_{tmb}     & \sigma^2_{ar} & \rho_{tmb}     \\
+\rho_{tmb}^3   & \rho_{tmb}^2   & \rho_{tmb}     & \sigma^2_{ar} \\
+\end{array}\right] +  
+\left[
+\begin{array}{cccc} 
+\sigma^2_{tmb} & 0   & 0 & 0   \\
+0     & \sigma^2_{tmb} & 0   & 0   \\
+0   & 0     & \sigma^2_{tmb} & 0   \\
+0   & 0   & 0     & \sigma^2_{tmb} \\
+\end{array}\right]$$
+<br>
+
+So if we take the <span class="pack" style = "">glmmTMB</span>  `ar1` estimate and variance estimates we can recover the <span class="pack" style = "">brms</span> estimate.
+
+```{r tmb2brms}
+ar_tmb * ar_var_tmb/(ar_var_tmb + res_var_tmb)
+
+ar_brm
+
+# if we assume ar var = 1
+ar_brm*res_var_brms
+
+ar_tmb
+
+# if we knew the ar variance
+ar_brm*(ar_var_tmb + res_var_tmb)/ar_var_tmb
+```
+
+The <span class="pack" style = "">glmmTMB</span> approach is interesting in how it explicitly separates out the ar component from the rest of the residual component.  This seems non-standard, as I don't recall papers reporting the AR standard deviation for example, and every depiction I come across in the mixed model literature is the one that underlies <span class="pack" style = "">brms</span>.  However, it seems like it might be useful and/or interesting from some settings, or maybe even preferable as an additional interpretation for a random effect, similar to the ones we commonly use.
+
+```{r ar-brms2, echo=FALSE, eval=FALSE}
+model_brm2 = brm(y ~ x + ar(times, group) + (1|group), data = test_df, cores = 4)
+
+summary(model_brm2)
+```
+
+
+```{r tmb-brms-reconcile2, echo=FALSE, eval=FALSE}
+ar_brm2 = round(extract_cor_structure(model_brm2, which_cor = 'ar1', digits = 4)$value, 4)
+res_var_brms2 =  round(extract_vc(model_brm2, digits = 4)$variance, 4)
+
+ar_brm2*sum(res_var_brms2)/res_var_brms2[1]
+
+ar_tmb
+```
+
+We can change our function to force <span class="pack" style = "">glmmTMB</span> to come to the same conclusion as <span class="pack" style = "">brms</span> by not distinguishing the variance components.  In this case, <span class="pack" style = "">glmmTMB</span> will move all residual variance to the AR estimate, and the estimated correlation is the same as what <span class="pack" style = "">brms</span> reports.
+
+```{r sim-ar-alt}
+simGroup_alt <- function(g, n = 5, rho = 0.7, sigma = .5) {
+  # create time points and group id
+  times <- factor(1:n)
+  group <- factor(rep(g, n))
+  
+  # create the ar structure
+  cor_struct <- rho^as.matrix(dist(1:n))   
+  
+  # combine the residual variance
+  resid_struct <- cor_struct*sigma^2
+  
+  # Simulate the process; note the difference
+  x_ar <- MASS::mvrnorm(mu = rep(0, n), Sigma = resid_struct) 
+  
+  # add another covariate
+  x <- rnorm(n)
+  
+  # linear predictor
+  mu <- 5 + .5*x
+  
+  # Create target variable; residual already incorporated into x_ar
+  y <-  mu + x_ar           
+  
+  data.frame(y, times, x, group)
+}
+
+
+set.seed(1234)
+
+test_df_alt = map_df(1:500, simGroup_alt, n = 10, rho = ar_brm, sigma = 1.5) 
+
+model_tmb_alt = glmmTMB(y ~ x + ar1(times + 0 | group), data = test_df_alt)
+
+summary(model_tmb_alt)
+```
+
+
+
+### Summary of residual correlation structure
+
+What both of these syntactical approaches make clear is that in specifying a specific correlational structure, we can think of it as adding a latent variable, i.e. a random effect, to our standard model, just as we have done with other random effects.  This particular random effect has correlated observations within a group as specified by the structure.  As such, it makes more sense to think of it as an additional component to the model structure/formula, as opposed to an function argument separate from your theoretical focus.
+
 
 
 
@@ -621,5 +874,3 @@ Latent Growth Curve modeling is an alternative way to do what is very commonly a
 
 
 
-
-## Correlation Structure Revisited
