@@ -70,25 +70,44 @@
 }
 
 /* link effects */
-.book .book-body .page-wrapper .page-inner section.normal a {
-    color: #007199; /*#3D68FF*/
-    background-image: linear-gradient(180deg,transparent 90%, #990024 0); /* #FFD43D */
-    background-size: 0 100%;
-    background-repeat: no-repeat;
+/*
+https://stackoverflow.com/questions/28623446/hover-effect-expand-bottom-border
+uri class is for urls
+*/
+
+.book .book-body .page-wrapper .page-inner section.normal a:active, 
+.book .book-body .page-wrapper .page-inner section.normal a:focus, 
+.book .book-body .page-wrapper .page-inner section.normal a:hover {
+    outline: 0;
     text-decoration: none;
-    -webkit-transition: background-size .4s ease;
-    -moz-transition: background-size .4s ease;
-    -ms-transition: background-size .4s ease;
-    -o-transition: background-size .4s ease;
-    transition: background-size .4s ease;
-    border-bottom: 0px solid;
 }
 
-.book .book-body .page-wrapper .page-inner section.normal a:hover {
-  text-decoration: none;
-    background-size: 100% 100%;
-    cursor: pointer;
+.book .book-body .page-wrapper .page-inner section.normal a,
+.book .book-body .page-wrapper .page-inner section.normal a.uri {
+    display: inline-block;
+    color: #D34600;
+    text-decoration: none;
 }
+
+.book .book-body .page-wrapper .page-inner section.normal a::after,
+.book .book-body .page-wrapper .page-inner section.normal a.uri::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 1.75px;
+    background: #990024;
+    transition: width .3s;
+}
+
+.book .book-body .page-wrapper .page-inner section.normal a:hover::after,
+.book .book-body .page-wrapper .page-inner section.normal a.uri:hover::after{
+    width: 100%;
+    //transition: width .3s;
+}
+
+
+
+
 
 .body-inner {
     background-color: #fffff8;

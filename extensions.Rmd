@@ -164,11 +164,11 @@ p
 
 Note that we have the usual extensions here if desired.  As an example, we could also do random slopes for student level characteristics.
 
-### Hierarchical Structure
+### Hierarchical structure
 
 Now that we have looked at cross-classified models, we can proceed to examine hierarchical cluster structuring.  In this situation we have clusters nested within other clusters, which may be nested within still other clusters.  A typical example might be cities within counties, and counties within states.
 
-#### Example: Nurses and Stress
+#### Example: Nurses and stress
 
 For our demonstration we'll use the nurses data set. Here we are interested in the effect of a training program (`treatment`) on stress levels (on a scale of 1-7) of nurses.  In this scenario, nurses are nested within wards, which themselves are nested within hospitals, so we will have random effects pertaining to ward (within hospital) and hospital. For more information see the [appendix][Data].
 
@@ -238,7 +238,7 @@ p
 ```
 
 
-### Crossed vs. Nested
+### Crossed vs. nested
 
 The following shows the difference in the results from treating ward as a nested (within hospital) vs. crossed random effect. What do you notice is different?
 
@@ -451,7 +451,7 @@ Again, the main point is that points further apart in time are assumed to have l
 
 Know that there are many patterns and possibilities to potentially consider, and that they are not limited to the repeated measures scenario.  For example, the correlation could represent spatial structure, where units closer together geographically would be more correlated.  And as noted, we could also have variances that are different at each time point[^residstruct].  We'll start with that for the next example.
 
-### Heterogeneous Variance
+### Heterogeneous variance
 
 Unfortunately, <span class="pack">lme4</span> does not provide the ability to model the residual covariance structure, at least [not in a straightforward fashion](https://bbolker.github.io/mixedmodels-misc/notes/corr_braindump.html), though many other mixed model packages do[^lmerho].  In fact, two packages that come with the basic R installation do so, <span class="pack">mgcv</span> and <span class="pack">nlme</span>.  We'll demonstrate with the latter. 
 

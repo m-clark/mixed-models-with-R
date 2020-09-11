@@ -8,7 +8,7 @@ It is common in <span class="emph">Structural Equation Modeling</span> (SEM) to 
 To best understand a growth curve model, I still think it's instructive to see it from the mixed model perspective, where things are mostly interpretable from what you know from a standard linear model.  We will use our GPA example from before, and one can refer to the [appendix][Appendix] for more detail.
 
 
-### Random Effects as Latent Variables
+### Random effects as latent variables
 
 [As before][Random Intercepts model] we assume the following for the GPA model.  As a simple starting point we merely model a trend of time (occasion- 6 semesters) and have random effects due to student for both intercept and occasion.  In this setting we are treating time as numeric, but one could treat the occasion variable as categorical[^subscript].
 
@@ -59,7 +59,7 @@ extract_random_effects(mixed_init) %>%
 
 
 
-### Random Effects in SEM
+### Random effects in SEM
 
 In SEM, we specify the latent linear, or common factor, model as follows.
 
@@ -75,7 +75,7 @@ Note that if $\lambda = 1$, we then have the right hand side as $b_{intercept} +
 
 
 
-### Running a Growth Curve Model
+### Running a growth curve model
 
 The graphical model for the standard LGC model resembles that of <span class="emph">confirmatory factor analysis</span> (CFA) with two latent variables/factors.  The observed, or *manifest*, measures are the dependent variable values at each respective time point.  However, for those familiar with structural equation modeling (SEM), growth curve models will actually look a bit different compared with typical SEM, because we have to fix the factor loadings to specific values in order to make it work for the LGC.  As we will see, this also leads to non-standard output relative to other SEM models, as there is nothing to estimate for the many fixed parameters.  
 
@@ -90,7 +90,7 @@ tags$div(style="width:50%; margin:auto auto; font-size:50%",
 
 
 
-#### Wide Data
+#### Wide data
 
 Given the above visualization, for the LGC our data needs to be in *wide* format, where each row represents the unit of interest, and we have separate columns for each time point of the target variable, as well as any other variable that varies over time.  This is contrasted with the *long* format we use for the mixed model, where rows represent observations at a given time point.  We can use the <span class="func">spread</span> function from <span class="pack">tidyr</span> to help with that. We end up with a data frame of two-hundred observations and columns for each semester gpa (0 through 5 for six semesters)  denoted by `gpa_*`. 
 
@@ -128,7 +128,7 @@ summary(lgc_init)
 ```
 
 
-#### Fixed Effects
+#### Fixed effects
 
 Most of the output is blank, which is needless clutter, but we do get the same five parameter values we are interested in though.
 
@@ -156,7 +156,7 @@ gpa_mixed = lmer(
 summary(gpa_mixed, cor=F)
 ```
 
-#### Random Effects
+#### Random effects
 
 Now let's look at the variance estimates, where we see some differences between the LGC and mixed model approach.  LGC by default assumes heterogeneous variance for each time point. Mixed models by default assume the same variance for each time point, but can allow them to be estimated separately in most modeling packages. Likewise, we could fix the LGC variances to be identical here.  Just know that's why the results are not identical (to go along with their respective estimation approaches, which are also different by default).  
 
@@ -183,7 +183,7 @@ print(VarCorr(gpa_mixed), comp = 'Var')  # using print to show variance
 ```
 
 
-### Random Intercepts
+### Random intercepts
 
 How can we put these models on the same footing? Let's take a step back and do a model with only random intercepts. In this case, time is an observed measure, and has no person-specific variability.  Our graphical model now looks like the following.  Time, or time point (i.e. semester in our example), is now represented with a square to denote it is no longer affiliated with a latent variable.
 
@@ -247,7 +247,7 @@ summary(mixed_ran_int, cor = FALSE)
 Now we have essentially identical results to <span class="objclass">mixed_ran_int</span>. The default estimation process is different for the two, resulting in some differences starting several decimal places out, but these are not meaningful differences.  We can actually use the same estimator, but the results will still differ slightly due to the data differences.
 
 
-### Random Intercepts and Slopes
+### Random intercepts and slopes
 
 Now let's let the slope for occasion vary.  We can just delete or comment out the syntax related to the (co-) variance.  By default slopes and intercepts are allowed to correlate as in the mixed model. We will continue to keep the variance constant.
 
@@ -319,7 +319,7 @@ Covariances:
 The `std.all` is what we typically will look at.
 
 
-### Random Effects with Heterogeneous Variances
+### Random effects with heterogeneous variances
 
 We have demonstrated heterogeneous variances [previously][Heterogeneous Variance].  But to revisit here, <span class="pack">lme4</span> does not provide an easy way to have separate variance at each time point, sacrificing various model complexities for computational advantages.  However, <span class="pack">nlme</span> provides an easy, though not straightforward way to get at these estimates.  See the previous section for details.
 
@@ -477,7 +477,7 @@ summary(mixed_cluster_level_cov, cor = FALSE)
 
 #### Time-varying covariates
 
-##### Mixed Model
+##### Mixed model
 
 If we had a <span class="emph">time varying covariate</span>, it'd look like the following.  The `gpa` data doesn't really come with a useful time-varying covariate, so I've added one just for demonstration, average weekly hours spent in the library (`lib_hours`).
 
@@ -590,7 +590,7 @@ Now imagine having just a few of those kinds of variables as would be common in 
 
 
 
-### Some Differences between Mixed Models and Growth Curves
+### Some differences between mixed models and growth curves
 
 #### Wide vs. long
 
@@ -621,7 +621,7 @@ Mixed models can run even if some clusters have a single value. SEM requires bal
 Numbering your time from zero makes sense in both worlds.  This leads to the natural interpretation that the intercept is the mean of the outcome for your first time point.  In other cases having a centered value would make sense, or numbering from 0 to a final value of 1, which would mean the slope coefficient represents the change over the whole time span.
 
 
-### Recommended Packages that can do LGC models
+### Recommended packages that can do growth curve models
 
 Between <span class="pack">lme4</span> and <span class="pack">nlme</span> or <span class="pack">glmmTMB</span>, you can do any standard LGC.  Besides that, various packages provide functionality that some might think is only done with SEM software.  One package I highly recommend is <span class="pack">brms</span>, as it builds on many other packages that incorporate a mixed model approach in the Bayesian framework.  The others are ones that come to mind off the top of my head, so in some cases should be seen as a starting point only.
 
@@ -634,8 +634,6 @@ Between <span class="pack">lme4</span> and <span class="pack">nlme</span> or <sp
 - Growth Mixture Models: <span class="pack">brms</span>, <span class="pack">flexmix</span>
 
 In short, you'd need a very complicated growth model to require moving from the mixed model framework to SEM-specific software or beyond R, in other words, one that combines potentially already complex modeling situations. Note also, unless you are incorporating latent variables, e.g. from scale measurements, there is little need to use something like <span class="pack">lavaan</span> or <span class="pack">Mplus</span> for standard mixed/multilevel modeling (i.e. in the long data framework), though they have such functionality.  The <span class="pack">Mplus</span> manual also lumps survival and standard time series in the chapter on longitudinal and related models.  However, I personally can't see a scenario where I would use <span class="pack">Mplus</span> for survival or time series given the multitude of easier to use, more flexible, and more powerful options in R.
-
-
 
 
 

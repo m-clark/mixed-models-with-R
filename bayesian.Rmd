@@ -76,8 +76,9 @@ summary(gpa_mixed, cor= F)
 Aside from additional diagnostic information, the Bayesian results are essentially the same, but now we can continue to explore the model. The <span class="pack" style = "">brms</span> package tries to use the same function names as <span class="pack" style = "">lme4</span> where possible, so <span class="func" style = "">ranef</span>, <span class="func" style = "">fixef</span>, <span class="func" style = "">VarCorr</span>, etc. are still in play.  However, you can still use my functions for standard models, which will return tidy data frames.
 
 ```{r brms-ranef}
-ranef(bayesian_mixed)$student[,,'occasion'] %>% head()
-# mixedup::extract_random_effects(bayesian_mixed)
+# examine random effects with the usual functions, not too tidy
+# ranef(bayesian_mixed)
+mixedup::extract_random_effects(bayesian_mixed)
 ```
 
 However, we also have some nice plotting functions.  Here I plot the occasion effect, as well as the estimated predictions from the model vs. our observed GPA values.

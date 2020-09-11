@@ -2,8 +2,8 @@
 title: Mixed Models with R
 subtitle: Getting started with random effects
 author:  |
-  <span class="noem">Michael Clark</span>
-  https://m-clark.github.io/ <span></span>
+  <span class="noem">Michael Clark</span> <br>
+  [m-clark.github.io](https://m-clark.github.io/)
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 output:
