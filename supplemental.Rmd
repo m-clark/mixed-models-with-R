@@ -742,6 +742,17 @@ model_brm = brm(
 summary(model_brm)
 ```
 
+While the focus here is on the other packages, we could also use the <span class="func" style = "">gls</span> function in <span class="pack" style = "">nlme</span>, which gives the same result as <span class="pack" style = "">brms</span>.
+
+```{r ar-gls}
+gls(
+  y ~ x, 
+  data = test_df, 
+  correlation = corAR1(form = ~as.numeric(times)|group)
+)
+```
+
+
 
 ```{r tmb-brms-reconcile, echo=FALSE}
 ar_brm = round(extract_cor_structure(model_brm, which_cor = 'ar1', digits = 4)$value, 4)
@@ -752,7 +763,7 @@ res_var_tmb = round(sigma(model_tmb)^2, 4)
 res_var_brms =  round(extract_vc(model_brm, digits = 4)$variance, 4)
 ```
 
-It may seem at first blush that <span class="pack" style = "">glmmTMB</span> and <span class="pack" style = "">brms</span> have come to different conclusions about the correlation and variance estimates.  However close inspection reveals they are in fact providing the same information from different viewpoints.  The simulation code shows how we start with our linear predictor which includes the fixed effects, then adds the random effect with autoregressive structure, and finally add our residual variance.  But the way <span class="pack" style = "">brms</span> is estimating it is how we've shown it in the matrix formulation above, as a single residual/random effect.
+It may seem at first blush that <span class="pack" style = "">glmmTMB</span> and <span class="pack" style = "">brms</span> have come to different conclusions about the correlation and variance estimates.  However, close inspection reveals they are in fact providing the same information from different viewpoints.  The simulation code shows how we start with our linear predictor, which includes the fixed effects, then adds the random effect with autoregressive structure, and finally adds our residual variance.  But the way <span class="pack" style = "">brms</span> (and <span class="pack" style = "">nlme</span>) is estimating it is how we've shown it in the matrix formulation above, as a single residual/random effect.
 
 
 <br>
@@ -797,7 +808,7 @@ ar_brm*res_var_brms
 
 ar_tmb
 
-# if we knew the ar variance
+# if we knew the ar variance, we could use brms to get to tmb's estimate
 ar_brm*(ar_var_tmb + res_var_tmb)/ar_var_tmb
 ```
 
@@ -862,7 +873,7 @@ summary(model_tmb_alt)
 
 ### Summary of residual correlation structure
 
-What both of these syntactical approaches make clear is that in specifying a specific correlational structure, we can think of it as adding a latent variable, i.e. a random effect, to our standard model, just as we have done with other random effects.  This particular random effect has correlated observations within a group as specified by the structure.  As such, it makes more sense to think of it as an additional component to the model structure/formula, as opposed to an function argument separate from your theoretical focus.
+What both of these syntactical approaches make clear is that, in specifying a specific correlational structure, we can think of it as adding a latent variable, i.e. a random effect, to our standard model, just as we have done with other random effects.  This particular random effect has correlated observations within a group as specified by the structure.  As such, it may make more sense to think of it as an additional component to the model structure/formula, as opposed to an function argument separate from your theoretical focus.
 
 
 

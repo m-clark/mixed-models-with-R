@@ -1706,7 +1706,29 @@ sigma     1.74      0.02     1.70     1.77 1.00     4737     3096
 Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
 scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
-<p>It may seem at first blush that <span class="pack" style="">glmmTMB</span> and <span class="pack" style="">brms</span> have come to different conclusions about the correlation and variance estimates. However close inspection reveals they are in fact providing the same information from different viewpoints. The simulation code shows how we start with our linear predictor which includes the fixed effects, then adds the random effect with autoregressive structure, and finally add our residual variance. But the way <span class="pack" style="">brms</span> is estimating it is how we’ve shown it in the matrix formulation above, as a single residual/random effect.</p>
+<p>While the focus here is on the other packages, we could also use the <span class="func" style="">gls</span> function in <span class="pack" style="">nlme</span>, which gives the same result as <span class="pack" style="">brms</span>.</p>
+<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb131-1"><a href="supplemental.html#cb131-1"></a><span class="kw">gls</span>(</span>
+<span id="cb131-2"><a href="supplemental.html#cb131-2"></a>  y <span class="op">~</span><span class="st"> </span>x, </span>
+<span id="cb131-3"><a href="supplemental.html#cb131-3"></a>  <span class="dt">data =</span> test_df, </span>
+<span id="cb131-4"><a href="supplemental.html#cb131-4"></a>  <span class="dt">correlation =</span> <span class="kw">corAR1</span>(<span class="dt">form =</span> <span class="op">~</span><span class="kw">as.numeric</span>(times)<span class="op">|</span>group)</span>
+<span id="cb131-5"><a href="supplemental.html#cb131-5"></a>)</span></code></pre></div>
+<pre><code>Generalized least squares fit by REML
+  Model: y ~ x 
+  Data: test_df 
+  Log-restricted-likelihood: -9853.791
+
+Coefficients:
+(Intercept)           x 
+  5.0443811   0.5514778 
+
+Correlation Structure: AR(1)
+ Formula: ~as.numeric(times) | group 
+ Parameter estimate(s):
+      Phi 
+0.2453209 
+Degrees of freedom: 5000 total; 4998 residual
+Residual standard error: 1.784043 </code></pre>
+<p>It may seem at first blush that <span class="pack" style="">glmmTMB</span> and <span class="pack" style="">brms</span> have come to different conclusions about the correlation and variance estimates. However, close inspection reveals they are in fact providing the same information from different viewpoints. The simulation code shows how we start with our linear predictor, which includes the fixed effects, then adds the random effect with autoregressive structure, and finally adds our residual variance. But the way <span class="pack" style="">brms</span> (and <span class="pack" style="">nlme</span>) is estimating it is how we’ve shown it in the matrix formulation above, as a single residual/random effect.</p>
 <p><br></p>
 <p><span class="math display">\[\Sigma_{brms} = \sigma^2_{brms}
 \left[
@@ -1734,54 +1756,54 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 \end{array}\right]\]</span>
 <br></p>
 <p>So if we take the <span class="pack" style="">glmmTMB</span> <code>ar1</code> estimate and variance estimates we can recover the <span class="pack" style="">brms</span> estimate.</p>
-<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb131-1"><a href="supplemental.html#cb131-1"></a>ar_tmb <span class="op">*</span><span class="st"> </span>ar_var_tmb<span class="op">/</span>(ar_var_tmb <span class="op">+</span><span class="st"> </span>res_var_tmb)</span></code></pre></div>
+<div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="supplemental.html#cb133-1"></a>ar_tmb <span class="op">*</span><span class="st"> </span>ar_var_tmb<span class="op">/</span>(ar_var_tmb <span class="op">+</span><span class="st"> </span>res_var_tmb)</span></code></pre></div>
 <pre><code>[1] 0.2494005</code></pre>
-<div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="supplemental.html#cb133-1"></a>ar_brm</span></code></pre></div>
+<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="supplemental.html#cb135-1"></a>ar_brm</span></code></pre></div>
 <pre><code>[1] 0.2475</code></pre>
-<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="supplemental.html#cb135-1"></a><span class="co"># if we assume ar var = 1</span></span>
-<span id="cb135-2"><a href="supplemental.html#cb135-2"></a>ar_brm<span class="op">*</span>res_var_brms</span></code></pre></div>
+<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb137-1"><a href="supplemental.html#cb137-1"></a><span class="co"># if we assume ar var = 1</span></span>
+<span id="cb137-2"><a href="supplemental.html#cb137-2"></a>ar_brm<span class="op">*</span>res_var_brms</span></code></pre></div>
 <pre><code>[1] 0.7455938</code></pre>
-<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb137-1"><a href="supplemental.html#cb137-1"></a>ar_tmb</span></code></pre></div>
+<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="supplemental.html#cb139-1"></a>ar_tmb</span></code></pre></div>
 <pre><code>[1] 0.7895</code></pre>
-<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="supplemental.html#cb139-1"></a><span class="co"># if we knew the ar variance</span></span>
-<span id="cb139-2"><a href="supplemental.html#cb139-2"></a>ar_brm<span class="op">*</span>(ar_var_tmb <span class="op">+</span><span class="st"> </span>res_var_tmb)<span class="op">/</span>ar_var_tmb</span></code></pre></div>
+<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="supplemental.html#cb141-1"></a><span class="co"># if we knew the ar variance, we could use brms to get to tmb&#39;s estimate</span></span>
+<span id="cb141-2"><a href="supplemental.html#cb141-2"></a>ar_brm<span class="op">*</span>(ar_var_tmb <span class="op">+</span><span class="st"> </span>res_var_tmb)<span class="op">/</span>ar_var_tmb</span></code></pre></div>
 <pre><code>[1] 0.7834837</code></pre>
 <p>The <span class="pack" style="">glmmTMB</span> approach is interesting in how it explicitly separates out the ar component from the rest of the residual component. This seems non-standard, as I don’t recall papers reporting the AR standard deviation for example, and every depiction I come across in the mixed model literature is the one that underlies <span class="pack" style="">brms</span>. However, it seems like it might be useful and/or interesting from some settings, or maybe even preferable as an additional interpretation for a random effect, similar to the ones we commonly use.</p>
 <p>We can change our function to force <span class="pack" style="">glmmTMB</span> to come to the same conclusion as <span class="pack" style="">brms</span> by not distinguishing the variance components. In this case, <span class="pack" style="">glmmTMB</span> will move all residual variance to the AR estimate, and the estimated correlation is the same as what <span class="pack" style="">brms</span> reports.</p>
-<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="supplemental.html#cb141-1"></a>simGroup_alt &lt;-<span class="st"> </span><span class="cf">function</span>(g, <span class="dt">n =</span> <span class="dv">5</span>, <span class="dt">rho =</span> <span class="fl">0.7</span>, <span class="dt">sigma =</span> <span class="fl">.5</span>) {</span>
-<span id="cb141-2"><a href="supplemental.html#cb141-2"></a>  <span class="co"># create time points and group id</span></span>
-<span id="cb141-3"><a href="supplemental.html#cb141-3"></a>  times &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="dv">1</span><span class="op">:</span>n)</span>
-<span id="cb141-4"><a href="supplemental.html#cb141-4"></a>  group &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="kw">rep</span>(g, n))</span>
-<span id="cb141-5"><a href="supplemental.html#cb141-5"></a>  </span>
-<span id="cb141-6"><a href="supplemental.html#cb141-6"></a>  <span class="co"># create the ar structure</span></span>
-<span id="cb141-7"><a href="supplemental.html#cb141-7"></a>  cor_struct &lt;-<span class="st"> </span>rho<span class="op">^</span><span class="kw">as.matrix</span>(<span class="kw">dist</span>(<span class="dv">1</span><span class="op">:</span>n))   </span>
-<span id="cb141-8"><a href="supplemental.html#cb141-8"></a>  </span>
-<span id="cb141-9"><a href="supplemental.html#cb141-9"></a>  <span class="co"># combine the residual variance</span></span>
-<span id="cb141-10"><a href="supplemental.html#cb141-10"></a>  resid_struct &lt;-<span class="st"> </span>cor_struct<span class="op">*</span>sigma<span class="op">^</span><span class="dv">2</span></span>
-<span id="cb141-11"><a href="supplemental.html#cb141-11"></a>  </span>
-<span id="cb141-12"><a href="supplemental.html#cb141-12"></a>  <span class="co"># Simulate the process; note the difference</span></span>
-<span id="cb141-13"><a href="supplemental.html#cb141-13"></a>  x_ar &lt;-<span class="st"> </span>MASS<span class="op">::</span><span class="kw">mvrnorm</span>(<span class="dt">mu =</span> <span class="kw">rep</span>(<span class="dv">0</span>, n), <span class="dt">Sigma =</span> resid_struct) </span>
-<span id="cb141-14"><a href="supplemental.html#cb141-14"></a>  </span>
-<span id="cb141-15"><a href="supplemental.html#cb141-15"></a>  <span class="co"># add another covariate</span></span>
-<span id="cb141-16"><a href="supplemental.html#cb141-16"></a>  x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n)</span>
-<span id="cb141-17"><a href="supplemental.html#cb141-17"></a>  </span>
-<span id="cb141-18"><a href="supplemental.html#cb141-18"></a>  <span class="co"># linear predictor</span></span>
-<span id="cb141-19"><a href="supplemental.html#cb141-19"></a>  mu &lt;-<span class="st"> </span><span class="dv">5</span> <span class="op">+</span><span class="st"> </span><span class="fl">.5</span><span class="op">*</span>x</span>
-<span id="cb141-20"><a href="supplemental.html#cb141-20"></a>  </span>
-<span id="cb141-21"><a href="supplemental.html#cb141-21"></a>  <span class="co"># Create target variable; residual already incorporated into x_ar</span></span>
-<span id="cb141-22"><a href="supplemental.html#cb141-22"></a>  y &lt;-<span class="st">  </span>mu <span class="op">+</span><span class="st"> </span>x_ar           </span>
-<span id="cb141-23"><a href="supplemental.html#cb141-23"></a>  </span>
-<span id="cb141-24"><a href="supplemental.html#cb141-24"></a>  <span class="kw">data.frame</span>(y, times, x, group)</span>
-<span id="cb141-25"><a href="supplemental.html#cb141-25"></a>}</span>
-<span id="cb141-26"><a href="supplemental.html#cb141-26"></a></span>
-<span id="cb141-27"><a href="supplemental.html#cb141-27"></a></span>
-<span id="cb141-28"><a href="supplemental.html#cb141-28"></a><span class="kw">set.seed</span>(<span class="dv">1234</span>)</span>
-<span id="cb141-29"><a href="supplemental.html#cb141-29"></a></span>
-<span id="cb141-30"><a href="supplemental.html#cb141-30"></a>test_df_alt =<span class="st"> </span><span class="kw">map_df</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">500</span>, simGroup_alt, <span class="dt">n =</span> <span class="dv">10</span>, <span class="dt">rho =</span> ar_brm, <span class="dt">sigma =</span> <span class="fl">1.5</span>) </span>
-<span id="cb141-31"><a href="supplemental.html#cb141-31"></a></span>
-<span id="cb141-32"><a href="supplemental.html#cb141-32"></a>model_tmb_alt =<span class="st"> </span><span class="kw">glmmTMB</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span><span class="kw">ar1</span>(times <span class="op">+</span><span class="st"> </span><span class="dv">0</span> <span class="op">|</span><span class="st"> </span>group), <span class="dt">data =</span> test_df_alt)</span>
-<span id="cb141-33"><a href="supplemental.html#cb141-33"></a></span>
-<span id="cb141-34"><a href="supplemental.html#cb141-34"></a><span class="kw">summary</span>(model_tmb_alt)</span></code></pre></div>
+<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="supplemental.html#cb143-1"></a>simGroup_alt &lt;-<span class="st"> </span><span class="cf">function</span>(g, <span class="dt">n =</span> <span class="dv">5</span>, <span class="dt">rho =</span> <span class="fl">0.7</span>, <span class="dt">sigma =</span> <span class="fl">.5</span>) {</span>
+<span id="cb143-2"><a href="supplemental.html#cb143-2"></a>  <span class="co"># create time points and group id</span></span>
+<span id="cb143-3"><a href="supplemental.html#cb143-3"></a>  times &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="dv">1</span><span class="op">:</span>n)</span>
+<span id="cb143-4"><a href="supplemental.html#cb143-4"></a>  group &lt;-<span class="st"> </span><span class="kw">factor</span>(<span class="kw">rep</span>(g, n))</span>
+<span id="cb143-5"><a href="supplemental.html#cb143-5"></a>  </span>
+<span id="cb143-6"><a href="supplemental.html#cb143-6"></a>  <span class="co"># create the ar structure</span></span>
+<span id="cb143-7"><a href="supplemental.html#cb143-7"></a>  cor_struct &lt;-<span class="st"> </span>rho<span class="op">^</span><span class="kw">as.matrix</span>(<span class="kw">dist</span>(<span class="dv">1</span><span class="op">:</span>n))   </span>
+<span id="cb143-8"><a href="supplemental.html#cb143-8"></a>  </span>
+<span id="cb143-9"><a href="supplemental.html#cb143-9"></a>  <span class="co"># combine the residual variance</span></span>
+<span id="cb143-10"><a href="supplemental.html#cb143-10"></a>  resid_struct &lt;-<span class="st"> </span>cor_struct<span class="op">*</span>sigma<span class="op">^</span><span class="dv">2</span></span>
+<span id="cb143-11"><a href="supplemental.html#cb143-11"></a>  </span>
+<span id="cb143-12"><a href="supplemental.html#cb143-12"></a>  <span class="co"># Simulate the process; note the difference</span></span>
+<span id="cb143-13"><a href="supplemental.html#cb143-13"></a>  x_ar &lt;-<span class="st"> </span>MASS<span class="op">::</span><span class="kw">mvrnorm</span>(<span class="dt">mu =</span> <span class="kw">rep</span>(<span class="dv">0</span>, n), <span class="dt">Sigma =</span> resid_struct) </span>
+<span id="cb143-14"><a href="supplemental.html#cb143-14"></a>  </span>
+<span id="cb143-15"><a href="supplemental.html#cb143-15"></a>  <span class="co"># add another covariate</span></span>
+<span id="cb143-16"><a href="supplemental.html#cb143-16"></a>  x &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n)</span>
+<span id="cb143-17"><a href="supplemental.html#cb143-17"></a>  </span>
+<span id="cb143-18"><a href="supplemental.html#cb143-18"></a>  <span class="co"># linear predictor</span></span>
+<span id="cb143-19"><a href="supplemental.html#cb143-19"></a>  mu &lt;-<span class="st"> </span><span class="dv">5</span> <span class="op">+</span><span class="st"> </span><span class="fl">.5</span><span class="op">*</span>x</span>
+<span id="cb143-20"><a href="supplemental.html#cb143-20"></a>  </span>
+<span id="cb143-21"><a href="supplemental.html#cb143-21"></a>  <span class="co"># Create target variable; residual already incorporated into x_ar</span></span>
+<span id="cb143-22"><a href="supplemental.html#cb143-22"></a>  y &lt;-<span class="st">  </span>mu <span class="op">+</span><span class="st"> </span>x_ar           </span>
+<span id="cb143-23"><a href="supplemental.html#cb143-23"></a>  </span>
+<span id="cb143-24"><a href="supplemental.html#cb143-24"></a>  <span class="kw">data.frame</span>(y, times, x, group)</span>
+<span id="cb143-25"><a href="supplemental.html#cb143-25"></a>}</span>
+<span id="cb143-26"><a href="supplemental.html#cb143-26"></a></span>
+<span id="cb143-27"><a href="supplemental.html#cb143-27"></a></span>
+<span id="cb143-28"><a href="supplemental.html#cb143-28"></a><span class="kw">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb143-29"><a href="supplemental.html#cb143-29"></a></span>
+<span id="cb143-30"><a href="supplemental.html#cb143-30"></a>test_df_alt =<span class="st"> </span><span class="kw">map_df</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">500</span>, simGroup_alt, <span class="dt">n =</span> <span class="dv">10</span>, <span class="dt">rho =</span> ar_brm, <span class="dt">sigma =</span> <span class="fl">1.5</span>) </span>
+<span id="cb143-31"><a href="supplemental.html#cb143-31"></a></span>
+<span id="cb143-32"><a href="supplemental.html#cb143-32"></a>model_tmb_alt =<span class="st"> </span><span class="kw">glmmTMB</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span><span class="kw">ar1</span>(times <span class="op">+</span><span class="st"> </span><span class="dv">0</span> <span class="op">|</span><span class="st"> </span>group), <span class="dt">data =</span> test_df_alt)</span>
+<span id="cb143-33"><a href="supplemental.html#cb143-33"></a></span>
+<span id="cb143-34"><a href="supplemental.html#cb143-34"></a><span class="kw">summary</span>(model_tmb_alt)</span></code></pre></div>
 <pre><code> Family: gaussian  ( identity )
 Formula:          y ~ x + ar1(times + 0 | group)
 Data: test_df_alt
@@ -1807,7 +1829,7 @@ x            0.47068    0.01974   23.84   &lt;2e-16 ***
 Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <div id="summary-of-residual-correlation-structure" class="section level3">
 <h3>Summary of residual correlation structure</h3>
-<p>What both of these syntactical approaches make clear is that in specifying a specific correlational structure, we can think of it as adding a latent variable, i.e. a random effect, to our standard model, just as we have done with other random effects. This particular random effect has correlated observations within a group as specified by the structure. As such, it makes more sense to think of it as an additional component to the model structure/formula, as opposed to an function argument separate from your theoretical focus.</p>
+<p>What both of these syntactical approaches make clear is that, in specifying a specific correlational structure, we can think of it as adding a latent variable, i.e. a random effect, to our standard model, just as we have done with other random effects. This particular random effect has correlated observations within a group as specified by the structure. As such, it may make more sense to think of it as an additional component to the model structure/formula, as opposed to an function argument separate from your theoretical focus.</p>
 
 </div>
 </div>
