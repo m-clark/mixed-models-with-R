@@ -13,7 +13,7 @@ bibliography: refs.bib
 biblio-style: apalike
 always_allow_html: true
 link-citations: yes
-description: "This is an introduction to mixed models in R. It covers a many of the most common techniques employed in such models, and relies heavily on the lme4 package.  The basics of random intercepts and slopes models, crossed vs. nested models, etc. are covered. Discussion includes extensions into generalized mixed models and realms beyond. "
+description: "This is an introduction to using mixed models in R. It covers the most common techniques employed, with demonstration primarily via the lme4 package.  Discussion includes extensions into generalized mixed models, Bayesian approaches, and realms beyond."
 cover-image: 'img/nineteeneightyR.png'
 favicon: 'img/R.ico'
 url: 'https\://m-clark.github.io/mixed-models-with-R/'  # evidently the \: is required or you'll get text in the title/toc area

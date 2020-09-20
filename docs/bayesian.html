@@ -5,25 +5,25 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Bayesian Approaches | Mixed Models with R</title>
-  <meta name="description" content="This is an introduction to mixed models in R. It covers a many of the most common techniques employed in such models, and relies heavily on the lme4 package. The basics of random intercepts and slopes models, crossed vs. nested models, etc. are covered. Discussion includes extensions into generalized mixed models and realms beyond." />
+  <meta name="description" content="This is an introduction to using mixed models in R. It covers the most common techniques employed, with demonstration primarily via the lme4 package. Discussion includes extensions into generalized mixed models, Bayesian approaches, and realms beyond." />
   <meta name="generator" content="bookdown 0.20.2 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Bayesian Approaches | Mixed Models with R" />
   <meta property="og:type" content="book" />
   <meta property="og:url" content="https://m-clark.github.io/mixed-models-with-R/" />
   <meta property="og:image" content="https://m-clark.github.io/mixed-models-with-R/img/nineteeneightyR.png" />
-  <meta property="og:description" content="This is an introduction to mixed models in R. It covers a many of the most common techniques employed in such models, and relies heavily on the lme4 package. The basics of random intercepts and slopes models, crossed vs. nested models, etc. are covered. Discussion includes extensions into generalized mixed models and realms beyond." />
+  <meta property="og:description" content="This is an introduction to using mixed models in R. It covers the most common techniques employed, with demonstration primarily via the lme4 package. Discussion includes extensions into generalized mixed models, Bayesian approaches, and realms beyond." />
   <meta name="github-repo" content="m-clark/mixed-models-with-R/" />
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Bayesian Approaches | Mixed Models with R" />
   
-  <meta name="twitter:description" content="This is an introduction to mixed models in R. It covers a many of the most common techniques employed in such models, and relies heavily on the lme4 package. The basics of random intercepts and slopes models, crossed vs. nested models, etc. are covered. Discussion includes extensions into generalized mixed models and realms beyond." />
+  <meta name="twitter:description" content="This is an introduction to using mixed models in R. It covers the most common techniques employed, with demonstration primarily via the lme4 package. Discussion includes extensions into generalized mixed models, Bayesian approaches, and realms beyond." />
   <meta name="twitter:image" content="https://m-clark.github.io/mixed-models-with-R/img/nineteeneightyR.png" />
 
 
 
-<meta name="date" content="2020-09-11" />
+<meta name="date" content="2020-09-20" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -465,9 +465,13 @@ occasion    0.106314   0.005885   18.07</code></pre>
 <p>Multinomial. Uses the categorical distribution for a standard multicategory target.</p>
 <div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="bayesian.html#cb64-1"></a><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g), <span class="dt">family =</span> categorical)</span></code></pre></div>
 <p>Zero-inflated and hurdle models.</p>
-<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="bayesian.html#cb65-1"></a><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g), <span class="dt">family =</span> <span class="kw">zero_inflated_negbinomial</span>(<span class="dt">link =</span> <span class="st">&#39;log&#39;</span>))</span>
-<span id="cb65-2"><a href="bayesian.html#cb65-2"></a></span>
-<span id="cb65-3"><a href="bayesian.html#cb65-3"></a><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g), <span class="dt">family =</span> hurdle_lognormal)</span></code></pre></div>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="bayesian.html#cb65-1"></a><span class="kw">brm</span>(</span>
+<span id="cb65-2"><a href="bayesian.html#cb65-2"></a>  y  <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g), </span>
+<span id="cb65-3"><a href="bayesian.html#cb65-3"></a>  zi <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z, </span>
+<span id="cb65-4"><a href="bayesian.html#cb65-4"></a>  <span class="dt">family =</span> <span class="kw">zero_inflated_negbinomial</span>(<span class="dt">link =</span> <span class="st">&#39;log&#39;</span>)</span>
+<span id="cb65-5"><a href="bayesian.html#cb65-5"></a>)</span>
+<span id="cb65-6"><a href="bayesian.html#cb65-6"></a></span>
+<span id="cb65-7"><a href="bayesian.html#cb65-7"></a><span class="kw">brm</span>(y <span class="op">~</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>z <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>g), <span class="dt">family =</span> hurdle_lognormal)</span></code></pre></div>
 <p>Many more including <span class="emph">weibull</span>, <span class="emph">student t</span>, <span class="emph">beta</span>, <span class="emph">skew normal</span>, <span class="emph">von mises</span>, and more.</p>
 </div>
 <div id="residual-structure-and-heterogeous-variances" class="section level4">

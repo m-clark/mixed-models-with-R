@@ -5,25 +5,25 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Appendix | Mixed Models with R</title>
-  <meta name="description" content="This is an introduction to mixed models in R. It covers a many of the most common techniques employed in such models, and relies heavily on the lme4 package. The basics of random intercepts and slopes models, crossed vs. nested models, etc. are covered. Discussion includes extensions into generalized mixed models and realms beyond." />
+  <meta name="description" content="This is an introduction to using mixed models in R. It covers the most common techniques employed, with demonstration primarily via the lme4 package. Discussion includes extensions into generalized mixed models, Bayesian approaches, and realms beyond." />
   <meta name="generator" content="bookdown 0.20.2 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Appendix | Mixed Models with R" />
   <meta property="og:type" content="book" />
   <meta property="og:url" content="https://m-clark.github.io/mixed-models-with-R/" />
   <meta property="og:image" content="https://m-clark.github.io/mixed-models-with-R/img/nineteeneightyR.png" />
-  <meta property="og:description" content="This is an introduction to mixed models in R. It covers a many of the most common techniques employed in such models, and relies heavily on the lme4 package. The basics of random intercepts and slopes models, crossed vs. nested models, etc. are covered. Discussion includes extensions into generalized mixed models and realms beyond." />
+  <meta property="og:description" content="This is an introduction to using mixed models in R. It covers the most common techniques employed, with demonstration primarily via the lme4 package. Discussion includes extensions into generalized mixed models, Bayesian approaches, and realms beyond." />
   <meta name="github-repo" content="m-clark/mixed-models-with-R/" />
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Appendix | Mixed Models with R" />
   
-  <meta name="twitter:description" content="This is an introduction to mixed models in R. It covers a many of the most common techniques employed in such models, and relies heavily on the lme4 package. The basics of random intercepts and slopes models, crossed vs. nested models, etc. are covered. Discussion includes extensions into generalized mixed models and realms beyond." />
+  <meta name="twitter:description" content="This is an introduction to using mixed models in R. It covers the most common techniques employed, with demonstration primarily via the lme4 package. Discussion includes extensions into generalized mixed models, Bayesian approaches, and realms beyond." />
   <meta name="twitter:image" content="https://m-clark.github.io/mixed-models-with-R/img/nineteeneightyR.png" />
 
 
 
-<meta name="date" content="2020-09-11" />
+<meta name="date" content="2020-09-20" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -343,7 +343,7 @@ market segments.</p>
 </div>
 <div id="python" class="section level3">
 <h3>Python</h3>
-<p>In Python, the <a href="http://www.statsmodels.org/stable/mixed_linear.html">statsmodels</a> module has basic capabilities for mixed models but not too many frills (e.g. no crossed random effects). CSCAR director Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series <a href="https://github.com/kshedden/Statsmodels-MixedLM">here</a>. The following provides an example.</p>
+<p>In Python, the <a href="http://www.statsmodels.org/stable/mixed_linear.html">statsmodels</a> module has basic capabilities for mixed models, but not too many frills relatively speaking. CSCAR director Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series <a href="https://github.com/kshedden/Statsmodels-MixedLM">here</a>. The following provides an example.</p>
 <div class="sourceCode" id="cb145"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb145-1"><a href="appendix.html#cb145-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb145-2"><a href="appendix.html#cb145-2"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
 <span id="cb145-3"><a href="appendix.html#cb145-3"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
@@ -369,6 +369,7 @@ occasion     0.106    0.004  26.096 0.000  0.098  0.114
 Group Var    0.064    0.033                            
 =======================================================
     </code></pre>
+<!-- Revisit pymer4 in the future. Could not install via conda 2020-09 -->
 </div>
 <div id="julia" class="section level3">
 <h3>Julia</h3>

@@ -149,7 +149,11 @@ brm(y ~ x + z + (1 | g), family = categorical)
 Zero-inflated and hurdle models.
 
 ```{r brms-zero, eval=FALSE}
-brm(y ~ x + z + (1 | g), family = zero_inflated_negbinomial(link = 'log'))
+brm(
+  y  ~ x + z + (1 | g), 
+  zi ~ x + z, 
+  family = zero_inflated_negbinomial(link = 'log')
+)
 
 brm(y ~ x + z + (1 | g), family = hurdle_lognormal)
 ```

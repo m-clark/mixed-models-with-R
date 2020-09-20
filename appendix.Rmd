@@ -51,7 +51,7 @@ R has more mixed modeling capabilities [than anything else out there](https://ww
 
 ### Python
 
-In Python, the [statsmodels](http://www.statsmodels.org/stable/mixed_linear.html) module has basic capabilities for mixed models but not too many frills (e.g. no crossed random effects).  CSCAR director Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series [here](https://github.com/kshedden/Statsmodels-MixedLM).  The following provides an example.
+In Python, the [statsmodels](http://www.statsmodels.org/stable/mixed_linear.html) module has basic capabilities for mixed models, but not too many frills relatively speaking.  CSCAR director Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series [here](https://github.com/kshedden/Statsmodels-MixedLM).  The following provides an example.
 
 ```{r pycheck, echo=FALSE, cache=FALSE}
 pycheck = ifelse(grepl('Windows', sessionInfo()$running), 
@@ -93,6 +93,7 @@ Group Var    0.064    0.033
 ```
 
 
+<!-- Revisit pymer4 in the future. Could not install via conda 2020-09 -->
 
 ### Julia
 

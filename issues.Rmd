@@ -1,7 +1,7 @@
 # Issues
 
 <div style = 'text-align: center'>
-<i class="fas fa-exclamation-triangle fa-5x" style = 'color:#990024'></i><span class="">
+<i class="fas fa-exclamation-triangle fa-5x" style = 'color:#990024'></i>
 </div>
 
 <br>
