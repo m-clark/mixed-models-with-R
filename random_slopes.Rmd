@@ -1,4 +1,13 @@
+```{r chunk_setup-ran-slope, include=FALSE, eval=TRUE}
+knitr::opts_chunk$set(
+  # cache
+  cache.rebuild = F,
+  cache         = T
+)
+```
+
 # More Random Effects
+
 
 Previously we've looked at random intercepts, but any observation or lower level covariate effect could be allowed to vary by cluster as well.
 
@@ -82,7 +91,7 @@ knitr::include_graphics('img/gpa_anim.gif')
 Let us now assume that the trend over time is allowed to vary by student in addition to the intercepts.  Using <span class="pack">lme4</span>, this is quite straightforward.
 
 ```{r random_slope, eval=FALSE}
-gpa_mixed =  lmer(gpa ~ occasion + (1 + occasion|student), data=gpa)
+gpa_mixed =  lmer(gpa ~ occasion + (1 + occasion | student), data = gpa)
 summary(gpa_mixed)
 ```
 
@@ -99,19 +108,18 @@ extract_fixed_effects(gpa_mixed) %>%
 extract_vc(gpa_mixed, ci_level = 0) %>% 
   kable_df()
 
-# gpa_mixed %>% 
-#   tidy('fixed', conf.int=T) %>% 
-#   kable(digits = 3) %>% 
-#   kable_styling()
+# gpa_mixed %>%
+#   tidy('fixed', conf.int=T) %>%
+#   kable_df()
+# 
 # 
 # data.frame(VarCorr(gpa_mixed)) %>% 
 #   slice(-3) %>%  
 #   select(-var2) %>% 
 #   rename(variance=vcov, sd=sdcor, re=var1) %>%  
 #   mutate_all(function(x) ifelse(is.na(x), '', x)) %>%
-#   data.frame %>% 
-#   kable(digits = 3) %>% 
-#   kable_styling()
+#   data.frame %>%
+#   kable_df()
 ```
 
 As before, since we have 0 as our starting semester, the intercept tells us what the average GPA is in the first semester.  The coefficient for occasion still reflects a one semester change in GPA.  As we have not changed the fixed effect portion of the model, the values are the same as before.
@@ -126,8 +134,8 @@ Yet another point of interest is the correlation of the intercepts and slopes. I
 
 Let's compare these results to the ones we would have gotten had we run a separate regression for each student.  In what follows we see the distribution of of the estimated intercept and slope coefficients for all the students.  Note that these are the same estimates one would have gotten with a fixed effects model with an occasion by student interaction[^fe_comparison].
 
-```{r ranints_vs_separateints, echo=FALSE}
-gint = data_frame(
+```{r ranints_vs_separateints, echo=FALSE, eval=FALSE}
+gint = tibble(
   Mixed = extract_random_coefs(gpa_mixed) %>% filter(effect == 'Intercept') %>% pull(value),
   Separate = gpa_lm_by_group %>% pull(Intercept)
 ) %>%
@@ -137,7 +145,7 @@ gint = data_frame(
   scale_fill_manual(values = c(palettes$orange$orange, palettes$orange$complementary[2])) +
   labs(x = '', y = '', title = 'Intercepts') +
   xlim(c(1.5, 4)) +
-  theme_trueMinimal() +
+  theme_clean() +
   theme(
     axis.text.x = element_text(size = 8),
     axis.text.y = element_blank(),
@@ -150,7 +158,7 @@ gint = data_frame(
     title = element_text(size = 12)
   )
 
-gslopes = data_frame(
+gslopes = tibble(
   Mixed = extract_random_coefs(gpa_mixed) %>% filter(effect == 'occasion') %>% pull(value),
   Separate = gpa_lm_by_group %>% pull(occasion)
 ) %>%
@@ -162,7 +170,7 @@ gslopes = data_frame(
   scale_fill_manual(values = c(palettes$orange$orange, palettes$orange$complementary[2])) +
   labs(x = '', y = '', title = 'Slopes for occasion') +
   xlim(c(-.2, .4)) +
-  theme_trueMinimal() +
+  theme_clean() +
   theme(
     axis.text.x = element_text(size = 8),
     axis.text.y = element_blank(),
@@ -171,7 +179,14 @@ gslopes = data_frame(
   )
 
 gint + gslopes
+
+ggsave('img/shrinkage_main.svg')
 ```
+
+```{r shrinkage_main, out.width='125%', echo = F}
+knitr::include_graphics('img/shrinkage_main.svg')
+```
+
 
 Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what would have been the by-group estimate, which would otherwise overfit in this scenario.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models[^pool].  It comes into play largely when we have few observations per group and less estimated variance for the random effects.  In other words, when there is little information in a group, or less group-level variance relative to the observation variance, then the mixed model will produce a group-specific effect that is closer to the overall population effect.  In that sense, the mixed model group coefficients better reflect our ignorance.  Conversely, with more pronounced group effects, our uncertainty about the overall effect increases.  
 
@@ -180,7 +195,7 @@ The following shows what would happen to similar data under a variety of setting
 
 
 
-```{r ranints_vs_separateints_more_npg, echo=FALSE}
+```{r ranints_vs_separateints_more_npg, echo=FALSE, eval=FALSE}
 set.seed(1234)
 Nstudent = 200
 NperGroup = 100
@@ -202,9 +217,7 @@ separate_lm = d %>%
   map_df(~data.frame(t(coef(lm(y ~ occasion, data=.))))) %>% 
   rename(Intercept = X.Intercept.)
 
-# lazerhawk::describeAll()
-
-gint_more_npg = data_frame(
+gint_more_npg = tibble(
   Mixed = extract_random_coefs(model) %>% filter(effect == 'Intercept') %>% pull(value),
   Separate = separate_lm %>% pull(Intercept)
 ) %>%
@@ -216,7 +229,7 @@ gint_more_npg = data_frame(
   scale_fill_manual(values = c(palettes$orange$orange, palettes$orange$complementary[2])) +
   labs(x = '', y = '', title = 'Intercepts', subtitle = 'More observations per group') +
   xlim(c(1, 4)) +
-  theme_trueMinimal() +
+  theme_clean() +
   theme(
     axis.text.x  = element_text(size = 6),
     axis.text.y  = element_blank(),
@@ -229,7 +242,7 @@ gint_more_npg = data_frame(
     title = element_text(size = 7)
   )
 
-gslopes_more_npg = data_frame(
+gslopes_more_npg = tibble(
   Mixed = extract_random_coefs(model) %>% filter(effect == 'occasion') %>% pull(value),
   Separate = separate_lm %>% pull(occasion)
 ) %>%
@@ -241,7 +254,7 @@ gslopes_more_npg = data_frame(
   scale_fill_manual(values = c(palettes$orange$orange, palettes$orange$complementary[2])) +
   labs(x = '', y = '', title = 'Slopes for occasion', subtitle = 'More observations per group') +
   xlim(c(-.25, .4)) +
-  theme_trueMinimal() +
+  theme_clean() +
   theme(
     axis.text.x  = element_text(size = 6),
     axis.text.y  = element_blank(),
@@ -252,7 +265,7 @@ gslopes_more_npg = data_frame(
 # gint_more_npg + gslopes_more_npg
 ```
 
-```{r ranints_vs_separateints_more_re, echo=FALSE}
+```{r ranints_vs_separateints_more_re, echo=FALSE, eval=FALSE}
 set.seed(1234)
 Nstudent  = 200
 NperGroup = 6
@@ -274,7 +287,7 @@ separate_lm = d %>%
   map_df(~data.frame(t(coef(lm(y ~ occasion, data=.))))) %>% 
   rename(Intercept = X.Intercept.)
 
-gint_more_re = data_frame(
+gint_more_re = tibble(
   Mixed = extract_random_coefs(model) %>% filter(effect == 'Intercept') %>% pull(value),
   Separate = separate_lm %>% pull(Intercept)
 ) %>%
@@ -291,7 +304,7 @@ gint_more_re = data_frame(
     subtitle = 'More RE variance'
   ) +
   xlim(c(1, 4)) +
-  theme_trueMinimal() +
+  theme_clean() +
   theme(
     axis.text.x  = element_text(size = 6),
     axis.text.y  = element_blank(),
@@ -304,7 +317,7 @@ gint_more_re = data_frame(
     title = element_text(size = 7)
   )
 
-gslopes_more_re = data_frame(
+gslopes_more_re = tibble(
   Mixed = extract_random_coefs(model) %>% filter(effect == 'occasion') %>% pull(value),
   Separate = separate_lm %>% pull(occasion)
 ) %>%
@@ -321,7 +334,7 @@ gslopes_more_re = data_frame(
     subtitle = 'More RE variance'
   ) +
   xlim(c(-.6, 1)) +
-  theme_trueMinimal() +
+  theme_clean() +
   theme(
     axis.text.x  = element_text(size = 6),
     axis.text.y  = element_blank(),
@@ -332,7 +345,7 @@ gslopes_more_re = data_frame(
 # gint_more_re + gslopes_more_re
 ```
 
-```{r ranints_vs_separateints_less_npg, echo=FALSE}
+```{r ranints_vs_separateints_less_npg, echo=FALSE, eval=FALSE}
 set.seed(1234)
 Nstudent = 200
 NperGroup = 3
@@ -354,7 +367,7 @@ separate_lm = d %>%
   map_df(~data.frame(t(coef(lm(y ~ occasion, data=.))))) %>% 
   rename(Intercept = X.Intercept.)
 
-gint_less_npg = data_frame(
+gint_less_npg = tibble(
   Mixed = extract_random_coefs(model) %>% filter(effect == 'Intercept') %>% pull(value),
   Separate = separate_lm %>% pull(Intercept)
   ) %>%
@@ -371,7 +384,7 @@ gint_less_npg = data_frame(
     subtitle = 'Fewer observations per group'
   ) +
   xlim(c(1, 4)) +
-  theme_trueMinimal() +
+  theme_clean() +
   theme(
     axis.text.x  = element_text(size = 6),
     axis.text.y  = element_blank(),
@@ -384,7 +397,7 @@ gint_less_npg = data_frame(
     title = element_text(size = 7)
   )
 
-gslopes_less_npg = data_frame(
+gslopes_less_npg = tibble(
   Mixed = extract_random_coefs(model) %>% filter(effect == 'occasion') %>% pull(value),
   Separate = separate_lm %>% pull(occasion)
   ) %>%
@@ -401,7 +414,7 @@ gslopes_less_npg = data_frame(
     subtitle = 'Fewer observations per group'
   ) +
   xlim(c(-.6, .8)) +
-  theme_trueMinimal() +
+  theme_clean() +
   theme(
     axis.text.x  = element_text(size = 6),
     axis.text.y = element_blank(),
@@ -412,7 +425,7 @@ gslopes_less_npg = data_frame(
 # gint_less_npg + gslopes_less_npg
 ```
 
-```{r ranints_vs_separateints_imbalanced, echo=FALSE}
+```{r ranints_vs_separateints_imbalanced, echo=FALSE, eval=FALSE}
 set.seed(1234)  
 Nstudent = 200
 NperGroup = 10
@@ -444,7 +457,7 @@ separate_lm = d %>%
   rename(Intercept = X.Intercept.)
 
 
-gint_imbalanced = data_frame(
+gint_imbalanced = tibble(
   Mixed = extract_random_coefs(model) %>% filter(effect == 'Intercept') %>% pull(value),
   Separate = separate_lm %>% pull(Intercept)
   ) %>%
@@ -461,7 +474,7 @@ gint_imbalanced = data_frame(
     subtitle = 'Imbalanced'
   ) +
   xlim(c(1, 4)) +
-  theme_trueMinimal() +
+  theme_clean() +
   theme(
     axis.text.x  = element_text(size = 6),
     axis.text.y  = element_blank(),
@@ -474,7 +487,7 @@ gint_imbalanced = data_frame(
     title = element_text(size = 7)
   )
 
-gslopes_imbalanced = data_frame(
+gslopes_imbalanced = tibble(
   Mixed = extract_random_coefs(model) %>% filter(effect == 'occasion') %>% pull(value),
   Separate = separate_lm %>% pull(occasion)
 ) %>%
@@ -491,7 +504,7 @@ gslopes_imbalanced = data_frame(
     subtitle = 'Imbalanced'
   ) +
   xlim(c(-.6, .8)) +
-  theme_trueMinimal() +
+  theme_clean() +
   theme(
     axis.text.x  = element_text(size = 6),
     axis.text.y = element_blank(),
@@ -504,11 +517,18 @@ gslopes_imbalanced = data_frame(
 
 
 
-```{r all_together_now, echo=F, fig.align='left', out.width='100%', cache.rebuild=T}
+```{r all_together_now, echo=F, fig.align='left', out.width='100%', eval=F}
+# all previous chunks need to be run 
+
 (gint + theme(title = element_text(size = 8)) | gint_more_npg | gint_more_re | gint_less_npg | gint_imbalanced) /
   (gslopes  + theme(title = element_text(size = 8))| gslopes_more_npg | gslopes_more_re | gslopes_less_npg | gslopes_imbalanced)
+
+ggsave('img/shrinkage_all.svg')
 ```
 
+```{r shrinkage_all, out.width='125%', echo = F}
+knitr::include_graphics('img/shrinkage_all.svg')
+```
 
 
 ## Visualization of effects
@@ -668,7 +688,7 @@ summary(lm(gpa_demean ~ occasion_demean - 1, gpa))
 # gpa_mixed = lmer(gpa ~ occasion + (1|student), data=gpa)
 # head(cbind(gpa_lm_by_group[,1], wi, coef(gpa_mixed)[[1]]))
 
-data_frame(
+tibble(
   `Mixed model` = coef(gpa_mixed)$student[, 1],
   `Fixed effects model` = wi,
   `LM by group` = ints_fixed
@@ -686,7 +706,7 @@ data_frame(
   ggtitle('Intercepts') +
   labs(x = '', y = '') +
   xlim(c(1.5, 4)) +
-  theme_trueMinimal() +
+  theme_clean() +
   theme(
     legend.key.size = unit(2, 'mm'),
     legend.title = element_text(size = 8),

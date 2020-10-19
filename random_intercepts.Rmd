@@ -1,3 +1,11 @@
+```{r chunk_setup-ran-int, include=FALSE, eval=TRUE}
+knitr::opts_chunk$set(
+  # cache
+  cache.rebuild = F,
+  cache         = T
+)
+```
+
 # Mixed Models
 
 <br>
@@ -46,7 +54,7 @@ In what follows we'll see mixed effect models in all these data situations. In g
 
 ## Random Intercepts Model
 
-For the following we'll demonstrate the simplest[^vcmodel] and most common case of a mixed model, that in which we have a single grouping structure for the random effect added to the standard regression situation.  For reasons that will hopefully become clear soon, this is commonly called a random intercepts model. We will also see an extension of it later.
+For the following we'll demonstrate the simplest[^vcmodel] and most common case of a mixed model, that in which we have a single grouping/cluster structure for the random effect.  For reasons that will hopefully become clear soon, this is commonly called a *random intercepts model*. 
 
 
 ## Example: Student GPA
@@ -134,14 +142,14 @@ Now we show one way of depicting a mixed model that includes a unique effect for
 
 $$\mathscr{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathscr{occasion} + (\mathrm{effect}_{\mathscr{student}} + \epsilon)$$
 
-We (usually) assume the following for the student effects.  
+We would (usually) assume the following for the student effects.  
 
 
 $$\mathrm{effect}_{\mathrm{student}} \sim \mathscr{N}(0, \tau)$$
 
 Thus the student effects are random, and specifically are normally distributed with mean of zero and some estimated standard deviation ($\tau$). In other words, conceptually the only difference between this mixed model and a standard regression is the student effect, which on average is no effect, but typically varies from student to student by some amount that is on average $\tau$.
 
-If we rearrange it, we can instead focus on model coefficients rather than as an additional source of error.
+If we rearrange it, we can instead focus on model coefficients, rather than as an additional source of error.
 
 $$\mathscr{gpa} = (b_{\mathrm{intercept}} + \mathrm{effect}_{\mathscr{student}}) + b_{\mathrm{occ}}\cdot \mathscr{occasion} +  \epsilon$$
 Or more succinctly:
@@ -359,7 +367,7 @@ The following plot is of the estimated random effects for each student and their
 # merTools::plotREsim(merTools::REsim(gpa_mixed)) +
 #   labs(x='Student', y='Value', title='Plot of Random Effects', subtitle='Interval estimates ') +
 #   geom_hline(aes(yintercept=0), color='orange', alpha=.5) +
-#   theme_trueMinimal() +
+#   theme_clean() +
 #   theme(axis.text.x = element_blank(),
 #         axis.ticks.x = element_blank(),
 #         strip.text.x = element_blank(),
@@ -397,7 +405,7 @@ In the above code we specified not to use the random effects `re.form=NA`, and a
 predict_no_re = predict(gpa_mixed, re.form=NA)
 predict_lm    = predict(gpa_lm)
 
-data_frame(student = as.numeric(gpa$student),
+tibble(student = as.numeric(gpa$student),
            lm = predict_lm, 
            `lmer no re`=predict_no_re) %>% 
   round(2) %>% 
@@ -409,7 +417,7 @@ But each person has their unique intercept, so let's see how the predictions dif
 ```{r predict_cond_lm, echo=1}
 predict_with_re = predict(gpa_mixed)
 
-data_frame(
+tibble(
   student = as.numeric(gpa$student),
   lm = predict_lm,
   `lmer no re` = predict_no_re,
@@ -426,7 +434,7 @@ Depending on the estimated student effect, students will start above or below th
 
 ```{r predict_cond_lm_plot, echo=FALSE}
 # note that plotly will warn because it's plotly 
-data_frame(
+tibble(
   student = as.character(gpa$student),
   occasion = gpa$occasion,
   gpa = gpa$gpa,

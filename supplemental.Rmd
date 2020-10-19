@@ -1,3 +1,11 @@
+```{r chunk_setup-supp, include=FALSE, eval=TRUE}
+knitr::opts_chunk$set(
+  # cache
+  cache.rebuild = F,
+  cache         = T
+)
+```
+
 
 # Supplemental
 
@@ -336,7 +344,8 @@ mixed_ran_int_ran_slope_hetero_var = lme(
 mixedup::summarise_model(mixed_ran_int_ran_slope_hetero_var)
 
 res_var = mixedup::extract_het_var(mixed_ran_int_ran_slope_hetero_var, scale = 'var')
-data_frame(
+
+tibble(
   Semester = 0:5,
   Variance = t(res_var)
   ) %>% 
@@ -873,7 +882,7 @@ summary(model_tmb_alt)
 
 ### Summary of residual correlation structure
 
-What both of these syntactical approaches make clear is that, in specifying a specific correlational structure, we can think of it as adding a latent variable, i.e. a random effect, to our standard model, just as we have done with other random effects.  This particular random effect has correlated observations within a group as specified by the structure.  As such, it may make more sense to think of it as an additional component to the model structure/formula, as opposed to an function argument separate from your theoretical focus.
+What both of these syntactical approaches make clear is that, in specifying a specific correlational structure, we can think of it as adding a latent variable, i.e. a random effect, to our standard model, just as we have done with other random effects.    This particular random effect has correlated observations within a group as specified by the structure.  The same thing can apply in the case of heterogenous variances, just that no specific correlation is assumed in that case. As such, it may make more sense to think of it as an additional component to the model structure/formula, as opposed to an function argument separate from your theoretical focus.
 
 
 

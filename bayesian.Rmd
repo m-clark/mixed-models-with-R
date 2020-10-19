@@ -1,3 +1,12 @@
+```{r chunk_setup-bayes, include=FALSE, eval=TRUE}
+knitr::opts_chunk$set(
+  # cache
+  cache.rebuild = F,
+  cache         = T
+)
+```
+
+
 # Bayesian Approaches
 
 <img src="img/priorpost.png" style="display:block; margin: 0 auto; width:50%">

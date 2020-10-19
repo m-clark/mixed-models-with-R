@@ -1,3 +1,11 @@
+```{r chunk_setup-issues, include=FALSE, eval=TRUE}
+knitr::opts_chunk$set(
+  # cache
+  cache.rebuild = F,
+  cache         = T
+)
+```
+
 # Issues
 
 <div style = 'text-align: center'>

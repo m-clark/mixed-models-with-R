@@ -23,7 +23,7 @@
 
 
 
-<meta name="date" content="2020-09-20" />
+<meta name="date" content="2020-10-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,6 +32,7 @@
   <link rel="shortcut icon" href="img/R.ico" type="image/x-icon" />
 <link rel="prev" href="supplemental.html"/>
 
+<script src="libs/header-attrs-2.3/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -49,7 +50,6 @@
 
 
 
-<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
 <script src="libs/viz-1.8.2/viz.js"></script>
 <link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
@@ -66,21 +66,23 @@
 <link href="libs/plotly-htmlwidgets-css-1.52.2/plotly-htmlwidgets.css" rel="stylesheet" />
 <script src="libs/plotly-main-1.52.2/plotly-latest.min.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="libs/bsTable-3.3.7/bootstrapTable.min.css" rel="stylesheet" />
+<script src="libs/bsTable-3.3.7/bootstrapTable.js"></script>
 
 
 <style type="text/css">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -100,7 +102,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -150,25 +152,30 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class='before'><a href="./">Mixed Models with R</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i>Introduction</a><ul>
-<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#overview"><i class="fa fa-check"></i>Overview</a><ul>
+<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i>Introduction</a>
+<ul>
+<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#overview"><i class="fa fa-check"></i>Overview</a>
+<ul>
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#goals"><i class="fa fa-check"></i>Goals</a></li>
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#prerequisites"><i class="fa fa-check"></i>Prerequisites</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#workshop"><i class="fa fa-check"></i>Workshop</a></li>
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#key-packages"><i class="fa fa-check"></i>Key packages</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html"><i class="fa fa-check"></i>Mixed Models</a><ul>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html"><i class="fa fa-check"></i>Mixed Models</a>
+<ul>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#terminology"><i class="fa fa-check"></i>Terminology</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#kinds-of-clustering"><i class="fa fa-check"></i>Kinds of Clustering</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#random-intercepts-model"><i class="fa fa-check"></i>Random Intercepts Model</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#example-student-gpa"><i class="fa fa-check"></i>Example: Student GPA</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#the-standard-regression-model"><i class="fa fa-check"></i>The Standard Regression Model</a></li>
-<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#the-mixed-model"><i class="fa fa-check"></i>The Mixed Model</a><ul>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#the-mixed-model"><i class="fa fa-check"></i>The Mixed Model</a>
+<ul>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#initial-depiction"><i class="fa fa-check"></i>Initial depiction</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#as-a-multi-level-model"><i class="fa fa-check"></i>As a multi-level model</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#application"><i class="fa fa-check"></i>Application</a><ul>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#application"><i class="fa fa-check"></i>Application</a>
+<ul>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#initial-visualization"><i class="fa fa-check"></i>Initial visualization</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#standard-regression"><i class="fa fa-check"></i>Standard regression</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#regression-by-cluster"><i class="fa fa-check"></i>Regression by cluster</a></li>
@@ -176,41 +183,50 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#cluster-level-covariates"><i class="fa fa-check"></i>Cluster Level Covariates</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#summary-of-mixed-model-basics"><i class="fa fa-check"></i>Summary of Mixed Model Basics</a></li>
-<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#exercises-for-starting-out"><i class="fa fa-check"></i>Exercises for Starting Out</a><ul>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#exercises-for-starting-out"><i class="fa fa-check"></i>Exercises for Starting Out</a>
+<ul>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#sleep"><i class="fa fa-check"></i>Sleep</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#adding-the-cluster-level-covariate"><i class="fa fa-check"></i>Adding the cluster-level covariate</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#simulating-a-mixed-model"><i class="fa fa-check"></i>Simulating a mixed model</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html"><i class="fa fa-check"></i>More Random Effects</a><ul>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html"><i class="fa fa-check"></i>More Random Effects</a>
+<ul>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#application-1"><i class="fa fa-check"></i>Application</a></li>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#comparison-to-many-regressions"><i class="fa fa-check"></i>Comparison to many regressions</a></li>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#visualization-of-effects"><i class="fa fa-check"></i>Visualization of effects</a></li>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#summary-of-random-slopes"><i class="fa fa-check"></i>Summary of Random Slopes</a></li>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#exercises"><i class="fa fa-check"></i>Exercises</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html"><i class="fa fa-check"></i>Common Extensions</a><ul>
-<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#additional-grouping-structure"><i class="fa fa-check"></i>Additional Grouping Structure</a><ul>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html"><i class="fa fa-check"></i>Common Extensions</a>
+<ul>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#additional-grouping-structure"><i class="fa fa-check"></i>Additional Grouping Structure</a>
+<ul>
 <li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#cross-classified-models"><i class="fa fa-check"></i>Cross-classified models</a></li>
 <li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#hierarchical-structure"><i class="fa fa-check"></i>Hierarchical structure</a></li>
 <li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#crossed-vs.-nested"><i class="fa fa-check"></i>Crossed vs. nested</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#residual-structure"><i class="fa fa-check"></i>Residual Structure</a><ul>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#residual-structure"><i class="fa fa-check"></i>Residual Structure</a>
+<ul>
 <li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#heterogeneous-variance"><i class="fa fa-check"></i>Heterogeneous variance</a></li>
 <li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#autocorrelation"><i class="fa fa-check"></i>Autocorrelation</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#generalized-linear-mixed-models"><i class="fa fa-check"></i>Generalized Linear Mixed Models</a></li>
-<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#exercises-1"><i class="fa fa-check"></i>Exercises</a><ul>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#exercises-1"><i class="fa fa-check"></i>Exercises</a>
+<ul>
 <li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#sociometric-data"><i class="fa fa-check"></i>Sociometric data</a></li>
 <li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#patents"><i class="fa fa-check"></i>Patents</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html"><i class="fa fa-check"></i>Issues</a><ul>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html"><i class="fa fa-check"></i>Issues</a>
+<ul>
 <li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#variance-accounted-for"><i class="fa fa-check"></i>Variance Accounted For</a></li>
-<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#common-alternatives-to-mixed-models"><i class="fa fa-check"></i>Common Alternatives to Mixed Models</a><ul>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#common-alternatives-to-mixed-models"><i class="fa fa-check"></i>Common Alternatives to Mixed Models</a>
+<ul>
 <li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#growth-curve-models"><i class="fa fa-check"></i>Growth curve models</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#sample-sizes"><i class="fa fa-check"></i>Sample Sizes</a><ul>
+<li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#sample-sizes"><i class="fa fa-check"></i>Sample Sizes</a>
+<ul>
 <li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#small-number-of-clusters"><i class="fa fa-check"></i>Small number of clusters</a></li>
 <li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#small-number-of-observations-within-clusters"><i class="fa fa-check"></i>Small number of observations within clusters</a></li>
 <li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#balancedmissing-values"><i class="fa fa-check"></i>Balanced/Missing values</a></li>
@@ -219,8 +235,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#model-comparison"><i class="fa fa-check"></i>Model Comparison</a></li>
 <li class="chapter" data-level="" data-path="issues.html"><a href="issues.html#convergence"><i class="fa fa-check"></i>Convergence</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="bayesian.html"><a href="bayesian.html"><i class="fa fa-check"></i>Bayesian Approaches</a><ul>
-<li class="chapter" data-level="" data-path="bayesian.html"><a href="bayesian.html#priors"><i class="fa fa-check"></i>Priors</a><ul>
+<li class="chapter" data-level="" data-path="bayesian.html"><a href="bayesian.html"><i class="fa fa-check"></i>Bayesian Approaches</a>
+<ul>
+<li class="chapter" data-level="" data-path="bayesian.html"><a href="bayesian.html#priors"><i class="fa fa-check"></i>Priors</a>
+<ul>
 <li class="chapter" data-level="" data-path="bayesian.html"><a href="bayesian.html#fixed-effects"><i class="fa fa-check"></i>Fixed effects</a></li>
 <li class="chapter" data-level="" data-path="bayesian.html"><a href="bayesian.html#variance-components-1"><i class="fa fa-check"></i>Variance components</a></li>
 </ul></li>
@@ -228,15 +246,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="bayesian.html"><a href="bayesian.html#example-models"><i class="fa fa-check"></i>Example Models</a></li>
 <li class="chapter" data-level="" data-path="bayesian.html"><a href="bayesian.html#beyond-the-model"><i class="fa fa-check"></i>Beyond the Model</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="further.html"><a href="further.html"><i class="fa fa-check"></i>Going Further</a><ul>
+<li class="chapter" data-level="" data-path="further.html"><a href="further.html"><i class="fa fa-check"></i>Going Further</a>
+<ul>
 <li class="chapter" data-level="" data-path="further.html"><a href="further.html#other-distributions"><i class="fa fa-check"></i>Other Distributions</a></li>
 <li class="chapter" data-level="" data-path="further.html"><a href="further.html#other-contexts"><i class="fa fa-check"></i>Other Contexts</a></li>
 <li class="chapter" data-level="" data-path="further.html"><a href="further.html#nonlinear-mixed-effects-models"><i class="fa fa-check"></i>Nonlinear Mixed Effects Models</a></li>
 <li class="chapter" data-level="" data-path="further.html"><a href="further.html#connections"><i class="fa fa-check"></i>Connections</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="summary.html"><a href="summary.html"><i class="fa fa-check"></i>Summary</a></li>
-<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html"><i class="fa fa-check"></i>Supplemental</a><ul>
-<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#a-comparison-to-latent-growth-curve-models"><i class="fa fa-check"></i>A Comparison to Latent Growth Curve Models</a><ul>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html"><i class="fa fa-check"></i>Supplemental</a>
+<ul>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#a-comparison-to-latent-growth-curve-models"><i class="fa fa-check"></i>A Comparison to Latent Growth Curve Models</a>
+<ul>
 <li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#random-effects-as-latent-variables"><i class="fa fa-check"></i>Random effects as latent variables</a></li>
 <li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#random-effects-in-sem"><i class="fa fa-check"></i>Random effects in SEM</a></li>
 <li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#running-a-growth-curve-model"><i class="fa fa-check"></i>Running a growth curve model</a></li>
@@ -248,13 +269,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#recommended-packages-that-can-do-growth-curve-models"><i class="fa fa-check"></i>Recommended packages that can do growth curve models</a></li>
 <li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#summary-of-lgc"><i class="fa fa-check"></i>Summary of LGC</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#correlation-structure-revisited"><i class="fa fa-check"></i>Correlation Structure Revisited</a><ul>
+<li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#correlation-structure-revisited"><i class="fa fa-check"></i>Correlation Structure Revisited</a>
+<ul>
 <li class="chapter" data-level="" data-path="supplemental.html"><a href="supplemental.html#summary-of-residual-correlation-structure"><i class="fa fa-check"></i>Summary of residual correlation structure</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i>Appendix</a><ul>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i>Appendix</a>
+<ul>
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#data"><i class="fa fa-check"></i>Data</a></li>
-<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#programming-languages"><i class="fa fa-check"></i>Programming languages</a><ul>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#programming-languages"><i class="fa fa-check"></i>Programming languages</a>
+<ul>
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#r"><i class="fa fa-check"></i>R</a></li>
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#python"><i class="fa fa-check"></i>Python</a></li>
 <li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#julia"><i class="fa fa-check"></i>Julia</a></li>
@@ -308,13 +332,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2>Data</h2>
 <p>Note that I have converted these from their original SPSS format to R data.frames saved within RData files. I also cleaned them up with better names/labels etc. For data sets used in that text, most of the description is taken from Joop Hox’s text appendix (‘Data Stories’).</p>
 <ul>
-<li><p><span class="emph">GPA</span>: The GPA data are a longitudinal data set, where 200 college students have been followed 6 consecutive semesters. In this data set, there are GPA measures on 6 consecutive occasions, with a JOB status variable (how many hours worked) for the same 6 occasions. There are two student-level explanatory variables: the gender (1= male, 2= female) and the high school GPA. There is also a dichotomous student-level outcome variable, which indicates whether a student has been admitted to the university of their choice. Since not every student applies to a university, this variable has many missing values.</p></li>
-<li><p><span class="emph">pupils</span>: Assume that we have data from 1000 pupils who have attended 100 different primary schools, and subsequently went on to 30 secondary schools. Similar to the situation where we have pupils within schools and neighborhoods, we have a cross-classified structure. Pupils are nested within primary and within secondary schools, with primary and secondary schools crossed. In other words: pupils are nested within the cross-classification of primary and secondary schools. In our example, we have a response variable achievement which is measured in secondary school. We have two explanatory variables at the pupil level: pupil gender (0 = male, 1 = female) and a six-point scale for pupil socioeconomic status, pupil SES. We have at the school level a dichotomous variable that indicates if the school is public (denom = 0) or denominational (denom = 1). Since we have both primary and secondary schools, we have two such variables (named pdenom for the primary school and sdenom for the secondary school).</p></li>
-<li><p><span class="emph">nurses</span>: The data in this example are from a hypothetical study on stress in hospitals. The data are from nurses working in wards nested within hospitals. In each of 25 hospitals, four wards are selected and randomly assigned to an experimental and control condition. In the experimental condition, a training program is offered to all nurses to cope with job- related stress. After the program is completed, a sample of about 10 nurses from each ward is given a test that measures job-related stress. Additional variables are: nurse age (years), nurse experience (years), nurse gender (0 = male, 1 = female), type of ward (0 = general care, 1 = special care), and hospital size (0 = small, 1 = medium, 2 = large). This is an example of an experiment where the experimental intervention is carried out at the group level. In biomedical research this design is known as a cluster randomized trial. They are quite common also in educational and organizational research, where entire classes or schools are assigned to experimental and control conditions. Since the design variable Experimental versus Control group (ExpCon) is manipulated at the second (ward) level, we can study whether the experimental effect is different in different hospitals, by defining the regression coefficient for the ExpCon variable as random at the hospital level. In this example, the variable ExpCon is of main interest, and the other variables are covariates. Their function is to control for differences between the groups, which should be small given that randomization is used, and to explain variance in the outcome variable stress. To the extent that they are successful in explaining variance, the power of the test for the effect of ExpCon will be increased. Therefore, although logically we can test if explanatory variables at the first level have random coefficients at the second or third level, and if explanatory variables at the second level have random coefficients at the third level, these possibilities are not pursued. We do test a model with a random coefficient for ExpCon at the third level, where there turns out to be significant slope variation. This varying slope can be predicted by adding a cross-level interaction between the variables ExpCon and HospSize. In view of this interaction, the variables ExpCon and HospSize have been centered on their overall mean.</p></li>
+<li><p><span class="emph">GPA</span>: The GPA data are a longitudinal data set, where 200 college students have been followed 6 consecutive semesters. In this data set, there are GPA measures on 6 consecutive occasions, with a JOB status variable (how many hours worked) for the same 6 occasions. There are two student-level explanatory variables: the sex (1= male, 2= female) and the high school GPA. There is also a dichotomous student-level outcome variable, which indicates whether a student has been admitted to the university of their choice. Since not every student applies to a university, this variable has many missing values.</p></li>
+<li><p><span class="emph">pupils</span>: Assume that we have data from 1000 pupils who have attended 100 different primary schools, and subsequently went on to 30 secondary schools. Similar to the situation where we have pupils within schools and neighborhoods, we have a cross-classified structure. Pupils are nested within primary and within secondary schools, with primary and secondary schools crossed. In other words: pupils are nested within the cross-classification of primary and secondary schools. In our example, we have a response variable achievement which is measured in secondary school. We have two explanatory variables at the pupil level: pupil sex (0 = male, 1 = female) and a six-point scale for pupil socioeconomic status, pupil SES. We have at the school level a dichotomous variable that indicates if the school is public (denom = 0) or denominational (denom = 1). Since we have both primary and secondary schools, we have two such variables (named pdenom for the primary school and sdenom for the secondary school).</p></li>
+<li><p><span class="emph">nurses</span>: The data in this example are from a hypothetical study on stress in hospitals. The data are from nurses working in wards nested within hospitals. In each of 25 hospitals, four wards are selected and randomly assigned to an experimental and control condition. In the experimental condition, a training program is offered to all nurses to cope with job- related stress. After the program is completed, a sample of about 10 nurses from each ward is given a test that measures job-related stress. Additional variables are: nurse age (years), nurse experience (years), nurse sex (0 = male, 1 = female), type of ward (0 = general care, 1 = special care), and hospital size (0 = small, 1 = medium, 2 = large). This is an example of an experiment where the experimental intervention is carried out at the group level. In biomedical research this design is known as a cluster randomized trial. They are quite common also in educational and organizational research, where entire classes or schools are assigned to experimental and control conditions. Since the design variable Experimental versus Control group (ExpCon) is manipulated at the second (ward) level, we can study whether the experimental effect is different in different hospitals, by defining the regression coefficient for the ExpCon variable as random at the hospital level. In this example, the variable ExpCon is of main interest, and the other variables are covariates. Their function is to control for differences between the groups, which should be small given that randomization is used, and to explain variance in the outcome variable stress. To the extent that they are successful in explaining variance, the power of the test for the effect of ExpCon will be increased. Therefore, although logically we can test if explanatory variables at the first level have random coefficients at the second or third level, and if explanatory variables at the second level have random coefficients at the third level, these possibilities are not pursued. We do test a model with a random coefficient for ExpCon at the third level, where there turns out to be significant slope variation. This varying slope can be predicted by adding a cross-level interaction between the variables ExpCon and HospSize. In view of this interaction, the variables ExpCon and HospSize have been centered on their overall mean.</p></li>
 <li><p><span class="emph">sociometric</span>: The sociometric data are intended to demonstrate a data structure where the cross-classification is at the lowest level, with an added group structure because there are several groups. The story is that in small groups all members are asked to rate each other on a scale of 1-9, where higher numbers indicate a more positive view of the individual (i.e. how much they would like to share some activity with the rated person). Each record is defined by the sender–receiver pairs, with explanatory variables age and sex defined separately for the sender and the receiver. The group variable ‘group size’ is added to this file. There are 20 groups, with sizes ranging from 4 to 11.</p></li>
 <li><p><span class="emph">speed dating</span>: Data involve a speed dating experiment on a sample of a few hundred students in graduate and professional schools at Columbia University. In the speed dating events, the experiment randomly assigned each participant to ten short dates (four minutes) with participants of the opposite sex. For each date, each person rated six attributes (attractive, sincere, intelligent, fun, ambitious, shared interests) of the other person on a 10-point scale and wrote down whether he or she would like to see the other person again. The data have been filtered to remove constant responders, i.e. those who always or never wanted to see their partner again, those six attributes have scaled versions with mean 0 and standard deviation 1 (<code>_sc</code>), column names have been made useful, and only some of the variables have been kept for the demo. If you run the same model, you can get very similar estimates to that in the Fahrmeier et al. text, table 7.4 (though there is a typo for the Male effect).</p>
 <ul>
-<li>The data come from Gelman’s website but are based on <a href="http://faculty.chicagobooth.edu/emir.kamenica/documents/genderDifferences.pdf">this article</a>.</li>
+<li>The data come from Gelman’s website but are based on <a href="http://faculty.chicagobooth.edu/emir.kamenica/documents/sexDifferences.pdf">this article</a>.</li>
 </ul></li>
 <li><p><span class="emph">patents</span>:
 The European Patent Office is able to protect a patent from competition for a certain period of time. The Patent Office has the task to examine inventions and to declare patent if certain prerequisites are fulfilled. The most important requirement is that the invention is something truly new. Even though the office examines each patent carefully, in about 80% of cases competitors raise an objection against already assigned patents. In the economic literature the analysis of patent opposition plays an important role as it allows one to (indirectly) investigate a number of economic questions. For instance, the frequency of patent opposition can be used as an indicator for the intensity of the competition in different
@@ -344,14 +368,17 @@ market segments.</p>
 <div id="python" class="section level3">
 <h3>Python</h3>
 <p>In Python, the <a href="http://www.statsmodels.org/stable/mixed_linear.html">statsmodels</a> module has basic capabilities for mixed models, but not too many frills relatively speaking. CSCAR director Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series <a href="https://github.com/kshedden/Statsmodels-MixedLM">here</a>. The following provides an example.</p>
-<div class="sourceCode" id="cb145"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb145-1"><a href="appendix.html#cb145-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb145-2"><a href="appendix.html#cb145-2"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
-<span id="cb145-3"><a href="appendix.html#cb145-3"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
-<span id="cb145-4"><a href="appendix.html#cb145-4"></a></span>
-<span id="cb145-5"><a href="appendix.html#cb145-5"></a>gpa <span class="op">=</span> pd.read_csv(<span class="st">&#39;data/gpa.csv&#39;</span>)</span>
-<span id="cb145-6"><a href="appendix.html#cb145-6"></a></span>
-<span id="cb145-7"><a href="appendix.html#cb145-7"></a>gpa_py_mixed <span class="op">=</span> smf.mixedlm(<span class="st">&quot;gpa ~ occasion&quot;</span>, gpa, groups<span class="op">=</span>gpa[<span class="st">&quot;student&quot;</span>]).fit()</span>
-<span id="cb145-8"><a href="appendix.html#cb145-8"></a><span class="bu">print</span>(gpa_py_mixed.summary())</span></code></pre></div>
+<div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="appendix.html#cb145-1" aria-hidden="true"></a>pycheck =<span class="st"> </span><span class="kw">ifelse</span>(<span class="kw">grepl</span>(<span class="st">&#39;Windows&#39;</span>, <span class="kw">sessionInfo</span>()<span class="op">$</span>running), </span>
+<span id="cb145-2"><a href="appendix.html#cb145-2" aria-hidden="true"></a>                 <span class="st">&#39;C:/ProgramData/Anaconda3&#39;</span>, </span>
+<span id="cb145-3"><a href="appendix.html#cb145-3" aria-hidden="true"></a>                 <span class="st">&#39;/Users/micl/opt/anaconda3/bin/python&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb146"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb146-1"><a href="appendix.html#cb146-1" aria-hidden="true"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb146-2"><a href="appendix.html#cb146-2" aria-hidden="true"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb146-3"><a href="appendix.html#cb146-3" aria-hidden="true"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb146-4"><a href="appendix.html#cb146-4" aria-hidden="true"></a></span>
+<span id="cb146-5"><a href="appendix.html#cb146-5" aria-hidden="true"></a>gpa <span class="op">=</span> pd.read_csv(<span class="st">&#39;data/gpa.csv&#39;</span>)</span>
+<span id="cb146-6"><a href="appendix.html#cb146-6" aria-hidden="true"></a></span>
+<span id="cb146-7"><a href="appendix.html#cb146-7" aria-hidden="true"></a>gpa_py_mixed <span class="op">=</span> smf.mixedlm(<span class="st">&quot;gpa ~ occasion&quot;</span>, gpa, groups<span class="op">=</span>gpa[<span class="st">&quot;student&quot;</span>]).fit()</span>
+<span id="cb146-8"><a href="appendix.html#cb146-8" aria-hidden="true"></a><span class="bu">print</span>(gpa_py_mixed.summary())</span></code></pre></div>
 <pre><code>
              Mixed Linear Model Regression Results
 =======================================================
@@ -373,7 +400,7 @@ Group Var    0.064    0.033
 </div>
 <div id="julia" class="section level3">
 <h3>Julia</h3>
-<p>One of the <span class="pack">lme4</span> authors develops a <a href="https://github.com/dmbates/MixedModels.jl">MixedModels</a> package for Julia. Doug Bates has some <a href="https://github.com/dmbates/MixedModelsinJulia">notebooks</a> on implementation of mixed models in Julia.</p>
+<p>One of the <span class="pack">lme4</span> authors develops a <a href="https://github.com/dmbates/MixedModels.jl">MixedModels</a> package for Julia. Doug Bates has some <a href="https://github.com/dmbates/MixedModelsinJulia">notebooks</a> on implementation of mixed models in Julia, though they are a bit dated at this point, so consult the documentation on the most recent version of the package.</p>
 </div>
 <div id="proprietary" class="section level3">
 <h3>Proprietary</h3>
@@ -389,7 +416,7 @@ Group Var    0.064    0.033
 <p>Two texts come at mixed models from a very broad perspective, which I like. I find Fahrmeier et al. <a href="http://www.springer.com/us/book/9783642343322">Regression - Models, Methods and Applications</a> to be very good. It will also tie mixed models to spatial and nonparametric approaches. <a href="https://www.crcpress.com/Richly-Parameterized-Linear-Models-Additive-Time-Series-and-Spatial/Hodges/p/book/9781439866832">Richly Parameterized Linear Models - Additive, Time Series, and Spatial Models Using Random Effects</a>, does as well, and provides some nice historical context and hits on practical issues you will encounter if you play with these models long enough.</p>
 <p>There is literally <a href="http://lme4.r-forge.r-project.org/lMMwR/lrgprt.pdf">a book on mixed models with lme4</a> by Doug Bates, one of the developers. While dated with regard to <span class="pack">lme4</span>, it’s definitely not with regard to mixed models in general, and worth having around.</p>
 <p>Check out the <a href="https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html">Mixed Model FAQ</a> maintained by Ben Bolker, <span class="pack" style="">lme4</span> developer</p>
-<p>I have <a href="http://m-clark.github.io/documents/#mixed-models">several other docs</a> on various aspects of mixed models.</p>
+<p>I have <a href="http://m-clark.github.io/documents/#mixed-models">several other docs</a> on various aspects of mixed models, and post about different aspects about them regularly.</p>
 <p>There is a lot of good information on stackoverflow and cross validated Q &amp; A sites, where <span class="pack">lme4</span> developer Ben Bolker has been quite active in answering people’s questions.</p>
 
 </div>

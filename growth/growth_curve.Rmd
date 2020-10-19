@@ -17,8 +17,15 @@ options(knitr.kable.NA = '')
 ```
 
 ```{r load_common_packages, echo=FALSE, cache=FALSE, eval=TRUE}
-library(visibly); library(htmltools); library(forcats); library(lme4)
-library(broom); library(plotly); library(tidyverse); library(kableExtra); library(patchwork)
+library(visibly)
+library(htmltools)
+library(forcats)
+library(lme4)
+library(broom)
+library(plotly)
+library(tidyverse)
+library(kableExtra)
+library(patchwork)
 
 kable_df = function(..., digits =3, full_width = FALSE) 
   kable(..., digits=digits) %>% kable_styling(full_width = full_width)
@@ -73,7 +80,6 @@ broom.mixed::tidy(mixed_init) %>%
   kable_df(digits = 2)
 
 # test %>% kable_df()  # somehow chokes pandoc for mysterious reasons due to kable_styling()
-# test %>% kable(digits=3) %>% kable_styling(full_width = F)
 ```
 
 We can also get estimates of the student level effects. These are the $re_{intercept}$ and $re_{occasion}$ from before.
@@ -339,10 +345,11 @@ mixed_ran_int_ran_slope_hetero_var = lme(gpa ~ occasion,
 
 summary(mixed_ran_int_ran_slope_hetero_var)
 
-res_var = lazerhawk::extract_nlme_variances(mixed_ran_int_ran_slope_hetero_var)
-data_frame(
+res_var = mixedup::extract_het_var(mixed_ran_int_ran_slope_hetero_var)
+
+tibble(
   Semester = 0:5,
-  Variance = res_var
+  Variance = t(res_var)
   ) %>% 
   kable_df(caption='Residual variance at each time point')
 ```

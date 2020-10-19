@@ -1,3 +1,12 @@
+```{r chunk_setup-ext, include=FALSE, eval=TRUE}
+knitr::opts_chunk$set(
+  # cache
+  cache.rebuild = F,
+  cache         = T
+)
+```
+
+
 # Common Extensions
 
 <br>
@@ -116,8 +125,7 @@ summary(pupils_crossed, correlation = FALSE)
 pupils_crossed %>% 
   extract_fixed_effects() %>% 
   select(-(t:p_value)) %>% 
-  kable(digits = 3) %>% 
-  kable_styling()
+  kable_df()
 ```
 
 The fixed effects tell us there is a positive effect of being female on achievement, and in general, relative to lowest SES category, being in the upper categories of SES also has a positive effect.
@@ -126,8 +134,7 @@ The fixed effects tell us there is a positive effect of being female on achievem
 crossed_var_cor = extract_vc(pupils_crossed, ci_level = 0) 
 
 crossed_var_cor %>%
-  kable(digits = 2) %>% 
-  kable_styling()
+  kable_df(digits = 2)
 ```
 
 When we look at the variance components we see that primary and secondary school contributes about `r perc(sum(crossed_var_cor$variance[1:2])/sum(crossed_var_cor$variance), digits = 0)` of the total variance.  Most of the variance attributable to school comes from the primary school.
@@ -142,7 +149,7 @@ Let's look at them visually using <span class="pack">merTools</span>.
 
 ```{r crossed_re_plot, echo=FALSE}
 p = merTools::plotREsim(merTools::REsim(pupils_crossed)) +
-  theme_trueMinimal()
+  theme_clean()
 p
 
 # multiplots with patchwork still do non-transparent background
@@ -233,7 +240,7 @@ Concerning the random effects, there appears to be quite a bit of variability fr
 
 ```{r hierarchical_re_plot, echo=FALSE}
 p = merTools::plotREsim(merTools::REsim(nurses_hierarchical)) +
-  theme_trueMinimal()
+  theme_clean()
 p
 ```
 
@@ -327,25 +334,27 @@ rc1 <- rescov(gpa_vis_cov, gpa)
 # image(rc1[1:60,1:60])
 rc1[1:30, 1:30] %>%
   as.matrix() %>%
-  reshape2::melt() %>% 
-  mutate(value = factor(round(value,5))) %>% 
-  ggplot(aes(Var1, Var2, fill = value)) + 
-  geom_tile(color='gray92', size=1) +
+  reshape2::melt() %>%
+  mutate(value = factor(round(value, 5))) %>%
+  ggplot(aes(Var1, Var2, fill = value)) +
+  geom_tile(color = 'gray92', size = 1) +
   scale_y_continuous(trans = 'reverse') +
-  scale_fill_manual(values = c('gray92','#00aaff80', '#ff550080')) +
-  theme_void() + 
+  scale_fill_manual(values = c('gray92', '#00aaff80', '#ff550080')) +
+  theme_void() +
   theme(
-    legend.key = ggplot2::element_rect(fill='transparent', colour = NA),
-    legend.background = ggplot2::element_rect(fill='transparent', colour = NA),
+    legend.key = ggplot2::element_rect(fill = 'transparent', colour = NA),
+    legend.background = ggplot2::element_rect(fill = 'transparent', colour = NA),
     panel.background = ggplot2::element_blank(),
     panel.grid = ggplot2::element_blank(),
     strip.background = ggplot2::element_blank(),
-    plot.background = ggplot2::element_rect(fill = "transparent", colour = NA))
+    plot.background = ggplot2::element_rect(fill = "transparent", colour = NA)
+  )
 
   
 # ggplotly()
 
-# library(plotly); library(viridis)
+# library(plotly)
+# library(viridis)
 # plot_ly(z =~ as.matrix(rc1[1:30, 1:30]), type='contour', colors = c('gray92','#00aaff80', '#ff550080')) %>%
 #   layout(yaxis = list(autorange = "reversed"))
 ```
@@ -570,7 +579,7 @@ Notice first that the fixed effect for occasion is the same as [before][Mixed mo
 
 Note that glmmTMB will analyze such structure as well. Note that we need the factor form for occasion for this specification, and also note how it is part of model formula, like another random effect. More on this in the [supplemental section][Correlation Structure Revisited].
 
-```{r corr_residual_glmmTMB, eval=FALSE, echo=1:3}
+```{r corr_residual_glmmTMB, eval=FALSE, echo=1:4}
 corr_res_tmb = glmmTMB(
   gpa ~ occasion +  ar1(0 + occas | student) + (1 | student),
   data = gpa
