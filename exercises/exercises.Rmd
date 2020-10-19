@@ -2,38 +2,226 @@
 title: "Mixed Model Exercises"
 output: 
   html_document: 
-    css: ../css/standard_html.css
+    css: [../css/book.css, ../css/standard_html.css]
     highlight: pygments
-    theme: united
+    toc: true
+    toc_float: true
+    theme: sandstone
 ---
 
-
-# Exercise 1
-
-The following simulates data for a random intercepts model. Which of the following values represents the random effect standard deviation?  After you determine this, change the values of the sigmas, the betas and the sample sizes 
-
-
-
-```{r}
-N_per_group = 20
-N_groups = 25
-N = N_per_group*N_groups
-groups = rep(1:N_groups, e=N_per_group)
-sigma1 = 1
-sigma2 = .5
-v1 = rnorm(N, mean=0, sd=sigma1)
-v2 = rnorm(N_groups, mean=0, sd=sigma2)
-
-x1 = runif(N)
-beta_0 = 2
-beta_1 = .5
-y = beta_0 + beta_1*x1 + v2[groups] + v1
-
-
-library(lme4)
-model = lmer(y ~ x1 + (1|groups))
-summary(model, correlation=F)
+```{r chunk_setup, include=FALSE, eval=TRUE}
+knitr::opts_chunk$set(
+  # code
+  echo      = T,
+  message   = F,
+  warning   = F,
+  error     = F,
+  comment   = NA,
+  R.options = list(width = 220),
+  # viz
+  dev.args  = list(bg = 'transparent'),
+  dev       = 'svglite',
+  fig.align = 'center',
+  out.width = '75%',
+  fig.asp   = .75,
+  # cache
+  cache.rebuild = F,
+  cache         = T
+)
 ```
 
-# Exercise 2
-# Exercise 3
+## Exercises for Starting Out
+
+
+### Sleep
+
+For this exercise, we'll use the sleep study data from the <span class="pack">lme4</span> package.  The following describes it.
+
+> The average reaction time per day for subjects in a sleep deprivation study. On day 0 the subjects had their normal amount of sleep. Starting that night they were restricted to 3 hours of sleep per night. The observations represent the average reaction time (in milliseconds) on a series of tests given each day to each subject.
+
+After loading the package, the data can be loaded as follows.  I show the first few observations.
+
+```{r sleepstudy, echo=-3}
+library(tidyverse)  # in case you need some data processing or like to pipe %>% 
+library(lme4)
+
+data("sleepstudy")
+
+head(sleepstudy)
+```
+
+1. Run a regression with Reaction as the target variable and Days as the predictor. 
+
+2. Run a mixed model with a random intercept for Subject.
+
+3. Interpret the variance components and fixed effects.
+
+
+
+### Adding the cluster-level covariate
+
+Rerun the mixed model with the GPA data adding the cluster level covariate of `sex`, or high school GPA (`highgpa`), or both.  Interpret all aspects of the results.
+
+```{r gpa_cluster, echo=F, eval=FALSE}
+gpa_mixed_cluster_level = lmer(gpa ~ occasion + sex + highgpa + (1|student), gpa)
+
+summary(gpa_mixed_cluster_level)
+```
+
+What happened to the student variance after adding cluster level covariates to the model?
+
+
+
+### Simulating a mixed model
+
+The following represents a simple way to simulate a random intercepts model.  Note each object what each object is, and make sure the code make sense to you.  Then run it.
+
+```{r simMixed, eval=FALSE}
+set.seed(1234)  # this will allow you to exactly duplicate your result
+Ngroups = 100
+NperGroup = 3
+N = Ngroups * NperGroup
+groups = factor(rep(1:Ngroups, each = NperGroup))
+u = rnorm(Ngroups, sd = .5)
+e = rnorm(N, sd = .25)
+x = rnorm(N)
+y = 2 + .5 * x + u[groups] + e
+
+d = data.frame(x, y, groups)
+```
+
+Which of the above represent the fixed and random effects? Now run the following.
+
+```{r simMixed2, eval=FALSE}
+model = lmer(y ~ x + (1|groups), data=d)
+
+summary(model)
+
+confint(model)
+
+
+library(ggplot2)
+
+ggplot(aes(x, y), data=d) +
+  geom_point()
+```
+
+Do the results seem in keeping with what you expect?
+
+In what follows we'll change various aspects of the data, then rerun the model after each change, then summarize and get confidence intervals as before.  For each note specifically at least one thing that changed in the results.
+
+0. First calculate or simply eyeball the intraclass correlation coefficient $\frac{\textrm{random effect variance}}{\textrm{residual + random effect variance}}$.  In addition, create a density plot of the random effects as follows.
+
+```{r simMixed3, eval=FALSE}
+re = ranef(model)$groups
+qplot(x = re, geom = 'density', xlim = c(-3, 3))
+```
+
+1. Change the random effect variance/sd and/or the residual variance/sd and note your new estimate of the ICC, and plot the random effect as before.
+2. Reset the values to the original.  Change <span class="objclass">Ngroups</span> to 50. What differences do you see in the confidence interval estimates? 
+3. Set the Ngroups back to 100. Now change <span class="objclass">NperGroup</span> to 10, and note again the how the CI is different from the base condition.
+
+
+## Exercises for Random Slopes
+
+#### Sleep revisited
+
+Run the sleep study model with random coefficient for the Days effect, and interpret the results.  What is the correlation between the intercept and Days random effects?  Use the <span class="func">ranef</span> and <span class="func">coef</span> functions on the model you've created to inspect the individual specific effects. What do you see?
+
+```{r sleepstudy2}
+library(lme4)
+data("sleepstudy")
+```
+
+In the following, replace <span class="objclass">model</span> with the name of your model object. Run each line, inspecting the result of each as you go along. 
+
+```{r ex-sleep, eval=FALSE}
+re = ranef(model)$Subject
+fe = fixef(model)
+
+apply(re, 1, function(x) x + fe) %>% t
+```
+
+The above code adds the fixed effects to each row of the random effects (the <span class="func">t</span> just transposes the result). What is the result compared to what you saw before?
+
+
+
+#### Simulation revisited
+
+The following shows a simplified way to simulate some random slopes, but otherwise is the same as the simulation before.  Go ahead and run the code.
+
+```{r simSlopes, eval=FALSE}
+set.seed(1234)  # this will allow you to exactly duplicate your result
+Ngroups = 50
+NperGroup = 3
+N = Ngroups * NperGroup
+groups = factor(rep(1:Ngroups, each = NperGroup))
+re_int = rnorm(Ngroups, sd = .75)
+re_slope = rnorm(Ngroups, sd = .25)
+e = rnorm(N, sd = .25)
+x = rnorm(N)
+y = (2 + re_int[groups]) + (.5 + re_slope[groups]) * x + e
+
+d = data.frame(x, y, groups)
+```
+
+This next bit of code shows a way to run a mixed model while specifying that there is no correlation between intercepts and slopes.  There is generally no reason to do this unless the study design warrants it[^nocorr], but you could do it as a step in the model-building process, such that you fit a model with no correlation, then one with it.
+
+```{r simSlopes2, eval=FALSE}
+model_ints_only = lmer(y ~ x + (1|groups), data = d)
+
+model_with_slopes = lmer(y ~ x + (1|groups) + (0 + x|groups), data = d)
+
+summary(model_with_slopes)
+
+confint(model_with_slopes)
+
+library(ggplot2)
+
+ggplot(aes(x, y), data = d) +
+  geom_point()
+```
+
+Compare model fit using the <span class="func">AIC</span> function, e.g. `AIC(model)`.  The model with the lower AIC is the better model, so which would you choose?
+
+
+## Exercises for Extensions
+
+
+### Sociometric data
+
+In the following data, kids are put into different groups and rate each other in terms of how much they would like to share some activity with the others. We have identifying variables for the person doing the rating (sender), the person being rated (receiver), what group they are in, as well as age and sex for both sender and receiver, as well as group size.
+
+To run a mixed model, we will have three sources of structure to consider:
+
+- senders (within group)
+- receivers (within group)
+- group
+
+First, load the sociometric data. 
+
+```{r load_socio}
+load('data/sociometric.RData')
+```
+
+
+To run the model, we will proceed with the following modeling steps. For each, make sure you are creating a separate model object for each model run.
+
+- Model 1: No covariates, only sender and receiver random effects. Note that even though we don't add group yet, still use the nesting approach to specify the effects (e.g. `1|group:receiver`)
+- Model 2: No covariates, add group random effect
+- Model 3: Add all covariates: `agesend/rec`, `sexsend/rec`, and `grsize` (group size)
+- Model 4: In order to examine sex matching effects, add an interaction of the sex variables to the model `sexsend:sexrec`.
+- Compare models with AIC, e.g. `AIC(model1)`. A lower value would indicate the model is preferred.
+
+
+### Patents
+
+Do a Poisson mixed effect model using the `patent data`.  Model the number of citations (`ncit`) based on whether there was opposition (`opposition`) and if it was for the biotechnology/pharmaceutical industry (`biopharm`). Use year as a random effect to account for unspecified economic conditions.  
+
+
+```{r patent_starter, eval=FALSE}
+load('data/patents.RData')
+```
+
+
+Interestingly, one can model overdispersion in a Poisson model by specifying an random intercept for each observation (`subject` in the data).  In other words, no specific clustering or grouped structure is necessary, but we can use the random effect approach to get at the extra variance.
