@@ -525,6 +525,7 @@ Rerun the mixed model with the [GPA data][Mixed model] adding the cluster level 
 
 ```{r gpa_cluster, echo=F, eval=FALSE}
 gpa_mixed_cluster_level = lmer(gpa ~ occasion + sex + highgpa + (1|student), gpa)
+
 summary(gpa_mixed_cluster_level)
 ```
 
@@ -540,12 +541,12 @@ The following represents a simple way to simulate a random intercepts model.  No
 set.seed(1234)  # this will allow you to exactly duplicate your result
 Ngroups = 100
 NperGroup = 3
-N = Ngroups*NperGroup
-groups = factor(rep(1:Ngroups, each=NperGroup))
-u = rnorm(Ngroups, sd=.5)
-e = rnorm(N, sd=.25)
+N = Ngroups * NperGroup
+groups = factor(rep(1:Ngroups, each = NperGroup))
+u = rnorm(Ngroups, sd = .5)
+e = rnorm(N, sd = .25)
 x = rnorm(N)
-y = 2 + .5*x + u[groups] + e
+y = 2 + .5 * x + u[groups] + e
 
 d = data.frame(x, y, groups)
 ```
@@ -554,12 +555,14 @@ Which of the above represent the fixed and random effects? Now run the following
 
 ```{r simMixed2, eval=FALSE}
 model = lmer(y ~ x + (1|groups), data=d)
+
 summary(model)
+
 confint(model)
 
 
-
 library(ggplot2)
+
 ggplot(aes(x, y), data=d) +
   geom_point()
 ```

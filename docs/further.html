@@ -196,7 +196,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#comparison-to-many-regressions"><i class="fa fa-check"></i>Comparison to many regressions</a></li>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#visualization-of-effects"><i class="fa fa-check"></i>Visualization of effects</a></li>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#summary-of-random-slopes"><i class="fa fa-check"></i>Summary of Random Slopes</a></li>
-<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#exercises"><i class="fa fa-check"></i>Exercises</a></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#exercises-for-random-slopes"><i class="fa fa-check"></i>Exercises for Random Slopes</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html"><i class="fa fa-check"></i>Common Extensions</a>
 <ul>
@@ -212,7 +212,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#autocorrelation"><i class="fa fa-check"></i>Autocorrelation</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#generalized-linear-mixed-models"><i class="fa fa-check"></i>Generalized Linear Mixed Models</a></li>
-<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#exercises-1"><i class="fa fa-check"></i>Exercises</a>
+<li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#exercises-for-extensions"><i class="fa fa-check"></i>Exercises for Extensions</a>
 <ul>
 <li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#sociometric-data"><i class="fa fa-check"></i>Sociometric data</a></li>
 <li class="chapter" data-level="" data-path="extensions.html"><a href="extensions.html#patents"><i class="fa fa-check"></i>Patents</a></li>
@@ -335,7 +335,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>This section covers topics that are generally beyond the scope of what would be covered in this introductory document, but may be given their own section over time.</p>
 <div id="other-distributions" class="section level2">
 <h2>Other Distributions</h2>
-<p>As noted in the GLMM section, we are not held to use only GLM family distributions regarding the target variable. Unfortunately, the tools you have available to do so will quickly diminish. However, a couple packages could help in this regard with simpler random effects structures. For example, the <span class="pack">mgcv</span> package allows one access to a variety of response distributions, such as student t, negative binomial, beta, zero-inflated Poisson and more. If you’re willing to go Bayesian, you’ll have even more options with <span class="pack">rstanarm</span> and <span class="pack">brms</span>. I’ve personally had success with ordinal, beta, truncated normal and more with <span class="pack">brms</span> in particular.</p>
+<p>As noted in the GLMM section, we are not held to use only GLM family distributions regarding the target variable. Unfortunately, the tools you have available to do so will quickly diminish. However, a couple packages could help in this regard with simpler random effects structures. For example, the <span class="pack">mgcv</span> and <span class="pack">glmmTMB</span> packages allow one access to a variety of response distributions, such as student t, negative binomial, beta, zero-inflated Poisson and more. If you’re willing to go Bayesian, you’ll have even more options with <span class="pack">rstanarm</span> and <span class="pack">brms</span>. I’ve personally had success with ordinal, beta, truncated normal and more with <span class="pack">brms</span> in particular.</p>
 <p>Note also that nothing says that the random effects must come from a normal distribution either. You probably are going to need some notably strong theoretical reasons for trying something else, but it does come up for some folks. You’ll almost certainly need to use a specialized approach, as most mixed model tools do not offer such functionality out of the box.</p>
 </div>
 <div id="other-contexts" class="section level2">

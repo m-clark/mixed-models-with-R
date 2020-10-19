@@ -781,7 +781,7 @@ extract_vc(sd_model, ci_level = 0) %>%
 For the variance components, notice that there is no residual variance. This is because we are not modeling with the normal distribution for the response, thus there is no $\sigma$ to estimate.  However, the result suggests that there is quite a bit of variability from person to person.
 
 
-## Exercises
+## Exercises for Extensions
 
 
 ### Sociometric data

@@ -608,11 +608,11 @@ gpa %>%
 
 At this point it might be clearer why some would call these *richly parameterized linear models*. Relative to a standard regression we get extra variance parameters that add to our understanding of the sources of uncertainty in the model, we can get the subjects specific effects, and their correlation, and use that information to obtain far better predictions.  What's not to like?
 
-## Exercises
+## Exercises for Random Slopes
 
 #### Sleep revisited
 
-Run the sleep study model with random coefficient for the Days effect, and interpret the results.  What is the correlation between the intercept and Days random effects?  Use the <span class="func">ranef</span> and <span class="func">coef</span> functions on the model you've created to inspect the individual specific effects. What do you see?
+Run the sleep study model with random coefficient for the Days effect, and interpret the results.  What is the correlation between the intercept and Days random effects?  Use the <span class="func">ranef</span> and <span class="func">coef</span> functions on the model you've created to inspect the individual-specific effects. What do you see?
 
 ```{r sleepstudy2}
 library(lme4)
@@ -624,6 +624,7 @@ In the following, replace <span class="objclass">model</span> with the name of y
 ```{r ex-sleep, eval=FALSE}
 re = ranef(model)$Subject
 fe = fixef(model)
+
 apply(re, 1, function(x) x + fe) %>% t
 ```
 
@@ -654,11 +655,15 @@ This next bit of code shows a way to run a mixed model while specifying that the
 
 ```{r simSlopes2, eval=FALSE}
 model_ints_only = lmer(y ~ x + (1|groups), data = d)
+
 model_with_slopes = lmer(y ~ x + (1|groups) + (0 + x|groups), data = d)
+
 summary(model_with_slopes)
+
 confint(model_with_slopes)
 
 library(ggplot2)
+
 ggplot(aes(x, y), data = d) +
   geom_point()
 ```
