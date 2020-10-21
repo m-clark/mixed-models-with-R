@@ -1,0 +1,100 @@
+---
+title: "Getting Started"
+output:
+  distill::distill_article:
+    self_contained: true
+    toc: true
+    css: [../css/book.css, ../css/standard_html.css]
+# bibliography: cites.bib
+# nocite:  | 
+#   @whatever
+---
+
+
+```{r chunk_setup, include=FALSE, eval=TRUE}
+knitr::opts_chunk$set(
+  # code
+  echo      = T,
+  eval      = F,
+  message   = F,
+  warning   = F,
+  error     = F,
+  comment   = NA
+)
+```
+
+### Data
+
+Load the GPA data to get things started.
+
+```{r}
+load('data/gpa.RData')
+```
+
+If you want to load all data so you don't have to worry with it again (we will only use 3 or 4), uncomment and run the following:
+
+```{r}
+sapply(paste0('data/', dir('data', pattern = 'RData')), load, .GlobalEnv)
+```
+
+
+### Packages
+
+The main package is `lme4`. If you need to install `lme4` first, run the following:
+
+```{r}
+install.packages('lme4')
+```
+
+Note that you also have `nlme` and `mgcv` for mixed models, both of which come with the base R installation.
+
+Other packages you can use that will potentially be demonstrated.
+
+```{r}
+install.packages('glmmTMB')
+install.packages('brms')  # may take a bit of time
+```
+
+Other packages you might find useful.
+
+```{r}
+install.packages('merTools')     # used in the document for plotting random effects
+install.packages('performance')  # icc, r-squared, other stuff
+```
+
+
+You can install my `mixedup` package from GitHub with `remotes`. It has some nice summary and extraction features that are consistent across several packages that can do mixed models.  Use the second approach if you don't already have `rstanarm` or `brms` (they aren't required to use in general).
+
+```{r}
+# install.pacakges(remotes) # if you don't have it
+
+remotes::install_github('m-clark/mixedup')
+
+# if you don't already have rstanarm and/or brms
+
+withr::with_envvar(c(R_REMOTES_NO_ERRORS_FROM_WARNINGS = "true"), 
+  remotes::install_github('m-clark/mixedup')
+)
+```
+
+
+### Example code
+
+You will have plenty of opportunity for coding mixed models, but here is an example of the functions to be familiar with.  They will also work for `nlme`, `glmmTMB`, `brms`, and possibly others.
+
+```{r}
+library(lme4)
+
+data(Orthodont, package = "nlme")
+
+test_mod = lmer(distance ~ age + (age | Subject), data = Orthodont)
+
+summary(test_mod, cor = FALSE) # don't need correlation of fixed effects
+
+fixef(test_mod)
+
+ranef(test_mod)
+
+VarCorr(test_mod)
+```
+

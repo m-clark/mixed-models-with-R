@@ -625,7 +625,7 @@ In the following, replace <span class="objclass">model</span> with the name of y
 re = ranef(model)$Subject
 fe = fixef(model)
 
-apply(re, 1, function(x) x + fe) %>% t
+apply(re, 1, function(x) x + fe) %>% t()
 ```
 
 The above code adds the fixed effects to each row of the random effects (the <span class="func">t</span> just transposes the result). What is the result compared to what you saw before?

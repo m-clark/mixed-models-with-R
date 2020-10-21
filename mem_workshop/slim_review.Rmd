@@ -30,36 +30,39 @@ We'll use the ggplot2movies package and the `movies` data frame inside.  You'll 
 
 ```{r}
 # if you need them
-# install.packages('ggplot2movies')
-# install.packages('tidyverse')
-# install.packages('modelr')
+# install.packages('ggplot2movies') # data example
+# install.packages('tidyverse') # dplyr, ggplot, etc.
+# install.packages('modelr')    # model predictions etc.
 
 library(dplyr)
-library(ggplot2movies)  
+library(ggplot2movies)
+
 ?movies
+
 glimpse(movies)
-movies %>% 
-  group_by(Action, Drama) %>% 
-  summarise(rating=mean(rating))
+
+movies %>%
+  group_by(Action, Drama) %>%
+  summarise(rating = mean(rating))
 ```
 
 
 First we'll trim things to more recent movies to make things a little more comparable. I'll also convert some of the variables to a more manageable scale, and create explicit factor variables.
 
 ```{r}
-movies_trim = movies %>% 
-  filter(year > 1970  
-         & budget > 1e6 
-         & votes > 1000) %>% 
-  mutate(budget_mil = budget/1e6,
-         votes_thou = votes/1000) %>% 
-  mutate_at(vars(Action:Short), factor, labels=c('No', 'Yes'))
+movies_trim = movies %>%
+  filter(year > 1970
+         & budget > 1e6
+         & votes > 1000) %>%
+  mutate(budget_mil = budget / 1e6,
+         votes_thou = votes / 1000) %>%
+  mutate_at(vars(Action:Short), factor, labels = c('No', 'Yes'))
 ```
 
 Next, let's look at the relationship of time (`year`) and budget in millions (`budget_mil`) to rating. Use the `lm` function, adding the appropriate formula to predict rating and interpret the results.
 
 ```{r}
-model = lm(?, data=movies_trim)
+model = lm( ? , data = movies_trim)
 summary(model)
 ```
 
@@ -67,9 +70,10 @@ We can get the fitted values using the `fitted` function, or automatically add t
 
 ```{r, eval=FALSE}
 library(modelr)
+
 head(fitted(model))
 
-movies_trim %>% 
+movies_trim %>%
   add_predictions(model, var = 'fitted')
 ```
 
@@ -78,6 +82,7 @@ The broom package can add even more with the `augment` function, and will return
 ```{r}
 # install.packages(broom)
 library(broom)
+
 augment(model) %>% 
   head()
 ```
@@ -87,18 +92,6 @@ You can also use the `tidy` function to make the model object itself a data fram
 ```{r}
 tidy(model)
 ```
-
-
-That combined with pander will make your table publication ready without you having to explicitly format anything.  You can even use pander directly on the model object. Either of these approaches is what you will see throughout the mixed model notes.
-
-```{r}
-# install.packages(pander)
-library(pander)
-tidy(model) %>% 
-  pander(justify='lrrrr')
-pander(model)
-```
-
 
 
 
@@ -113,7 +106,7 @@ Add the `Action` indicator and the number of votes in thousands to the model.  I
 
 # Exercise 3
 
-See if Action interacts with budget, or any other aspect of the model or data you want to explore.
+See if Action interacts with budget, or any other aspect of the model or data you want to explore. You can do an interaction between two variables as `a + b + a:b` or `a*b`.
 
 ```{r}
 ```

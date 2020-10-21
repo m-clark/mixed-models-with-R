@@ -165,7 +165,7 @@ y = (2 + re_int[groups]) + (.5 + re_slope[groups]) * x + e
 d = data.frame(x, y, groups)
 ```
 
-This next bit of code shows a way to run a mixed model while specifying that there is no correlation between intercepts and slopes.  There is generally no reason to do this unless the study design warrants it, but you could do it as a step in the model-building process, such that you fit a model with no correlation, then one with it.
+This next bit of code shows a way to run a mixed model while specifying that there is no correlation between intercepts and slopes.  There is generally no reason to do this unless the study design warrants it[^nocorr], but you could do it as a step in the model-building process, such that you fit a model with no correlation, then one with it.
 
 ```{r simSlopes2, eval=FALSE}
 model_ints_only = lmer(y ~ x + (1|groups), data = d)
