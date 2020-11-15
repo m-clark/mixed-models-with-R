@@ -42,6 +42,8 @@ knitr::opts_chunk$set(
   cache.rebuild = F,
   cache         = T
 )
+
+options(knitr.kable.NA = '')
 ```
 
 ```{r load_common_packages, echo=FALSE, cache=FALSE, eval=TRUE}

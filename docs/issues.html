@@ -388,26 +388,186 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb45-4"><a href="issues.html#cb45-4" aria-hidden="true" tabindex="-1"></a>gpa_3 <span class="ot">=</span>  <span class="fu">lmer</span>(gpa <span class="sc">~</span> occasion <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> student), <span class="at">data =</span> gpa)</span>
 <span id="cb45-5"><a href="issues.html#cb45-5" aria-hidden="true" tabindex="-1"></a>gpa_4 <span class="ot">=</span>  <span class="fu">lmer</span>(gpa <span class="sc">~</span> occasion <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> occasion <span class="sc">|</span> student), <span class="at">data =</span> gpa)</span>
 <span id="cb45-6"><a href="issues.html#cb45-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-7"><a href="issues.html#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(gpa_1, gpa_2, <span class="at">refit =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<pre><code>Data: gpa
-Models:
-gpa_1: gpa ~ occasion + (1 + occasion | student)
-gpa_2: gpa ~ occasion + sex + (1 + occasion | student)
-      npar    AIC    BIC  logLik deviance  Chisq Df Pr(&gt;Chisq)   
-gpa_1    6 258.23 288.77 -123.12   246.23                        
-gpa_2    7 250.07 285.70 -118.03   236.07 10.166  1   0.001431 **
----
-Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="issues.html#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(gpa_3, gpa_4, <span class="at">refit =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
-<pre><code>Data: gpa
-Models:
-gpa_3: gpa ~ occasion + (1 | student)
-gpa_4: gpa ~ occasion + (1 + occasion | student)
-      npar    AIC    BIC  logLik deviance  Chisq Df Pr(&gt;Chisq)    
-gpa_3    4 416.89 437.25 -204.45   408.89                         
-gpa_4    6 272.96 303.50 -130.48   260.96 147.94  2  &lt; 2.2e-16 ***
----
-Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<span id="cb45-7"><a href="issues.html#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(gpa_1, gpa_2, <span class="at">refit =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb45-8"><a href="issues.html#cb45-8" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(gpa_3, gpa_4, <span class="at">refit =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+npar
+</th>
+<th style="text-align:right;">
+AIC
+</th>
+<th style="text-align:right;">
+BIC
+</th>
+<th style="text-align:right;">
+logLik
+</th>
+<th style="text-align:right;">
+deviance
+</th>
+<th style="text-align:right;">
+Chisq
+</th>
+<th style="text-align:right;">
+Df
+</th>
+<th style="text-align:right;">
+p-value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+gpa_1
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+258.234
+</td>
+<td style="text-align:right;">
+288.775
+</td>
+<td style="text-align:right;">
+-123.117
+</td>
+<td style="text-align:right;">
+246.234
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+gpa_2
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+250.068
+</td>
+<td style="text-align:right;">
+285.699
+</td>
+<td style="text-align:right;">
+-118.034
+</td>
+<td style="text-align:right;">
+236.068
+</td>
+<td style="text-align:right;">
+10.166
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.001
+</td>
+</tr>
+</tbody>
+</table>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+npar
+</th>
+<th style="text-align:right;">
+AIC
+</th>
+<th style="text-align:right;">
+BIC
+</th>
+<th style="text-align:right;">
+logLik
+</th>
+<th style="text-align:right;">
+deviance
+</th>
+<th style="text-align:right;">
+Chisq
+</th>
+<th style="text-align:right;">
+Df
+</th>
+<th style="text-align:right;">
+p-value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+gpa_3
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+416.893
+</td>
+<td style="text-align:right;">
+437.253
+</td>
+<td style="text-align:right;">
+-204.446
+</td>
+<td style="text-align:right;">
+408.893
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+<td style="text-align:right;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+gpa_4
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+272.957
+</td>
+<td style="text-align:right;">
+303.497
+</td>
+<td style="text-align:right;">
+-130.478
+</td>
+<td style="text-align:right;">
+260.957
+</td>
+<td style="text-align:right;">
+147.936
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
 <p>One can see that the estimated log likelihood is not the same for <code>gpa_1</code> (ML) and <code>gpa_4</code> (REML), even though they are otherwise the same model.</p>
 <p>In my opinion, model selection involves considerations of theory, parsimony, and prediction, and those tests do not. I’m not a fan of such tests even in the standard setting, and would use AIC here to potentially aid (not make) a model choice if I thought it was necessary, as I would there<a href="#fn25" class="footnote-ref" id="fnref25"><sup>25</sup></a>. We can just use the <span class="func" style="">AIC</span> function, but see also the <span class="pack" style="">cAIC4</span> package for a conditional AIC that works specifically for <span class="objclass" style="">merMod</span> objects. In the following, <code>gpa_2</code> has the lowest (best) AIC value, and given that both it and <code>gpa_1</code> are notably superior to <code>gpa_3</code>, one could conclude that having the random coefficient for occasion is useful.</p>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">

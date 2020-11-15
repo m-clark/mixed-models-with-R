@@ -82,7 +82,7 @@ On the plus side, if you're willing to wait, tools like the Stan family will lik
 
 Model comparison takes place in the usual way in the sense of potentially having statistical tests and information criteria.  Unfortunately, the typical likelihood ratio tests one might use in standard settings are not so straightforward here. For example, in order to compare models with different fixed effects, at a minimum you'd have to change the default estimation from REML to ML, and the models must have the same random effects structure, for the resulting test p-value to be correct.  It works the other way to compare models with different random effects structure (with fixed effects the same across models), i.e. where you'd have to use REML.
 
-```{r model-compare-lr-ratio}
+```{r model-compare-lr-ratio, eval=FALSE}
 # to compare fixed effects refit with ML
 gpa_1 =  lmer(gpa ~ occasion + (1 + occasion | student), data = gpa)
 gpa_2 =  lmer(gpa ~ occasion + sex + (1 + occasion | student), data = gpa)
@@ -92,6 +92,25 @@ gpa_4 =  lmer(gpa ~ occasion + (1 + occasion | student), data = gpa)
 anova(gpa_1, gpa_2, refit = TRUE)
 anova(gpa_3, gpa_4, refit = FALSE)
 ```
+
+```{r  model-compare-lr-ratio-show, echo=FALSE}
+# to compare fixed effects refit with ML
+gpa_1 =  lmer(gpa ~ occasion + (1 + occasion | student), data = gpa)
+gpa_2 =  lmer(gpa ~ occasion + sex + (1 + occasion | student), data = gpa)
+gpa_3 =  lmer(gpa ~ occasion + (1 | student), data = gpa)
+gpa_4 =  lmer(gpa ~ occasion + (1 + occasion | student), data = gpa)
+
+anova(gpa_1, gpa_2, refit = TRUE) %>% 
+  data.frame() %>% 
+  rename(`p-value` = `Pr..Chisq.`) %>% 
+  kable_df()
+
+anova(gpa_3, gpa_4, refit = FALSE) %>% 
+  data.frame() %>% 
+  rename(`p-value` = `Pr..Chisq.`) %>% 
+  kable_df()
+```
+
 
 One can see that the estimated log likelihood is not the same for `gpa_1` (ML) and `gpa_4` (REML), even though they are otherwise the same model.
 

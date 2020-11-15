@@ -369,17 +369,17 @@ market segments.</p>
 <div id="python" class="section level3">
 <h3>Python</h3>
 <p>In Python, the <a href="http://www.statsmodels.org/stable/mixed_linear.html">statsmodels</a> module has basic capabilities for mixed models, but not too many frills relatively speaking. CSCAR director Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series <a href="https://github.com/kshedden/Statsmodels-MixedLM">here</a>. The following provides an example.</p>
-<div class="sourceCode" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb149-1"><a href="appendix.html#cb149-1" aria-hidden="true" tabindex="-1"></a>pycheck <span class="ot">=</span> <span class="fu">ifelse</span>(<span class="fu">grepl</span>(<span class="st">&#39;Windows&#39;</span>, <span class="fu">sessionInfo</span>()<span class="sc">$</span>running), </span>
-<span id="cb149-2"><a href="appendix.html#cb149-2" aria-hidden="true" tabindex="-1"></a>                 <span class="st">&#39;C:/ProgramData/Anaconda3&#39;</span>, </span>
-<span id="cb149-3"><a href="appendix.html#cb149-3" aria-hidden="true" tabindex="-1"></a>                 <span class="st">&#39;/Users/micl/opt/anaconda3/bin/python&#39;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb150"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb150-1"><a href="appendix.html#cb150-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb150-2"><a href="appendix.html#cb150-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
-<span id="cb150-3"><a href="appendix.html#cb150-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
-<span id="cb150-4"><a href="appendix.html#cb150-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb150-5"><a href="appendix.html#cb150-5" aria-hidden="true" tabindex="-1"></a>gpa <span class="op">=</span> pd.read_csv(<span class="st">&#39;data/gpa.csv&#39;</span>)</span>
-<span id="cb150-6"><a href="appendix.html#cb150-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb150-7"><a href="appendix.html#cb150-7" aria-hidden="true" tabindex="-1"></a>gpa_py_mixed <span class="op">=</span> smf.mixedlm(<span class="st">&quot;gpa ~ occasion&quot;</span>, gpa, groups<span class="op">=</span>gpa[<span class="st">&quot;student&quot;</span>]).fit()</span>
-<span id="cb150-8"><a href="appendix.html#cb150-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(gpa_py_mixed.summary())</span></code></pre></div>
+<div class="sourceCode" id="cb146"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb146-1"><a href="appendix.html#cb146-1" aria-hidden="true" tabindex="-1"></a>pycheck <span class="ot">=</span> <span class="fu">ifelse</span>(<span class="fu">grepl</span>(<span class="st">&#39;Windows&#39;</span>, <span class="fu">sessionInfo</span>()<span class="sc">$</span>running), </span>
+<span id="cb146-2"><a href="appendix.html#cb146-2" aria-hidden="true" tabindex="-1"></a>                 <span class="st">&#39;C:/ProgramData/Anaconda3&#39;</span>, </span>
+<span id="cb146-3"><a href="appendix.html#cb146-3" aria-hidden="true" tabindex="-1"></a>                 <span class="st">&#39;/Users/micl/opt/anaconda3/bin/python&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb147"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb147-1"><a href="appendix.html#cb147-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb147-2"><a href="appendix.html#cb147-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb147-3"><a href="appendix.html#cb147-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb147-4"><a href="appendix.html#cb147-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb147-5"><a href="appendix.html#cb147-5" aria-hidden="true" tabindex="-1"></a>gpa <span class="op">=</span> pd.read_csv(<span class="st">&#39;data/gpa.csv&#39;</span>)</span>
+<span id="cb147-6"><a href="appendix.html#cb147-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb147-7"><a href="appendix.html#cb147-7" aria-hidden="true" tabindex="-1"></a>gpa_py_mixed <span class="op">=</span> smf.mixedlm(<span class="st">&quot;gpa ~ occasion&quot;</span>, gpa, groups<span class="op">=</span>gpa[<span class="st">&quot;student&quot;</span>]).fit()</span>
+<span id="cb147-8"><a href="appendix.html#cb147-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(gpa_py_mixed.summary())</span></code></pre></div>
 <pre><code>
              Mixed Linear Model Regression Results
 =======================================================
