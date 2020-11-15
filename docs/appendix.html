@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Appendix | Mixed Models with R</title>
   <meta name="description" content="This is an introduction to using mixed models in R. It covers the most common techniques employed, with demonstration primarily via the lme4 package. Discussion includes extensions into generalized mixed models, Bayesian approaches, and realms beyond." />
-  <meta name="generator" content="bookdown 0.20.2 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Appendix | Mixed Models with R" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,6 @@
 
 
 
-<meta name="date" content="2020-10-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +31,7 @@
   <link rel="shortcut icon" href="img/R.ico" type="image/x-icon" />
 <link rel="prev" href="supplemental.html"/>
 
-<script src="libs/header-attrs-2.3/header-attrs.js"></script>
+<script src="libs/header-attrs-2.5/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -50,7 +49,9 @@
 
 
 
-<script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.2/htmlwidgets.js"></script>
 <script src="libs/viz-1.8.2/viz.js"></script>
 <link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
 <script src="libs/grViz-binding-1.0.6.1/grViz.js"></script>
@@ -368,17 +369,17 @@ market segments.</p>
 <div id="python" class="section level3">
 <h3>Python</h3>
 <p>In Python, the <a href="http://www.statsmodels.org/stable/mixed_linear.html">statsmodels</a> module has basic capabilities for mixed models, but not too many frills relatively speaking. CSCAR director Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series <a href="https://github.com/kshedden/Statsmodels-MixedLM">here</a>. The following provides an example.</p>
-<div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="appendix.html#cb145-1" aria-hidden="true"></a>pycheck =<span class="st"> </span><span class="kw">ifelse</span>(<span class="kw">grepl</span>(<span class="st">&#39;Windows&#39;</span>, <span class="kw">sessionInfo</span>()<span class="op">$</span>running), </span>
-<span id="cb145-2"><a href="appendix.html#cb145-2" aria-hidden="true"></a>                 <span class="st">&#39;C:/ProgramData/Anaconda3&#39;</span>, </span>
-<span id="cb145-3"><a href="appendix.html#cb145-3" aria-hidden="true"></a>                 <span class="st">&#39;/Users/micl/opt/anaconda3/bin/python&#39;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb146"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb146-1"><a href="appendix.html#cb146-1" aria-hidden="true"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb146-2"><a href="appendix.html#cb146-2" aria-hidden="true"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
-<span id="cb146-3"><a href="appendix.html#cb146-3" aria-hidden="true"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
-<span id="cb146-4"><a href="appendix.html#cb146-4" aria-hidden="true"></a></span>
-<span id="cb146-5"><a href="appendix.html#cb146-5" aria-hidden="true"></a>gpa <span class="op">=</span> pd.read_csv(<span class="st">&#39;data/gpa.csv&#39;</span>)</span>
-<span id="cb146-6"><a href="appendix.html#cb146-6" aria-hidden="true"></a></span>
-<span id="cb146-7"><a href="appendix.html#cb146-7" aria-hidden="true"></a>gpa_py_mixed <span class="op">=</span> smf.mixedlm(<span class="st">&quot;gpa ~ occasion&quot;</span>, gpa, groups<span class="op">=</span>gpa[<span class="st">&quot;student&quot;</span>]).fit()</span>
-<span id="cb146-8"><a href="appendix.html#cb146-8" aria-hidden="true"></a><span class="bu">print</span>(gpa_py_mixed.summary())</span></code></pre></div>
+<div class="sourceCode" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb149-1"><a href="appendix.html#cb149-1" aria-hidden="true" tabindex="-1"></a>pycheck <span class="ot">=</span> <span class="fu">ifelse</span>(<span class="fu">grepl</span>(<span class="st">&#39;Windows&#39;</span>, <span class="fu">sessionInfo</span>()<span class="sc">$</span>running), </span>
+<span id="cb149-2"><a href="appendix.html#cb149-2" aria-hidden="true" tabindex="-1"></a>                 <span class="st">&#39;C:/ProgramData/Anaconda3&#39;</span>, </span>
+<span id="cb149-3"><a href="appendix.html#cb149-3" aria-hidden="true" tabindex="-1"></a>                 <span class="st">&#39;/Users/micl/opt/anaconda3/bin/python&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb150"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb150-1"><a href="appendix.html#cb150-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb150-2"><a href="appendix.html#cb150-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb150-3"><a href="appendix.html#cb150-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb150-4"><a href="appendix.html#cb150-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb150-5"><a href="appendix.html#cb150-5" aria-hidden="true" tabindex="-1"></a>gpa <span class="op">=</span> pd.read_csv(<span class="st">&#39;data/gpa.csv&#39;</span>)</span>
+<span id="cb150-6"><a href="appendix.html#cb150-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb150-7"><a href="appendix.html#cb150-7" aria-hidden="true" tabindex="-1"></a>gpa_py_mixed <span class="op">=</span> smf.mixedlm(<span class="st">&quot;gpa ~ occasion&quot;</span>, gpa, groups<span class="op">=</span>gpa[<span class="st">&quot;student&quot;</span>]).fit()</span>
+<span id="cb150-8"><a href="appendix.html#cb150-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(gpa_py_mixed.summary())</span></code></pre></div>
 <pre><code>
              Mixed Linear Model Regression Results
 =======================================================

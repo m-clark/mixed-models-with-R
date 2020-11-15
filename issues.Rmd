@@ -82,7 +82,43 @@ On the plus side, if you're willing to wait, tools like the Stan family will lik
 
 Model comparison takes place in the usual way in the sense of potentially having statistical tests and information criteria.  Unfortunately, the typical likelihood ratio tests one might use in standard settings are not so straightforward here. For example, in order to compare models with different fixed effects, at a minimum you'd have to change the default estimation from REML to ML, and the models must have the same random effects structure, for the resulting test p-value to be correct.  It works the other way to compare models with different random effects structure (with fixed effects the same across models), i.e. where you'd have to use REML.
 
-In my opinion, model selection involves considerations of theory, parsimony, and prediction, and those tests do not. I'm not a fan of such tests even in the standard setting, and would use AIC here to potentially aid (not make) a model choice if I thought it was necessary, as I would there[^lrtest]. In general though, trying to determine a 'best' model with one set of data is a problematic endeavor at best, and at worst, completely misguided.  I think it's very useful to build models of increasing complexity, and select one to focus on based on the available evidence.  Just don't get hung up on choosing one based solely on the outcome of a single statistic.  If you have a lot of data, you should consider some sort of explicit validation approach if you really want to compare competing models, but that is not without complication given the dependency in the data.  If your goal is more on the predictive side, consider *model averaging* rather than selecting a single model.
+```{r model-compare-lr-ratio}
+# to compare fixed effects refit with ML
+gpa_1 =  lmer(gpa ~ occasion + (1 + occasion | student), data = gpa)
+gpa_2 =  lmer(gpa ~ occasion + sex + (1 + occasion | student), data = gpa)
+gpa_3 =  lmer(gpa ~ occasion + (1 | student), data = gpa)
+gpa_4 =  lmer(gpa ~ occasion + (1 + occasion | student), data = gpa)
+
+anova(gpa_1, gpa_2, refit = TRUE)
+anova(gpa_3, gpa_4, refit = FALSE)
+```
+
+One can see that the estimated log likelihood is not the same for `gpa_1` (ML) and `gpa_4` (REML), even though they are otherwise the same model.
+
+In my opinion, model selection involves considerations of theory, parsimony, and prediction, and those tests do not. I'm not a fan of such tests even in the standard setting, and would use AIC here to potentially aid (not make) a model choice if I thought it was necessary, as I would there[^lrtest]. We can just use the <span class="func" style = "">AIC</span> function, but see also the <span class="pack" style = "">cAIC4</span> package for a conditional AIC that works specifically for <span class="objclass" style = "">merMod</span> objects.  In the following, `gpa_2` has the lowest (best) AIC value, and given that both it and `gpa_1` are notably superior to `gpa_3`, one could conclude that having the random coefficient for occasion is useful.
+
+```{r model-compare-AIC, echo=FALSE}
+model_list = list(
+  gpa_1 = gpa_1,
+  gpa_2 = gpa_2,
+  gpa_3 = gpa_3
+)
+
+# map_df(model_list, function(mod)
+#   data.frame(cAIC4::cAIC(mod)[c('loglikelihood', 'df', 'caic')]),
+#   .id = 'model') %>% 
+#   arrange(caic) %>% 
+#   mutate(`Δ caic` = caic - min(caic))
+
+map_df(model_list, function(mod) data.frame(AIC = AIC(mod)), .id = 'model') %>% 
+  arrange(AIC) %>% 
+  mutate(`Δ AIC` = AIC - min(AIC)) %>% 
+  kable_df()
+```
+
+
+In general though, trying to determine a 'best' model with one set of data is a problematic endeavor at best, and at worst, completely misguided.  I think it's very useful to build models of increasing complexity, and select one to focus on based on the available evidence to simplify exposition.  Just don't get hung up on choosing one based solely on the outcome of a single statistic.  If you have a lot of data, you should consider some sort of explicit validation approach if you really want to compare competing models, but that is not without complication given the dependency in the data.  If your goal is more on the predictive side, consider *model averaging* rather than selecting a single model.
+
 
 
 
@@ -115,7 +151,7 @@ The main point is that you'll need to acknowledge the warnings and messages that
 
 [^mi]: Multiple imputation is straightforward only in theory.  In practice it becomes a major pain to go very far beyond getting the parameter estimates for simple models.  Full information maximum likelihood (FIML) is little implemented outside of SEM software/packages, and more problematic in its assumptions.
 
-[^lrtest]: If you really want them see the <span class="pack">lmertest</span> package.  Note also that AIC [does not come with a free lunch](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#can-i-use-aic-for-mixed-models-how-do-i-count-the-number-of-degrees-of-freedom-for-a-random-effect).  See the <span class="pack">cAIC4</span> package and references therein.
+[^lrtest]: If you really go the statistical test route, see the <span class="pack">lmertest</span> package for additional functionality.  Note also that AIC [does not come with a free lunch](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#can-i-use-aic-for-mixed-models-how-do-i-count-the-number-of-degrees-of-freedom-for-a-random-effect), and as mentioned, see the <span class="pack">cAIC4</span> package and references therein.
 
 [^missingreviewer]:  Just note that in some disciplines, reviewers, who will rarely do this themselves for the same reasons, nevertheless will make a big deal about the missing data because it's an easy point for them to make.  This is similar to econometrically trained reviewers who shout 'endogeneity!' at every turn, but won't bother to tell you where to get the instrument in the first place, admit that IV analysis is problematic in its own right, or what specifically the approach should be in complex model settings such as mixed models with nonlinear, spatial effects, multiple levels of clustering etc.  I've even seen a reviewer say that one 'should conduct a test for whether data is missing at random vs. not, then proceed accordingly'.  That was the entirety of their suggestion. Aside from the fact that there technically is no such test, because it would require the very data one doesn't have, declaring a type of missingness doesn't tell you which of dozens of approaches one should take.
 

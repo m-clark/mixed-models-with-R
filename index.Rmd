@@ -4,7 +4,7 @@ subtitle: Getting started with random effects
 author:  |
   <span class="noem">Michael Clark</span> <br>
   [m-clark.github.io](https://m-clark.github.io/)
-date: "`r Sys.Date()`"
+# date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 output:
   bookdown::gitbook

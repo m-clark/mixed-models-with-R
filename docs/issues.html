@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Issues | Mixed Models with R</title>
   <meta name="description" content="This is an introduction to using mixed models in R. It covers the most common techniques employed, with demonstration primarily via the lme4 package. Discussion includes extensions into generalized mixed models, Bayesian approaches, and realms beyond." />
-  <meta name="generator" content="bookdown 0.20.2 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Issues | Mixed Models with R" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,6 @@
 
 
 
-<meta name="date" content="2020-10-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +31,7 @@
   <link rel="shortcut icon" href="img/R.ico" type="image/x-icon" />
 <link rel="prev" href="extensions.html"/>
 <link rel="next" href="bayesian.html"/>
-<script src="libs/header-attrs-2.3/header-attrs.js"></script>
+<script src="libs/header-attrs-2.5/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -50,7 +49,9 @@
 
 
 
-<script src="libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.2/htmlwidgets.js"></script>
 <script src="libs/viz-1.8.2/viz.js"></script>
 <link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
 <script src="libs/grViz-binding-1.0.6.1/grViz.js"></script>
@@ -336,7 +337,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="variance-accounted-for" class="section level2">
 <h2>Variance Accounted For</h2>
 <p>People really love the R-squared value that comes from standard regression. Never mind that it is inherently biased, nor does it matter that there is no way to state what would be a ‘good’ result for a given data situation, nor that many actually don’t know how to interpret it, nor does it even matter that many have no qualms about dropping it from a report at the first sign of trouble.</p>
-<p>Suffice it to say that when there are multiple sources of ‘variance’, talking about <em>variance accounted for</em> is not straightforward. Still, many have tried. You might look at the <span class="pack" style="">r2glmm</span> package and the references noted in the description, or the <span class="func" style="">r2</span> function in <span class="pack" style="">performance</span>. See also the <a href="https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#how-do-i-compute-a-coefficient-of-determination-r2-or-an-analogue-for-glmms">GLMM FAQ</a>. I would suggest not even bothering beyond the standard linear mixed model.</p>
+<p>Suffice it to say that when there are multiple sources of ‘variance,’ talking about <em>variance accounted for</em> is not straightforward. Still, many have tried. You might look at the <span class="pack" style="">r2glmm</span> package and the references noted in the description, or the <span class="func" style="">r2</span> function in <span class="pack" style="">performance</span>. See also the <a href="https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#how-do-i-compute-a-coefficient-of-determination-r2-or-an-analogue-for-glmms">GLMM FAQ</a>. I would suggest not even bothering beyond the standard linear mixed model.</p>
 <p>This also regards the <em>intraclass correlation</em>, which has little meaning outside of a linear mixed model with no random slopes. Again, just because you can calculate something that looks like it, doesn’t mean that it actually means what you want it to mean.</p>
 </div>
 <div id="common-alternatives-to-mixed-models" class="section level2">
@@ -381,7 +382,85 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="model-comparison" class="section level2">
 <h2>Model Comparison</h2>
 <p>Model comparison takes place in the usual way in the sense of potentially having statistical tests and information criteria. Unfortunately, the typical likelihood ratio tests one might use in standard settings are not so straightforward here. For example, in order to compare models with different fixed effects, at a minimum you’d have to change the default estimation from REML to ML, and the models must have the same random effects structure, for the resulting test p-value to be correct. It works the other way to compare models with different random effects structure (with fixed effects the same across models), i.e. where you’d have to use REML.</p>
-<p>In my opinion, model selection involves considerations of theory, parsimony, and prediction, and those tests do not. I’m not a fan of such tests even in the standard setting, and would use AIC here to potentially aid (not make) a model choice if I thought it was necessary, as I would there<a href="#fn25" class="footnote-ref" id="fnref25"><sup>25</sup></a>. In general though, trying to determine a ‘best’ model with one set of data is a problematic endeavor at best, and at worst, completely misguided. I think it’s very useful to build models of increasing complexity, and select one to focus on based on the available evidence. Just don’t get hung up on choosing one based solely on the outcome of a single statistic. If you have a lot of data, you should consider some sort of explicit validation approach if you really want to compare competing models, but that is not without complication given the dependency in the data. If your goal is more on the predictive side, consider <em>model averaging</em> rather than selecting a single model.</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="issues.html#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># to compare fixed effects refit with ML</span></span>
+<span id="cb45-2"><a href="issues.html#cb45-2" aria-hidden="true" tabindex="-1"></a>gpa_1 <span class="ot">=</span>  <span class="fu">lmer</span>(gpa <span class="sc">~</span> occasion <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> occasion <span class="sc">|</span> student), <span class="at">data =</span> gpa)</span>
+<span id="cb45-3"><a href="issues.html#cb45-3" aria-hidden="true" tabindex="-1"></a>gpa_2 <span class="ot">=</span>  <span class="fu">lmer</span>(gpa <span class="sc">~</span> occasion <span class="sc">+</span> sex <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> occasion <span class="sc">|</span> student), <span class="at">data =</span> gpa)</span>
+<span id="cb45-4"><a href="issues.html#cb45-4" aria-hidden="true" tabindex="-1"></a>gpa_3 <span class="ot">=</span>  <span class="fu">lmer</span>(gpa <span class="sc">~</span> occasion <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> student), <span class="at">data =</span> gpa)</span>
+<span id="cb45-5"><a href="issues.html#cb45-5" aria-hidden="true" tabindex="-1"></a>gpa_4 <span class="ot">=</span>  <span class="fu">lmer</span>(gpa <span class="sc">~</span> occasion <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> occasion <span class="sc">|</span> student), <span class="at">data =</span> gpa)</span>
+<span id="cb45-6"><a href="issues.html#cb45-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-7"><a href="issues.html#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(gpa_1, gpa_2, <span class="at">refit =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>Data: gpa
+Models:
+gpa_1: gpa ~ occasion + (1 + occasion | student)
+gpa_2: gpa ~ occasion + sex + (1 + occasion | student)
+      npar    AIC    BIC  logLik deviance  Chisq Df Pr(&gt;Chisq)   
+gpa_1    6 258.23 288.77 -123.12   246.23                        
+gpa_2    7 250.07 285.70 -118.03   236.07 10.166  1   0.001431 **
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="issues.html#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(gpa_3, gpa_4, <span class="at">refit =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<pre><code>Data: gpa
+Models:
+gpa_3: gpa ~ occasion + (1 | student)
+gpa_4: gpa ~ occasion + (1 + occasion | student)
+      npar    AIC    BIC  logLik deviance  Chisq Df Pr(&gt;Chisq)    
+gpa_3    4 416.89 437.25 -204.45   408.89                         
+gpa_4    6 272.96 303.50 -130.48   260.96 147.94  2  &lt; 2.2e-16 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>One can see that the estimated log likelihood is not the same for <code>gpa_1</code> (ML) and <code>gpa_4</code> (REML), even though they are otherwise the same model.</p>
+<p>In my opinion, model selection involves considerations of theory, parsimony, and prediction, and those tests do not. I’m not a fan of such tests even in the standard setting, and would use AIC here to potentially aid (not make) a model choice if I thought it was necessary, as I would there<a href="#fn25" class="footnote-ref" id="fnref25"><sup>25</sup></a>. We can just use the <span class="func" style="">AIC</span> function, but see also the <span class="pack" style="">cAIC4</span> package for a conditional AIC that works specifically for <span class="objclass" style="">merMod</span> objects. In the following, <code>gpa_2</code> has the lowest (best) AIC value, and given that both it and <code>gpa_1</code> are notably superior to <code>gpa_3</code>, one could conclude that having the random coefficient for occasion is useful.</p>
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+model
+</th>
+<th style="text-align:right;">
+AIC
+</th>
+<th style="text-align:right;">
+Δ AIC
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+gpa_2
+</td>
+<td style="text-align:right;">
+269.785
+</td>
+<td style="text-align:right;">
+0.000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+gpa_1
+</td>
+<td style="text-align:right;">
+272.957
+</td>
+<td style="text-align:right;">
+3.171
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+gpa_3
+</td>
+<td style="text-align:right;">
+416.893
+</td>
+<td style="text-align:right;">
+147.108
+</td>
+</tr>
+</tbody>
+</table>
+<p>In general though, trying to determine a ‘best’ model with one set of data is a problematic endeavor at best, and at worst, completely misguided. I think it’s very useful to build models of increasing complexity, and select one to focus on based on the available evidence to simplify exposition. Just don’t get hung up on choosing one based solely on the outcome of a single statistic. If you have a lot of data, you should consider some sort of explicit validation approach if you really want to compare competing models, but that is not without complication given the dependency in the data. If your goal is more on the predictive side, consider <em>model averaging</em> rather than selecting a single model.</p>
 </div>
 <div id="convergence" class="section level2">
 <h2>Convergence</h2>
@@ -407,8 +486,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <hr />
 <ol start="23">
 <li id="fn23"><p>Multiple imputation is straightforward only in theory. In practice it becomes a major pain to go very far beyond getting the parameter estimates for simple models. Full information maximum likelihood (FIML) is little implemented outside of SEM software/packages, and more problematic in its assumptions.<a href="issues.html#fnref23" class="footnote-back">↩︎</a></p></li>
-<li id="fn24"><p>Just note that in some disciplines, reviewers, who will rarely do this themselves for the same reasons, nevertheless will make a big deal about the missing data because it’s an easy point for them to make. This is similar to econometrically trained reviewers who shout ‘endogeneity!’ at every turn, but won’t bother to tell you where to get the instrument in the first place, admit that IV analysis is problematic in its own right, or what specifically the approach should be in complex model settings such as mixed models with nonlinear, spatial effects, multiple levels of clustering etc. I’ve even seen a reviewer say that one ‘should conduct a test for whether data is missing at random vs. not, then proceed accordingly’. That was the entirety of their suggestion. Aside from the fact that there technically is no such test, because it would require the very data one doesn’t have, declaring a type of missingness doesn’t tell you which of dozens of approaches one should take.<a href="issues.html#fnref24" class="footnote-back">↩︎</a></p></li>
-<li id="fn25"><p>If you really want them see the <span class="pack">lmertest</span> package. Note also that AIC <a href="https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#can-i-use-aic-for-mixed-models-how-do-i-count-the-number-of-degrees-of-freedom-for-a-random-effect">does not come with a free lunch</a>. See the <span class="pack">cAIC4</span> package and references therein.<a href="issues.html#fnref25" class="footnote-back">↩︎</a></p></li>
+<li id="fn24"><p>Just note that in some disciplines, reviewers, who will rarely do this themselves for the same reasons, nevertheless will make a big deal about the missing data because it’s an easy point for them to make. This is similar to econometrically trained reviewers who shout ‘endogeneity!’ at every turn, but won’t bother to tell you where to get the instrument in the first place, admit that IV analysis is problematic in its own right, or what specifically the approach should be in complex model settings such as mixed models with nonlinear, spatial effects, multiple levels of clustering etc. I’ve even seen a reviewer say that one ‘should conduct a test for whether data is missing at random vs. not, then proceed accordingly.’ That was the entirety of their suggestion. Aside from the fact that there technically is no such test, because it would require the very data one doesn’t have, declaring a type of missingness doesn’t tell you which of dozens of approaches one should take.<a href="issues.html#fnref24" class="footnote-back">↩︎</a></p></li>
+<li id="fn25"><p>If you really go the statistical test route, see the <span class="pack">lmertest</span> package for additional functionality. Note also that AIC <a href="https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#can-i-use-aic-for-mixed-models-how-do-i-count-the-number-of-degrees-of-freedom-for-a-random-effect">does not come with a free lunch</a>, and as mentioned, see the <span class="pack">cAIC4</span> package and references therein.<a href="issues.html#fnref25" class="footnote-back">↩︎</a></p></li>
 <li id="fn26"><p>The <em>Richly Parameterized Linear Models</em> text discusses convergence and other issues probably more than any other text I’ve come across. Most don’t treat the subject at all.<a href="issues.html#fnref26" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
