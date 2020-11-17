@@ -1,9 +1,9 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono|Roboto+Condensed|Open+Sans|Lato|Lora|Fira+Sans|Yellotail");
+@import url("https://fonts.googleapis.com/css?family=Bitter|Roboto|Roboto+Mono|Roboto+Condensed|Open+Sans|Lato|Lora|Fira+Sans|Yellotail");
 
 /* title page */
 .book .book-body .page-wrapper .page-inner section.normal h1.title {
   font-size: 250%;
-  font-family: 'Fira Sans', Karla, 'Roboto Condensed', Lora, Lato, Roboto, sans;
+  font-family: Karla, 'Roboto Condensed', 'Fira Sans', Lora, Lato, Roboto, sans;
   font-style: normal;
   font-weight: 100;
 }
@@ -51,7 +51,7 @@
     background-color: #fffff8;
     color: #585858;
     padding: 5px 15px;
-    font-family: Roboto, 'Helvetica Neue', sans-serif;
+    font-family: Bitter, Roboto, 'Helvetica Neue', sans-serif;
     word-wrap: break-word;
     overflow: hidden;
     line-height: 1.7;
@@ -232,7 +232,9 @@ i {
     margin: 0 0 1.275em;
     padding: .85em 1em;
     background: #fafafa;
+    border-radius: 10px;
 }
+
 
 
 .book .book-body .page-wrapper .page-inner section.normal code,
