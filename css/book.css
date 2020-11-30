@@ -99,7 +99,7 @@ uri class is for urls
     transition: width .3s;
 }
 
-.book .book-body .page-wrapper .page-inner section.normal,
+.book .book-body .page-wrapper .page-inner section.normal a:hover::after,
 .book .book-body .page-wrapper .page-inner section.normal a.uri:hover::after{
     width: 100%;
     //transition: width .3s;
