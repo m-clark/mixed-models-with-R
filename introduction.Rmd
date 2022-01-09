@@ -2,11 +2,11 @@
 
 ## Overview
 
-Mixed models are an extremely useful modeling tool for situations in which there is some dependency among observations in the data, where the correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements for the units of observation, or in which the units of observation are otherwise grouped together (e.g. students within school, cities within geographic region).   While there are different ways to approach such a situation, mixed models are a very common and powerful tool to do so.  In addition, they have ties to other statistical approaches that further expand their applicability.
+Mixed models are an extremely useful modeling tool for situations in which there is some dependency among observations in the data, where the correlation typically arises from the observations being clustered in some way. For example, it is quite common to have data in which we have repeated measurements for the units of observation, or in which the units of observation are otherwise grouped together (e.g. students within school, cities within geographic region).   While there are different ways to approach such a situation, mixed models are a very common and powerful tool to use.  In addition, they have ties to other statistical approaches that further expand their applicability.
 
 ### Goals
 
-This document also serves as the basis for a workshop. The goal of the workshop is primarily to provide a sense of when one would use mixed models and a variety of standard techniques to implement them.  Exercises are available to practice your skills.
+The goal here is primarily to provide a sense of when one would use mixed models, and a variety of standard techniques to implement them.  While it can be seen as a standalone treatment, the document originally served as the basis for a workshop, and from that, exercises are available to practice your skills.
 
 
 ### Prerequisites
@@ -19,18 +19,18 @@ Note the following color coding used in this document:
 - <span class="pack">package</span>
 - <span class="func">function</span>
 - <span class="objclass">object/class</span>
-- [link]() (with hover underline)
+- [link]() 
 
 
-## Workshop
+<!-- ## Workshop -->
 
-If doing or interested in the workshop follow these steps:
+<!-- If doing or interested in the workshop follow these steps: -->
 
-0. Download the zip file at [GitHub](https://github.com/m-clark/mixed-models-with-r-workshop-2019/archive/master.zip). Be mindful of where you put it.
-1. Unzip it. Be mindful of where you put the resulting folder.
-2. Open RStudio.
-3. File/Open Project and click on the blue icon (`mixed-models-with-r-workshop-2019.Rproj`) in the folder you just created.
-4. File/Open Click on the ReadMe file and do what it says.
+<!-- 0. Download the zip file at [GitHub](https://github.com/m-clark/mixed-models-with-r-workshop-2019/archive/master.zip). Be mindful of where you put it. -->
+<!-- 1. Unzip it. Be mindful of where you put the resulting folder. -->
+<!-- 2. Open RStudio. -->
+<!-- 3. File/Open Project and click on the blue icon (`mixed-models-with-r-workshop-2019.Rproj`) in the folder you just created. -->
+<!-- 4. File/Open Click on the ReadMe file and do what it says. -->
 
 
 ## Key packages
@@ -38,11 +38,11 @@ If doing or interested in the workshop follow these steps:
 To run the code in this document you'll really only need the following:
 
 - <span class="pack">lme4</span> 
-- <span class="pack">tidyverse</span> (for data processing)
-- <span class="pack">merTools</span> (optional)
-- <span class="pack">glmmTMB</span> (optional)
-- <span class="pack">brms</span> (optional)
-- <span class="pack">modelr</span> (optional)
-- <span class="pack">nlme</span> (part of base R, no need for install)
+- <span class="pack">tidyverse</span>: for data processing
+- <span class="pack">merTools</span>: optional
+- <span class="pack">glmmTMB</span>: optional
+- <span class="pack">brms</span>: optional
+- <span class="pack">modelr</span>: optional
+- <span class="pack">nlme</span>: part of base R, no need for install
 
 I also use a custom package called <span class="pack">mixedup</span> that provides more usable and printable output for mixed models from <span class="pack">lme4</span>, <span class="pack">brms</span>, <span class="pack">mgcv</span>, etc. Much of the output you see will come from that.
