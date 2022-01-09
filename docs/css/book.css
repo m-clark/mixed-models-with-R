@@ -85,7 +85,7 @@ uri class is for urls
 .book .book-body .page-wrapper .page-inner section.normal a,
 .book .book-body .page-wrapper .page-inner section.normal a.uri {
     display: inline-block;
-    color: #D34600;
+    color: #1f65b7;
     text-decoration: none;
 }
 
@@ -99,7 +99,7 @@ uri class is for urls
     transition: width .3s;
 }
 
-.book .book-body .page-wrapper .page-inner section.normal,
+.book .book-body .page-wrapper .page-inner section.normal a:hover::after,
 .book .book-body .page-wrapper .page-inner section.normal a.uri:hover::after{
     width: 100%;
     //transition: width .3s;
@@ -355,8 +355,16 @@ img {
 
 /* pack func and objclass colors initially come from hcl(seq(90,360, length.out=4), c=80, l=80); redone for contrast*/
 .pack {
-  color: #1f65b7; /* #990071 #AC9CFF #e41a1c*/
+  /* color: #1f65b7; #990071 #AC9CFF #e41a1c*/
   font-weight: 500;
+}
+
+.pack::before {
+  content: "{"
+}
+
+.pack::after {
+  content: "}"
 }
 
 .func {
