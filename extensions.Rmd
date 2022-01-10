@@ -33,7 +33,7 @@ Oftentimes there will be additional sources of variance beyond one grouping fact
 
 ```{r demodata_crossed, echo=FALSE}
 crossing(Person = 1:20, Image = letters[1:10]) %>%
-  mutate(score = sample(1:10, 200, replace = T)) %>%
+  mutate(Score = sample(1:10, 200, replace = TRUE)) %>%
   DT::datatable(
     options = list(
       dom = 'tp',
@@ -51,12 +51,12 @@ crossing(Person = 1:20, Image = letters[1:10]) %>%
 <br>
 <br>
 
-In these situations, we have observations clustered within both person and image, but person and image are not nested within one another- all participants see all 10 images.  Such a situation is typically referred to as one in which there are <span class="emph">crossed</span> random effects, which just means non-nested.  In the situations we'll look at next, we will have multiple sources variances to consider.
+In these situations, we have observations clustered within both person and image, but person and image are not nested within one another- all participants see all 10 images.  Such a situation is typically referred to as one in which there are <span class="emph">crossed</span> random effects, which pretty much just means non-nested, or even more to the point, 'default'.  In the situations we'll look at next, we will have multiple sources variances to consider.
 
 
 #### Example: Student achievement
 
-For our own demonstration we'll look at achievement scores for students.  The sources of dependency are due to students having gone to the same primary or secondary schools.  However, in this example, going to a primary school doesn't necessarily mean you'll go to a specific secondary school.  Note also that there are no repeated measures, we see each student only once. Here's a quick look a the data, and for more detail, check the [appendix][Data].
+For this demonstration we'll look at achievement scores for students.  The sources of dependency are due to students having gone to the same primary or secondary schools.  However, in this example, going to a primary school doesn't necessarily mean you'll go to a specific secondary school.  Note also that there are no repeated measures, we see each student only once. Here's a quick look a the data, and for more detail, check the [appendix][Data].
 
 
 ```{r pupil_nurses_setup, echo=FALSE, eval=FALSE}
@@ -108,7 +108,7 @@ DT::datatable(pupils,
 <br>
 <br>
 
-For our mixed model we'll look at the effects for `sex` and socioeconomic status, `ses`, a six level variable from low to high, on scholastic achievement.  The range of achievement scores is roughly `r round(min(pupils$achievement))` to `r round(max(pupils$achievement))`, with mean of `r round(mean(pupils$achievement), 1)` and standard deviation `r round(sd(pupils$achievement), 1)`.  We'll take into account the clustering at primary school and secondary school.  To incorporate the additional structure in <span class="pack">lme4</span> syntax is very easy, we just do as we did before, though now for both grouping factors[^crossed_notation].
+For our mixed model we'll look at the effects on scholastic achievement of `sex` and socioeconomic status, `ses`, a six level variable from low to high.  The range of achievement scores is roughly `r round(min(pupils$achievement))` to `r round(max(pupils$achievement))`, with mean of `r round(mean(pupils$achievement), 1)` and standard deviation `r round(sd(pupils$achievement), 1)`.  We'll take into account the clustering at primary school and secondary school.  To incorporate the additional structure in <span class="pack">lme4</span> syntax is very easy- we just do as we did before, though now for both grouping factors[^crossed_notation].
 
 ```{r cross_classified, eval=1}
 pupils_crossed = lmer(
@@ -128,7 +128,7 @@ pupils_crossed %>%
   kable_df()
 ```
 
-The fixed effects tell us there is a positive effect of being female on achievement, and in general, relative to lowest SES category, being in the upper categories of SES also has a positive effect.
+The fixed effects tell us there is a positive effect of being female on achievement, and in general, relative to lowest SES category, being in the upper categories of SES also has a positive effect.  Now for the random effects.
 
 ```{r  cross_classified_random, echo=FALSE}
 crossed_var_cor = extract_vc(pupils_crossed, ci_level = 0) 
@@ -137,7 +137,7 @@ crossed_var_cor %>%
   kable_df(digits = 2)
 ```
 
-When we look at the variance components we see that primary and secondary school contributes about `r perc(sum(crossed_var_cor$variance[1:2])/sum(crossed_var_cor$variance), digits = 0)` of the total variance.  Most of the variance attributable to school comes from the primary school.
+When we look at the variance components, we see that primary and secondary school contributes about `r perc(sum(crossed_var_cor$variance[1:2])/sum(crossed_var_cor$variance), digits = 0)` of the total variance.  Most of the variance attributable to school comes from the primary school.
 
 If we inspect the random effects, we can see that we now have two sets of effects- `r n_distinct(pupils$primary_school_id)` for the primary schools, and `r n_distinct(pupils$secondary_school_id)` for the secondary.  Both would be incorporated into any pupil-specific prediction.
 
@@ -169,7 +169,7 @@ p
 ```
 
 
-Note that we have the usual extensions here if desired.  As an example, we could also do random slopes for student level characteristics.
+The above visualizations allows us to actually see less variability among students for secondary schools. Note that we have the usual extensions here if desired.  As an example, we could also do random slopes for student characteristics.
 
 ### Hierarchical structure
 
@@ -289,7 +289,7 @@ random effects are associated with multiple factors, exactly the same
 computational methods are used whether the factors form a nested sequence or are
 partially crossed or are completely crossed.
 
-You might have noticed that we were using `wardid` rather than the `ward` grouping variable as in our first example. Even though every ward is unique, the `ward` column labels them with an arbitrary sequence starting with 1.  While this might seem natural, ward 1 in hospital 1 is not the same as ward 1 in hospital 2, so it's probably not a good idea to give them the same label. The `wardid` column properly distinguishes the wards with unique values (e.g. 11, 12).
+You might have noticed that we were using `wardid` rather than the `ward` grouping variable as in our first example. Even though every ward is unique, the `ward` column labels them with an arbitrary sequence starting with 1 within each hospital.  While this might seem natural, ward 1 in hospital 1 is not the same as ward 1 in hospital 2, so it's probably not a good idea to give them the same label. The `wardid` column properly distinguishes the wards with unique values (e.g. 11, 12).
 
 What would have happened had we used that variable as a crossed random effect?
 
@@ -306,7 +306,7 @@ extract_vc(nurses_crossed_bad_data, ci_level = 0) %>%
 
 This is certainly not the result we want. The variance in `ward` is already captured by treatment and type. However, as demonstrated, this can be avoided with the proper syntax, or proper labeling in the data to allow unique clusters to have unique identifiers.
 
-See this [discussion also](https://stats.stackexchange.com/questions/228800/crossed-vs-nested-random-effects-how-do-they-differ-and-how-are-they-specified), as well as [this from the FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#nested-or-crossed) from one of the <span class="pack">lme4</span> developers. Josh Errickson at CSCAR also has a nice [write-up with visual depiction](http://errickson.net/stats-notes/vizrandomeffects.html) of the underlying matrices of interest, which served as inspiration for some of the visualization in the next section.
+For more, see this [discussion on Stack Exchange](https://stats.stackexchange.com/questions/228800/crossed-vs-nested-random-effects-how-do-they-differ-and-how-are-they-specified), as well as [this from the GLMM FAQ](https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html#nested-or-crossed) from one of the <span class="pack">lme4</span> developers. Josh Errickson at CSCAR also has a nice [write-up with visual depiction](http://errickson.net/stats-notes/vizrandomeffects.html) of the underlying matrices of interest, which served as inspiration for some of the visualization in the next section.
 
 So there you have it.  When it comes to <span class="pack">lme4</span>, or mixed models more generally, crossed vs. nested is simply a state of mind (data)[^crossnest].
 
@@ -359,7 +359,7 @@ rc1[1:30, 1:30] %>%
 #   layout(yaxis = list(autorange = "reversed"))
 ```
 
-Each block represents the covariance matrix pertaining to observations within an individual. Within the person there are variances on the diagonal and covariances on the off-diagonal.  When considering the whole data, we can see that observations from one person have no covariance with another person (gray). Furthermore, the covariance within a person is a constant value, the variance is also a constant value.  Where did those values come from?
+Each block represents the covariance matrix pertaining to observations within an individual. Within the person, there are variances on the diagonal and covariances of observations on the off-diagonal.  When considering the whole data, we can see that observations from one person have no covariance with another person (gray). Furthermore, the covariance within a person is a constant value, the variance is also a constant value.  Where did those values come from? Let's look again at the result from our random intercept model.
 
 ```{r residual_varcov2, echo=F}
 vc = extract_vc(gpa_vis_cov, ci_level = 0)
@@ -386,7 +386,7 @@ $$\Sigma =
 \end{array}\right]$$
 <br>
 
-This represents a covariance structure of <span class="emph">compound symmetry</span>. It is the default in most mixed model settings, and the same as what is shown visually above. Now let's start to think about other types of covariance structures. 
+This represents a covariance structure of <span class="emph">compound symmetry</span>, where correlations, the off-diagonal values, are constant. It is the default in most mixed model settings, and the same as what is shown visually above. Now let's start to think about other types of covariance structures. 
 
 Consider the following model for an individual and just three time points to keep things simpler to show.
 
@@ -408,7 +408,7 @@ $$\Sigma =
 0   & 0   & \sigma^2 \\
 \end{array}\right]$$
 
-Next, we can relax the assumption of equal variances, and estimate each separately. In this case of heterogeneous variances, we might see more or less variance over time, for example.
+Next, we can relax the assumption of equal variances, and estimate each separately. In this case of *heterogeneous variances*, we might see more or less variance over time, for example.
 
 $$\Sigma = 
 \left[
@@ -497,7 +497,7 @@ summary(heterovar_res$modelStruct)
 Relative values are fine, I guess, but what we'd want are the actual estimates.  Here's how you can get them using the residual standard deviation to scale those values, then square them to get on the variance scale.
 
 ```{r heterovar_extract_vars_from_nlmes_cold_dead_hands}
-(c(1.0000000, coef(heterovar_res$modelStruct$varStruct, unconstrained=F))*heterovar_res$sigma)^2
+(c(1.0000000, coef(heterovar_res$modelStruct$varStruct, unconstrained = FALSE))*heterovar_res$sigma)^2
 ```
 
 Yeah.  You'll have to look this up every time you want to do it, or just make your own function that takes the model input.  Here is how my function would extract the information.
@@ -506,7 +506,7 @@ Yeah.  You'll have to look this up every time you want to do it, or just make yo
 mixedup::extract_het_var(heterovar_res, scale = 'var')
 ```
 
-A newer alternative to keep in mind is <span class="pack">glmmTMB</span>.  It would allow one to stay more in the <span class="pack">lme4</span> style and output.
+A newer alternative to keep in mind is <span class="pack">glmmTMB</span>.  It would allow one to stay more in the <span class="pack">lme4</span> syntax style and provide similar looking output.
 
 ```{r glmmTMB_hetero}
 library(glmmTMB)
@@ -873,12 +873,14 @@ Interestingly, one can model overdispersion in a Poisson model by specifying an 
 
 [^residstruct]: One reason to do so would be that you expect variability to decrease over time, e.g. due to experience.  You might also allow that variance to be different due to some other grouping factor entirely (e.g. due to treatment group membership).
 
-[^lmerho]: This feature request has been made by its users for over a decade at this point- it's not gonna happen.  The issue is that the way <span class="pack">lmer</span> works by default employs a method that won't allow it (this is why it is faster and better performing than other packages). Unfortunately the common response to this issue is 'use <span class="pack">nlme</span>'.  However many other packages work with <span class="pack">lme4</span> rather than <span class="pack">nlme</span>, and if you aren't going to use <span class="pack">lme4</span> for mixed models you might as well go Bayesian with <span class="pack">rstanarm</span> or <span class="pack">brms</span> instead of <span class="pack">nlme</span>.  I would even prefer <span class="pack">mgcv</span> to <span class="pack">nlme</span> (though it can use <span class="pack">nlme</span> under the hood) because of the other capabilities it provides, and the objects created are easier to work with in my opinion.
+
 
 [^crossed_notation]: I don't show the formal model here as we did before, but this is why depicting mixed models solely as 'multilevel' becomes a bit problematic in my opinion. In the standard mixed model notation it's straightforward though, you just add an additional random effect term, just as we do in the actual model syntax.
 
 [^signflip]: Setting aside our discussion to take a turn regarding regression modeling more generally, this is a good example of 'surprising' effects not being so surprising when you consider them more closely.  Take a look at the effect of experience. More experience means less stress, this is probably not surprising.  Now look at the age effect. It's positive! But wouldn't older nurses have more experience? What's going on here? When interpreting experience, it is with age *held constant*, thus more experience helps with lowering stress no matter what your age.  With age, we're holding experience constant.  If experience doesn't matter, being older is affiliated with more stress, which might be expected given the type of very busy and high pressure work often being done (the mean age is `r median(nurses$age)`).  A good way to better understand this specifically is to look at predicted values when age is young, middle, and older vs. experience levels at low, middle, and high experience, possibly explicitly including the interaction of the two in the model.  Also note that if you take experience out of the model, the age effect is negative, which is expected, as it captures experience also.
 
 [^crossnest]: Just a reminder, it *does* matter if you label your data in a less than optimal fashion.  For example, if in the nesting situation you start your id variable at 1 for each nested group, then you have to use the nested notation in <span class="pack">lme4</span>, otherwise, e.g. it won't know that id = 1 in group 1 is different from id 1 in group 2.  In our hospital example, this would be akin to using `ward` instead of `wardid` as we did.  Again though, this wouldn't be an issue if one practices good data habits.  Note also the `:` syntax. In other modeling contexts in R this denotes an interaction, and that is no different here.  In some contexts, typically due to experimental designs, one would want to explore random effects of the sort 1|A, 1|B and 1|A:B.  However, this is relatively rare.
+
+[^lmerho]: This feature request has been made by its users for over a decade at this point- it's not gonna happen.  The issue is that the way <span class="pack">lmer</span> works by default employs a method that won't allow it (this is why it is faster and better performing than other packages). Unfortunately the common response to this issue is 'use <span class="pack">nlme</span>'.  However many other packages work with <span class="pack">lme4</span> model results, but not <span class="pack">nlme</span>, and if you aren't going to use <span class="pack">lme4</span> for mixed models you might as well go Bayesian with <span class="pack">rstanarm</span> or <span class="pack">brms</span> instead of <span class="pack">nlme</span>.  I would even prefer <span class="pack">mgcv</span> to <span class="pack">nlme</span> because of the other capabilities it provides, and the model objects created are easier to work with in my opinion.
 
 [^scalecontbin]:  Note that for a balanced binary variable, the mean `p=.5` and standard deviation is `sqrt(p*(1-p)) = .5`
