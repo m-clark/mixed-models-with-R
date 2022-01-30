@@ -52,7 +52,7 @@ R has more mixed modeling capabilities [than anything else out there](https://ww
 
 ### Python
 
-In Python, the [statsmodels](http://www.statsmodels.org/stable/mixed_linear.html) module has basic capabilities for mixed models, but not too many frills relatively speaking.  My former boss, University of Michigan CSCAR director Kerby Shedden, has been part of this specific development. You can see his notes from the Data Science Skills Series [here](https://github.com/kshedden/Statsmodels-MixedLM).  The following provides an example.
+In Python, the [statsmodels](http://www.statsmodels.org/stable/mixed_linear.html) module has basic capabilities for mixed models, but not too many frills relatively speaking.  My former boss, University of Michigan CSCAR director Kerby Shedden, has been part of this specific development. You can see his notes [here](https://github.com/kshedden/Statsmodels-MixedLM).  The following provides an example.
 
 ```{r pycheck, echo=FALSE, cache=FALSE}
 pycheck = ifelse(grepl('Windows', sessionInfo()$running), 
@@ -137,4 +137,4 @@ Check out the [Mixed Model FAQ](https://bbolker.github.io/mixedmodels-misc/glmmF
 I have [several other docs](https://m-clark.github.io/documents.html#mixed-models) on various aspects of mixed models, and post about different aspects about them regularly.
 
 
-There is a lot of good information on stackoverflow and cross validated Q &  A sites, where <span class="pack">lme4</span> developer Ben Bolker has been quite active in answering people's questions.
+There is a lot of good information on [stackoverflow](https://stackoverflow.com/questions/tagged/lme4) and cross validated Q &  A sites, where <span class="pack">lme4</span> developer Ben Bolker has been quite active in answering people's questions.

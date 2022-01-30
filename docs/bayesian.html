@@ -158,12 +158,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#goals"><i class="fa fa-check"></i>Goals</a></li>
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#prerequisites"><i class="fa fa-check"></i>Prerequisites</a></li>
 </ul></li>
+<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#data-and-exercises"><i class="fa fa-check"></i>Data and Exercises</a></li>
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#key-packages"><i class="fa fa-check"></i>Key packages</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html"><i class="fa fa-check"></i>Mixed Models</a>
 <ul>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#terminology"><i class="fa fa-check"></i>Terminology</a></li>
-<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#kinds-of-clustering"><i class="fa fa-check"></i>Kinds of Clustering</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#kinds-of-structure"><i class="fa fa-check"></i>Kinds of Structure</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#random-intercepts-model"><i class="fa fa-check"></i>Random Intercepts Model</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#example-student-gpa"><i class="fa fa-check"></i>Example: Student GPA</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#the-standard-regression-model"><i class="fa fa-check"></i>The Standard Regression Model</a></li>
@@ -193,6 +194,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#application-1"><i class="fa fa-check"></i>Application</a></li>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#comparison-to-many-regressions"><i class="fa fa-check"></i>Comparison to many regressions</a></li>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#visualization-of-effects"><i class="fa fa-check"></i>Visualization of effects</a></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#categorical-features"><i class="fa fa-check"></i>Categorical Features</a></li>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#summary-of-random-slopes"><i class="fa fa-check"></i>Summary of Random Slopes</a></li>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#exercises-for-random-slopes"><i class="fa fa-check"></i>Exercises for Random Slopes</a></li>
 </ul></li>
@@ -327,32 +329,32 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="bayesian-approaches" class="section level1">
 <h1>Bayesian Approaches</h1>
 <p><img src="img/priorpost.png" style="display:block; margin: 0 auto; width:50%"></p>
-<p>With mixed models we’ve been thinking of coefficients as coming from a distribution (normal). While we have what we are calling ‘fixed’ effects, the distinguishing feature of the mixed model is the addition of this random component. Now consider a standard regression model, i.e. no clustering. You can actually do the same thing, i.e. assume the coefficients are not fixed, but random. In this sense, the goal is to understand that distribution, and focus on it, rather than just the summary of it, e.g. the mean. However, the mean (or other central tendency) of that distribution can be treated like you’ve been doing the fixed effects in your standard models.</p>
-<p>Thus you can use how you’ve been thinking about the random effects in mixed models as a natural segue to the Bayesian approach, where all parameters are random draws from a distribution. Using Bayesian versions of your favorite models takes no more syntactical effort than your standard models. The following is a standard linear regression and a mixed model in the <span class="pack">brms</span> package, but would likewise be the same for <span class="pack" style="">rstanarm</span>.</p>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="bayesian.html#cb46-1" aria-hidden="true" tabindex="-1"></a>brms<span class="sc">::</span><span class="fu">brm</span>(gpa <span class="sc">~</span> occasion, <span class="at">data =</span> gpa)</span>
-<span id="cb46-2"><a href="bayesian.html#cb46-2" aria-hidden="true" tabindex="-1"></a>brms<span class="sc">::</span><span class="fu">brm</span>(Reaction <span class="sc">~</span> Days <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> Days <span class="sc">|</span> Subject), <span class="at">data =</span> sleepstudy)</span>
-<span id="cb46-3"><a href="bayesian.html#cb46-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-4"><a href="bayesian.html#cb46-4" aria-hidden="true" tabindex="-1"></a>rstanarm<span class="sc">::</span><span class="fu">stan_lm</span>(gpa <span class="sc">~</span> occasion, <span class="at">data =</span> gpa)</span>
-<span id="cb46-5"><a href="bayesian.html#cb46-5" aria-hidden="true" tabindex="-1"></a>rstanarm<span class="sc">::</span><span class="fu">stan_lmer</span>(Reaction <span class="sc">~</span> Days <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> Days <span class="sc">|</span> Subject), <span class="at">data =</span> sleepstudy)</span></code></pre></div>
-<p>So running the Bayesian models is not only as easy, the syntax is identical! Furthermore, just like mixed models allowed you to understand your data more deeply, the Bayesian models have the potential to do the same. Even the probabilities and intervals make more sense. With <span class="pack">rstanarm</span> and especially <span class="pack">brms</span>, you can do fairly complex models, taking you further than the standard mixed model packages, all without learning how to code the models explicitly in Stan, the probabilistic programming language that both are based on. However, when you get to that point, the modeling possibilities are only limited by your imagination.</p>
+<p>With mixed models we’ve been thinking of coefficients as coming from a distribution (normal). While we have what we are calling ‘fixed’ effects, the distinguishing feature of the mixed model is the addition of this random component. Now consider a standard regression model, i.e. no clustering. You can actually do the same thing, i.e. assume the coefficients are not fixed, but random. In this sense, the goal is to understand that distribution, and focus on it, rather than just the summary of it, like the mean. However, the mean (or other central tendency) of that distribution can be treated like you’ve been doing the fixed effects in your standard models.</p>
+<p>Thus you can use how you’ve been thinking about the random effects in mixed models as a natural segue to the Bayesian approach for any model, where all parameters are random draws from a distribution. Using Bayesian versions of your favorite models takes no more syntactical effort than your standard models. The following is a standard linear regression and a mixed model in the <span class="pack">brms</span> package, but would likewise be the same for <span class="pack" style="">rstanarm</span>, two very popular packages for Bayesian estimation that use Stan under the hood.</p>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="bayesian.html#cb73-1" aria-hidden="true" tabindex="-1"></a>brms<span class="sc">::</span><span class="fu">brm</span>(gpa <span class="sc">~</span> occasion, <span class="at">data =</span> gpa)</span>
+<span id="cb73-2"><a href="bayesian.html#cb73-2" aria-hidden="true" tabindex="-1"></a>brms<span class="sc">::</span><span class="fu">brm</span>(Reaction <span class="sc">~</span> Days <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> Days <span class="sc">|</span> Subject), <span class="at">data =</span> sleepstudy)</span>
+<span id="cb73-3"><a href="bayesian.html#cb73-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-4"><a href="bayesian.html#cb73-4" aria-hidden="true" tabindex="-1"></a>rstanarm<span class="sc">::</span><span class="fu">stan_lm</span>(gpa <span class="sc">~</span> occasion, <span class="at">data =</span> gpa)</span>
+<span id="cb73-5"><a href="bayesian.html#cb73-5" aria-hidden="true" tabindex="-1"></a>rstanarm<span class="sc">::</span><span class="fu">stan_lmer</span>(Reaction <span class="sc">~</span> Days <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> Days <span class="sc">|</span> Subject), <span class="at">data =</span> sleepstudy)</span></code></pre></div>
+<p>So running the Bayesian models is not only as easy, the syntax is identical! Furthermore, just like mixed models allowed you to understand your data more deeply, the Bayesian models have the potential to do the same. Even the probabilities and intervals make more sense compared to our usual <code>frequentist</code> approaches. With <span class="pack">rstanarm</span> and especially <span class="pack">brms</span>, you can do fairly complex models, taking you further than the standard mixed model packages, all without learning how to code the models explicitly in Stan, the probabilistic programming language that both are based on. However, when you get to that point, the modeling possibilities are only limited by your imagination.</p>
 <p>You will have to learn a new inferential framework, as well as some of the nuances of the Markov Chain Monte Carlo (MCMC) approach. But you may be surprised to find that the basics come more easily than you would anticipate. Using tools like <span class="pack">brms</span> and related make it easier than ever to dive into Bayesian data analysis, and you’ve already been in a similar mindset with mixed models, so try it out some time. I have an <a href="https://m-clark.github.io/bayesian-basics/">introduction to Baysian analysis with Stan</a>, and a bit more on the Bayesian approach and mixed models in this <a href="https://m-clark.github.io/docs/mixedModels/mixedModels.html#mixed_model_7:_bayesian_mixed_model">document</a>.</p>
 <div id="priors" class="section level2">
 <h2>Priors</h2>
 <p>The following information about priors assumes some background knowledge of Bayesian analysis, particularly for regression models. The Stan development group offers recommendations <a href="https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations">here</a>, so refer to it often. Note that Stan does not require conjugacy, in contrast to tools such as BUGS/JAGS. This frees one up to use other prior distributions as they see fit. Generally though, using some normal distribution for the fixed effects, and the package defaults for variance components, should suffice for the standard models we’ve been discussing.</p>
 <div id="fixed-effects" class="section level3">
 <h3>Fixed effects</h3>
-<p>For fixed effect regression coefficients, normal and student t would be the most common prior distributions, but the default <span class="pack">brms</span> (and <span class="pack">rstanarm</span>) implementation does not specify any, and so defaults to a uniform/improper prior, which is a poor choice. You will want to set this for your models. Note that scaling numeric predictors benefits here just like it does with <span class="pack">lme4</span>, and makes specifying the prior easier as well.</p>
+<p>For fixed effect regression coefficients, normal and student t would be the most common prior distributions, but the default <span class="pack">brms</span> (and <span class="pack">rstanarm</span>) implementation does not specify any, and so defaults to a uniform/improper prior, which is a poor choice. You will want to set this for your models. Note that scaling numeric predictors benefits here just like it does with <span class="pack">lme4</span>, and makes specifying the prior easier as well, since you have a better idea about the range of plausible values for the estimate.</p>
 </div>
 <div id="variance-components-1" class="section level3">
 <h3>Variance components</h3>
-<p>In Bayesian linear mixed models, the random effects are estimated parameters, just like the fixed effects (and thus are not BLUPs). The benefit to this is that getting interval estimates for them, or predictions using them, is as easy as anything else. Typically priors for variance components are half-t for the variances, as the values can only be positive, but beyond that, e.g. intercept and slope correlations, you can again just rely on the package defaults.</p>
+<p>In Bayesian linear mixed models, the random effects are estimated parameters, just like the fixed effects (and thus are not BLUPs). The benefit to this is that getting interval estimates for them, or predictions using them, is as easy as anything else. Typically priors for variance components are half-t or similar, as the values can only be positive, but beyond that, e.g. intercept and slope correlations, you can again just rely on the package defaults.</p>
 <p>To make this more explicit, let’s say we have a situation with random intercepts and slopes, with variances 1 and .1 respectively, with a .3 correlation. The random effects, say for 10 clusters, would come from a multivariate distribution as follows.</p>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="bayesian.html#cb47-1" aria-hidden="true" tabindex="-1"></a>re_cov <span class="ot">=</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, .<span class="dv">3</span>, .<span class="dv">3</span>, .<span class="dv">1</span>), <span class="at">ncol =</span> <span class="dv">2</span>)</span>
-<span id="cb47-2"><a href="bayesian.html#cb47-2" aria-hidden="true" tabindex="-1"></a>re_cov</span></code></pre></div>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="bayesian.html#cb74-1" aria-hidden="true" tabindex="-1"></a>re_cov <span class="ot">=</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, .<span class="dv">3</span>, .<span class="dv">3</span>, .<span class="dv">1</span>), <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb74-2"><a href="bayesian.html#cb74-2" aria-hidden="true" tabindex="-1"></a>re_cov</span></code></pre></div>
 <pre><code>     [,1] [,2]
 [1,]  1.0  0.3
 [2,]  0.3  0.1</code></pre>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="bayesian.html#cb49-1" aria-hidden="true" tabindex="-1"></a>mvtnorm<span class="sc">::</span><span class="fu">rmvnorm</span>(<span class="dv">10</span>, <span class="at">mean =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="at">sigma =</span> re_cov)</span></code></pre></div>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="bayesian.html#cb76-1" aria-hidden="true" tabindex="-1"></a>mvtnorm<span class="sc">::</span><span class="fu">rmvnorm</span>(<span class="dv">10</span>, <span class="at">mean =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="at">sigma =</span> re_cov)</span></code></pre></div>
 <pre><code>            [,1]        [,2]
  [1,] -1.2221063 -0.19934740
  [2,]  0.5511788  0.14630128
@@ -364,23 +366,37 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
  [8,]  0.3269719  0.05641921
  [9,] -0.4339689  0.12164433
 [10,] -0.7510034 -0.22716122</code></pre>
-<p>The priors in the model would regard the correlation matrix, and the estimated random effects would be added to the linear predictor, as we showed in the <a href="random_intercepts.html#initial-depiction">beginning</a>.</p>
+<p>The priors in the model for the variance components would regard this correlation matrix, and the estimated random effects from that would be explicitly added to the linear predictor, as we showed in the <a href="random_intercepts.html#initial-depiction">beginning</a>.</p>
 </div>
 </div>
 <div id="demonstration" class="section level2">
 <h2>Demonstration</h2>
 <p>Let’s return to our GPA model. I will add the priors for the fixed effects, and an option to speed computation by parallelizing the chains.</p>
-<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="bayesian.html#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms)</span>
-<span id="cb51-2"><a href="bayesian.html#cb51-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-3"><a href="bayesian.html#cb51-3" aria-hidden="true" tabindex="-1"></a>pr <span class="ot">=</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> <span class="st">&#39;b&#39;</span>)</span>
-<span id="cb51-4"><a href="bayesian.html#cb51-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-5"><a href="bayesian.html#cb51-5" aria-hidden="true" tabindex="-1"></a>bayesian_mixed <span class="ot">=</span> <span class="fu">brm</span>(</span>
-<span id="cb51-6"><a href="bayesian.html#cb51-6" aria-hidden="true" tabindex="-1"></a>  gpa <span class="sc">~</span> occasion <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> occasion <span class="sc">|</span> student), </span>
-<span id="cb51-7"><a href="bayesian.html#cb51-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">data  =</span> gpa,</span>
-<span id="cb51-8"><a href="bayesian.html#cb51-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">prior =</span> pr,</span>
-<span id="cb51-9"><a href="bayesian.html#cb51-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">cores =</span> <span class="dv">4</span></span>
-<span id="cb51-10"><a href="bayesian.html#cb51-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
-<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="bayesian.html#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bayesian_mixed)</span></code></pre></div>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="bayesian.html#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brms)</span>
+<span id="cb78-2"><a href="bayesian.html#cb78-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-3"><a href="bayesian.html#cb78-3" aria-hidden="true" tabindex="-1"></a>pr <span class="ot">=</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">class =</span> <span class="st">&#39;b&#39;</span>)</span>
+<span id="cb78-4"><a href="bayesian.html#cb78-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb78-5"><a href="bayesian.html#cb78-5" aria-hidden="true" tabindex="-1"></a>bayesian_mixed <span class="ot">=</span> <span class="fu">brm</span>(</span>
+<span id="cb78-6"><a href="bayesian.html#cb78-6" aria-hidden="true" tabindex="-1"></a>  gpa <span class="sc">~</span> occasion <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> occasion <span class="sc">|</span> student), </span>
+<span id="cb78-7"><a href="bayesian.html#cb78-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">data  =</span> gpa,</span>
+<span id="cb78-8"><a href="bayesian.html#cb78-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">prior =</span> pr,</span>
+<span id="cb78-9"><a href="bayesian.html#cb78-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">cores =</span> <span class="dv">4</span></span>
+<span id="cb78-10"><a href="bayesian.html#cb78-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>Before getting too far, we can see more explicitly what our priors were. Though the result looks complicated, a. you didn’t have to worry about setting everything and these are likely fine for your situations, and b., it’s not as bad as it seems once you start to get the hang of things. But for example, along with the prior we just set, we have student-t priors for the variances (on the standard deviation scale).</p>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="bayesian.html#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prior_summary</span>(bayesian_mixed)</span></code></pre></div>
+<pre><code>                  prior     class      coef   group resp dpar nlpar bound       source
+           normal(0, 1)         b                                                 user
+           normal(0, 1)         b  occasion                               (vectorized)
+ student_t(3, 2.8, 2.5) Intercept                                              default
+   lkj_corr_cholesky(1)         L                                              default
+   lkj_corr_cholesky(1)         L           student                       (vectorized)
+   student_t(3, 0, 2.5)        sd                                              default
+   student_t(3, 0, 2.5)        sd           student                       (vectorized)
+   student_t(3, 0, 2.5)        sd Intercept student                       (vectorized)
+   student_t(3, 0, 2.5)        sd  occasion student                       (vectorized)
+   student_t(3, 0, 2.5)     sigma                                              default</code></pre>
+<p>Now for the model summary.</p>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="bayesian.html#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bayesian_mixed)</span></code></pre></div>
 <pre><code> Family: gaussian 
   Links: mu = identity; sigma = identity 
 Formula: gpa ~ occasion + (1 + occasion | student) 
@@ -391,24 +407,24 @@ Formula: gpa ~ occasion + (1 + occasion | student)
 Group-Level Effects: 
 ~student (Number of levels: 200) 
                         Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sd(Intercept)               0.21      0.02     0.18     0.25 1.00     2465     3044
-sd(occasion)                0.07      0.01     0.06     0.08 1.00     1448     2376
-cor(Intercept,occasion)    -0.08      0.11    -0.28     0.14 1.00     1216     2175
+sd(Intercept)               0.21      0.02     0.18     0.25 1.00     2326     2746
+sd(occasion)                0.07      0.01     0.06     0.08 1.00     1508     2339
+cor(Intercept,occasion)    -0.09      0.11    -0.29     0.13 1.00     1118     1704
 
 Population-Level Effects: 
           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept     2.60      0.02     2.56     2.63 1.00     2771     3143
-occasion      0.11      0.01     0.09     0.12 1.00     2498     2745
+Intercept     2.60      0.02     2.56     2.64 1.00     2821     2725
+occasion      0.11      0.01     0.09     0.12 1.00     2681     3107
 
 Family Specific Parameters: 
       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sigma     0.21      0.01     0.20     0.22 1.00     2178     2770
+sigma     0.21      0.01     0.20     0.22 1.00     2695     3352
 
 Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
 scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <p>Compare to our previous results.</p>
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="bayesian.html#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(gpa_mixed, <span class="at">cor=</span> F)</span></code></pre></div>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="bayesian.html#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(gpa_mixed, <span class="at">cor=</span> F)</span></code></pre></div>
 <pre><code>Linear mixed model fit by REML [&#39;lmerMod&#39;]
 Formula: gpa ~ occasion + (1 + occasion | student)
    Data: gpa
@@ -430,143 +446,144 @@ Fixed effects:
             Estimate Std. Error t value
 (Intercept) 2.599214   0.018357  141.59
 occasion    0.106314   0.005885   18.07</code></pre>
-<p>Aside from additional diagnostic information, the Bayesian results are essentially the same, but now we can continue to explore the model. The <span class="pack" style="">brms</span> package tries to use the same function names as <span class="pack" style="">lme4</span> where possible, so <span class="func" style="">ranef</span>, <span class="func" style="">fixef</span>, <span class="func" style="">VarCorr</span>, etc. are still in play. However, you can still use my functions for standard models, which will return tidy data frames.</p>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="bayesian.html#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># examine random effects with the usual functions, not too tidy</span></span>
-<span id="cb56-2"><a href="bayesian.html#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ranef(bayesian_mixed)</span></span>
-<span id="cb56-3"><a href="bayesian.html#cb56-3" aria-hidden="true" tabindex="-1"></a>mixedup<span class="sc">::</span><span class="fu">extract_random_effects</span>(bayesian_mixed)</span></code></pre></div>
+<p>Aside from additional diagnostic information, the Bayesian results are essentially the same, but now we can continue to explore the model. The <span class="pack" style="">brms</span> package tries to use the same function names as <span class="pack" style="">lme4</span> where possible, so <span class="func" style="">ranef</span>, <span class="func" style="">fixef</span>, <span class="func" style="">VarCorr</span>, etc. are still in play. However, you can still use my <span class="pack" style="">mixedup</span> functions for standard models, which will return tidy data frames.</p>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="bayesian.html#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="co"># examine random effects with the usual functions, not too tidy</span></span>
+<span id="cb85-2"><a href="bayesian.html#cb85-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ranef(bayesian_mixed)</span></span>
+<span id="cb85-3"><a href="bayesian.html#cb85-3" aria-hidden="true" tabindex="-1"></a>mixedup<span class="sc">::</span><span class="fu">extract_random_effects</span>(bayesian_mixed)</span></code></pre></div>
 <pre><code># A tibble: 400 × 7
    group_var effect    group  value    se lower_2.5 upper_97.5
    &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
- 1 student   Intercept 1     -0.202 0.116    -0.423      0.027
- 2 student   Intercept 2     -0.211 0.117    -0.436      0.014
- 3 student   Intercept 3     -0.005 0.113    -0.231      0.215
- 4 student   Intercept 4     -0.095 0.11     -0.31       0.118
- 5 student   Intercept 5      0.086 0.113    -0.133      0.31 
- 6 student   Intercept 6     -0.206 0.113    -0.432      0.013
- 7 student   Intercept 7     -0.15  0.113    -0.377      0.073
- 8 student   Intercept 8      0.152 0.114    -0.067      0.375
- 9 student   Intercept 9      0.038 0.113    -0.185      0.27 
-10 student   Intercept 10     0.098 0.114    -0.129      0.322
+ 1 student   Intercept 1     -0.203 0.117    -0.432      0.024
+ 2 student   Intercept 2     -0.209 0.113    -0.436      0.007
+ 3 student   Intercept 3     -0.005 0.113    -0.228      0.216
+ 4 student   Intercept 4     -0.096 0.117    -0.329      0.137
+ 5 student   Intercept 5      0.086 0.116    -0.134      0.319
+ 6 student   Intercept 6     -0.205 0.111    -0.425      0.007
+ 7 student   Intercept 7     -0.156 0.114    -0.387      0.064
+ 8 student   Intercept 8      0.152 0.112    -0.077      0.365
+ 9 student   Intercept 9      0.039 0.115    -0.185      0.263
+10 student   Intercept 10     0.099 0.115    -0.124      0.327
 # … with 390 more rows</code></pre>
-<p>However, we also have some nice plotting functions. Here I plot the occasion effect, as well as the estimated predictions from the model vs. our observed GPA values.</p>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="bayesian.html#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">conditional_effects</span>(bayesian_mixed)</span></code></pre></div>
-<p><img src="mixed_models_files/figure-html/brms-cond-pp-1.svg" width="75%" style="display: block; margin: auto;" /></p>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="bayesian.html#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(bayesian_mixed)</span></code></pre></div>
-<p><img src="mixed_models_files/figure-html/brms-cond-pp-2.svg" width="75%" style="display: block; margin: auto;" /></p>
+<p>However, we also have some nice plotting functions. Here I plot the occasion effect</p>
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="bayesian.html#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">conditional_effects</span>(bayesian_mixed)</span></code></pre></div>
+<p><img src="mixed_models_files/figure-html/brms-cond-1.svg" width="75%" style="display: block; margin: auto;" /></p>
+<p>Here are estimated predictions from the model (multiple posterior draws) vs. our observed GPA values.</p>
+<div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="bayesian.html#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pp_check</span>(bayesian_mixed)</span></code></pre></div>
+<p><img src="mixed_models_files/figure-html/brms-pp-1.svg" width="75%" style="display: block; margin: auto;" /></p>
 <p>There is a lot more modeling we can do here as we’ll see shortly, but it’s important to know you can do the basics easily.</p>
 </div>
 <div id="example-models" class="section level2">
 <h2>Example Models</h2>
 <p>In the following I attempt to show a wide variety of (mixed) models one could do with <span class="pack">brms</span>. Typically is shown the modeling function <span class="func">brm</span>, where the syntax is <span class="pack">lme4</span>-like. Elsewhere I use the specific <span class="func">bf</span> function, which allows one to build a potentially complicated formula as a separate object to be used in the eventual modeling function. For example.</p>
-<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="bayesian.html#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> mydata, <span class="at">family =</span> gaussian)</span>
-<span id="cb60-2"><a href="bayesian.html#cb60-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-3"><a href="bayesian.html#cb60-3" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> <span class="fu">bf</span>(y <span class="sc">~</span> x)</span>
-<span id="cb60-4"><a href="bayesian.html#cb60-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-5"><a href="bayesian.html#cb60-5" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(f, ...)</span></code></pre></div>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="bayesian.html#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> mydata, <span class="at">family =</span> gaussian)</span>
+<span id="cb89-2"><a href="bayesian.html#cb89-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb89-3"><a href="bayesian.html#cb89-3" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> <span class="fu">bf</span>(y <span class="sc">~</span> x)</span>
+<span id="cb89-4"><a href="bayesian.html#cb89-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb89-5"><a href="bayesian.html#cb89-5" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(f, ...)</span></code></pre></div>
 <div id="standard-mixed-models" class="section level4">
 <h4>Standard mixed models</h4>
 <p>Random intercept.</p>
-<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="bayesian.html#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g))</span></code></pre></div>
+<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="bayesian.html#cb90-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g))</span></code></pre></div>
 <p>Random intercept and random coefficient for <code>x</code>.</p>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="bayesian.html#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> x <span class="sc">|</span> g))</span></code></pre></div>
+<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="bayesian.html#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> x <span class="sc">|</span> g))</span></code></pre></div>
 <p>Multiple grouping structure/random effects.</p>
-<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="bayesian.html#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g1)  <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g2))</span>
-<span id="cb63-2"><a href="bayesian.html#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g1 <span class="sc">+</span> g2))  <span class="co"># same thing</span></span>
-<span id="cb63-3"><a href="bayesian.html#cb63-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-4"><a href="bayesian.html#cb63-4" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g1)  <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g1<span class="sc">:</span>g2))</span></code></pre></div>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="bayesian.html#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g1)  <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g2))</span>
+<span id="cb92-2"><a href="bayesian.html#cb92-2" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g1 <span class="sc">+</span> g2))  <span class="co"># same thing</span></span>
+<span id="cb92-3"><a href="bayesian.html#cb92-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb92-4"><a href="bayesian.html#cb92-4" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g1)  <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g1<span class="sc">:</span>g2))</span></code></pre></div>
 </div>
 <div id="other-distributional-families" class="section level4">
 <h4>Other distributional families</h4>
 <p>Multiple types of ordinal models including ‘generalized’ or ‘varying coefficients’ models that include category specific effects.</p>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="bayesian.html#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g), <span class="at">family =</span> cumulative)</span>
-<span id="cb64-2"><a href="bayesian.html#cb64-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb64-3"><a href="bayesian.html#cb64-3" aria-hidden="true" tabindex="-1"></a><span class="co"># x has category specific effects</span></span>
-<span id="cb64-4"><a href="bayesian.html#cb64-4" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> <span class="fu">cs</span>(x) <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g), <span class="at">family =</span> acat)  </span>
-<span id="cb64-5"><a href="bayesian.html#cb64-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb64-6"><a href="bayesian.html#cb64-6" aria-hidden="true" tabindex="-1"></a><span class="co"># for ordered predictors, see the mo() function.</span></span></code></pre></div>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="bayesian.html#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g), <span class="at">family =</span> cumulative)</span>
+<span id="cb93-2"><a href="bayesian.html#cb93-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-3"><a href="bayesian.html#cb93-3" aria-hidden="true" tabindex="-1"></a><span class="co"># x has category specific effects</span></span>
+<span id="cb93-4"><a href="bayesian.html#cb93-4" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> <span class="fu">cs</span>(x) <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g), <span class="at">family =</span> acat)  </span>
+<span id="cb93-5"><a href="bayesian.html#cb93-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb93-6"><a href="bayesian.html#cb93-6" aria-hidden="true" tabindex="-1"></a><span class="co"># for ordered predictors, see the mo() function.</span></span></code></pre></div>
 <p>Multinomial. Uses the categorical distribution for a standard multicategory target.</p>
-<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="bayesian.html#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g), <span class="at">family =</span> categorical)</span></code></pre></div>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="bayesian.html#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g), <span class="at">family =</span> categorical)</span></code></pre></div>
 <p>Zero-inflated and hurdle models.</p>
-<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="bayesian.html#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(</span>
-<span id="cb66-2"><a href="bayesian.html#cb66-2" aria-hidden="true" tabindex="-1"></a>  y  <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g), </span>
-<span id="cb66-3"><a href="bayesian.html#cb66-3" aria-hidden="true" tabindex="-1"></a>  zi <span class="sc">~</span> x <span class="sc">+</span> z, </span>
-<span id="cb66-4"><a href="bayesian.html#cb66-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">zero_inflated_negbinomial</span>(<span class="at">link =</span> <span class="st">&#39;log&#39;</span>)</span>
-<span id="cb66-5"><a href="bayesian.html#cb66-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb66-6"><a href="bayesian.html#cb66-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb66-7"><a href="bayesian.html#cb66-7" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g), <span class="at">family =</span> hurdle_lognormal)</span></code></pre></div>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="bayesian.html#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(</span>
+<span id="cb95-2"><a href="bayesian.html#cb95-2" aria-hidden="true" tabindex="-1"></a>  y  <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g), </span>
+<span id="cb95-3"><a href="bayesian.html#cb95-3" aria-hidden="true" tabindex="-1"></a>  zi <span class="sc">~</span> x <span class="sc">+</span> z, </span>
+<span id="cb95-4"><a href="bayesian.html#cb95-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">zero_inflated_negbinomial</span>(<span class="at">link =</span> <span class="st">&#39;log&#39;</span>)</span>
+<span id="cb95-5"><a href="bayesian.html#cb95-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb95-6"><a href="bayesian.html#cb95-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb95-7"><a href="bayesian.html#cb95-7" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g), <span class="at">family =</span> hurdle_lognormal)</span></code></pre></div>
 <p>Many more including <span class="emph">weibull</span>, <span class="emph">student t</span>, <span class="emph">beta</span>, <span class="emph">skew normal</span>, <span class="emph">von mises</span>, and more.</p>
 </div>
 <div id="residual-structure-and-heterogeous-variances" class="section level4">
 <h4>Residual structure and heterogeous variances</h4>
 <p>Various functions exist to model temporal, spatial and other residual structure.</p>
-<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="bayesian.html#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span>  time <span class="sc">+</span>  (<span class="dv">1</span> <span class="sc">+</span> time <span class="sc">|</span> g) <span class="sc">+</span>   <span class="fu">ar</span>(time, person, <span class="at">p =</span> <span class="dv">2</span>))</span></code></pre></div>
-<p>We can model the variance just like anything else.</p>
-<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="bayesian.html#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g), </span>
-<span id="cb68-2"><a href="bayesian.html#cb68-2" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> x <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g))</span></code></pre></div>
+<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="bayesian.html#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span>  time <span class="sc">+</span>  (<span class="dv">1</span> <span class="sc">+</span> time <span class="sc">|</span> g) <span class="sc">+</span>   <span class="fu">ar</span>(time, person, <span class="at">p =</span> <span class="dv">2</span>))</span></code></pre></div>
+<p>We can model the (observation level) variance just like anything else.</p>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="bayesian.html#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g), </span>
+<span id="cb97-2"><a href="bayesian.html#cb97-2" aria-hidden="true" tabindex="-1"></a>    sigma <span class="sc">~</span> x <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g))</span></code></pre></div>
 <p>We can allow the variance components themselves to vary by some group. In the following we’d have separate variances for male and female.</p>
-<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="bayesian.html#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(count <span class="sc">~</span> Sex <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span><span class="fu">gr</span>(g, <span class="at">by =</span> Sex)))</span></code></pre></div>
+<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="bayesian.html#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(count <span class="sc">~</span> Sex <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span><span class="fu">gr</span>(g, <span class="at">by =</span> Sex)))</span></code></pre></div>
 <p>Multi-membership models, where individuals may belong to more than one cluster can also be used. In the following, <code>g1</code> and <code>g2</code> are identical conceptually, but may take on different values for some observations.</p>
-<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="bayesian.html#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> <span class="fu">mm</span>(g1, g2))) </span></code></pre></div>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="bayesian.html#cb99-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> <span class="fu">mm</span>(g1, g2))) </span></code></pre></div>
 </div>
 <div id="multivariate-mixed-models" class="section level4">
 <h4>Multivariate mixed models</h4>
 <p>For multiple outcomes we can allow random effects to be correlated. In the following, <code>ID1</code> is an arbitrary label that serves to connect/correlate the modeled random effects across multiple outcomes <code>y1</code> and <code>y2</code>. In SEM literature this would be akin to a parallel process model if we add a random slope for a time indicator variable.</p>
-<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="bayesian.html#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bf</span>(</span>
-<span id="cb71-2"><a href="bayesian.html#cb71-2" aria-hidden="true" tabindex="-1"></a>  y1 <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ID1 <span class="sc">|</span>g),</span>
-<span id="cb71-3"><a href="bayesian.html#cb71-3" aria-hidden="true" tabindex="-1"></a>  y2 <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ID1 <span class="sc">|</span>g)</span>
-<span id="cb71-4"><a href="bayesian.html#cb71-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="bayesian.html#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bf</span>(</span>
+<span id="cb100-2"><a href="bayesian.html#cb100-2" aria-hidden="true" tabindex="-1"></a>  y1 <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ID1 <span class="sc">|</span>g),</span>
+<span id="cb100-3"><a href="bayesian.html#cb100-3" aria-hidden="true" tabindex="-1"></a>  y2 <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ID1 <span class="sc">|</span>g)</span>
+<span id="cb100-4"><a href="bayesian.html#cb100-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <p>Such an approach would also make sense for zero-inflated models for example, where we want random effects for the same clustering to be correlated for both the count model and zero-inflated model.</p>
-<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="bayesian.html#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bf</span>(y  <span class="sc">~</span> x <span class="sc">*</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> x <span class="sc">|</span> ID1 <span class="sc">|</span> g), </span>
-<span id="cb72-2"><a href="bayesian.html#cb72-2" aria-hidden="true" tabindex="-1"></a>   zi <span class="sc">~</span> x <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ID1 <span class="sc">|</span> g))</span></code></pre></div>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="bayesian.html#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bf</span>(y  <span class="sc">~</span> x <span class="sc">*</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> x <span class="sc">|</span> ID1 <span class="sc">|</span> g), </span>
+<span id="cb101-2"><a href="bayesian.html#cb101-2" aria-hidden="true" tabindex="-1"></a>   zi <span class="sc">~</span> x <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> ID1 <span class="sc">|</span> g))</span></code></pre></div>
 </div>
 <div id="additive-mixed-models" class="section level4">
 <h4>Additive mixed models</h4>
-<p>Much of the basic functionality of <span class="pack">mgcv</span> is incorporated, and works with the same syntax.</p>
-<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="bayesian.html#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> <span class="fu">s</span>(x) <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g))</span></code></pre></div>
+<p>Much of the basic functionality of <span class="pack">mgcv</span> is incorporated for generalized additive models, and works with the same syntax.</p>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="bayesian.html#cb102-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> <span class="fu">s</span>(x) <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g))</span></code></pre></div>
 </div>
 <div id="nonlinear-mixed-models" class="section level4">
 <h4>Nonlinear mixed models</h4>
 <p>We can model similar situations where the functional form is known, as with <span class="pack">nlme</span>.</p>
-<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="bayesian.html#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bf</span>(</span>
-<span id="cb74-2"><a href="bayesian.html#cb74-2" aria-hidden="true" tabindex="-1"></a>  y  <span class="sc">~</span> a1 <span class="sc">-</span> a2<span class="sc">^</span>x, </span>
-<span id="cb74-3"><a href="bayesian.html#cb74-3" aria-hidden="true" tabindex="-1"></a>  a1 <span class="sc">~</span> <span class="dv">1</span>, </span>
-<span id="cb74-4"><a href="bayesian.html#cb74-4" aria-hidden="true" tabindex="-1"></a>  a2 <span class="sc">~</span> x <span class="sc">+</span> (x <span class="sc">|</span> g), </span>
-<span id="cb74-5"><a href="bayesian.html#cb74-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">nl =</span> <span class="cn">TRUE</span></span>
-<span id="cb74-6"><a href="bayesian.html#cb74-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="bayesian.html#cb103-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bf</span>(</span>
+<span id="cb103-2"><a href="bayesian.html#cb103-2" aria-hidden="true" tabindex="-1"></a>  y  <span class="sc">~</span> a1 <span class="sc">-</span> a2<span class="sc">^</span>x, </span>
+<span id="cb103-3"><a href="bayesian.html#cb103-3" aria-hidden="true" tabindex="-1"></a>  a1 <span class="sc">~</span> <span class="dv">1</span>, </span>
+<span id="cb103-4"><a href="bayesian.html#cb103-4" aria-hidden="true" tabindex="-1"></a>  a2 <span class="sc">~</span> x <span class="sc">+</span> (x <span class="sc">|</span> g), </span>
+<span id="cb103-5"><a href="bayesian.html#cb103-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">nl =</span> <span class="cn">TRUE</span></span>
+<span id="cb103-6"><a href="bayesian.html#cb103-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div id="censored-and-truncated-targets" class="section level4">
 <h4>Censored and truncated targets</h4>
 <p>For censored data, just supply the censoring variables as you would typically note in a survival/event-history model.</p>
-<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="bayesian.html#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bf</span>(y <span class="sc">|</span> <span class="fu">cens</span>(censor_variable) <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g), <span class="at">family =</span> lognormal)  <span class="co"># frailty</span></span>
-<span id="cb75-2"><a href="bayesian.html#cb75-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb75-3"><a href="bayesian.html#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="co"># see also stan_jm in the rstanarm package for joint models</span></span></code></pre></div>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="bayesian.html#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bf</span>(y <span class="sc">|</span> <span class="fu">cens</span>(censor_variable) <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g), <span class="at">family =</span> lognormal)  <span class="co"># frailty</span></span>
+<span id="cb104-2"><a href="bayesian.html#cb104-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb104-3"><a href="bayesian.html#cb104-3" aria-hidden="true" tabindex="-1"></a><span class="co"># see also stan_jm in the rstanarm package for joint models</span></span></code></pre></div>
 <p>For truncated models, specify the lower bound, upper bound, or both.</p>
-<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="bayesian.html#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(count <span class="sc">|</span> <span class="fu">trunc</span>(<span class="at">ub =</span> <span class="dv">10</span>) <span class="sc">~</span> x <span class="sc">*</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g), <span class="at">family =</span> poisson)</span></code></pre></div>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="bayesian.html#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(count <span class="sc">|</span> <span class="fu">trunc</span>(<span class="at">ub =</span> <span class="dv">10</span>) <span class="sc">~</span> x <span class="sc">*</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g), <span class="at">family =</span> poisson)</span></code></pre></div>
 </div>
 <div id="measurment-error" class="section level4">
 <h4>Measurment error</h4>
 <p>There may be cases where we know one variable is assumed to be measured with error, such as the mean of several trials, or latent variables estimated by some other means. In the following, <code>sdx</code> is the known standard deviation for x, which may be constant or vary by observation.</p>
-<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="bayesian.html#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> <span class="fu">me</span>(x, sdx) <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g))</span></code></pre></div>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="bayesian.html#cb106-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> <span class="fu">me</span>(x, sdx) <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g))</span></code></pre></div>
 </div>
 <div id="mixture-models" class="section level4">
 <h4>Mixture models</h4>
 <p>Two clusters specified by multiple families along with <code>mixture</code>. So I guess this is technically a mixture mixed model.</p>
-<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="bayesian.html#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g), <span class="at">family =</span> <span class="fu">mixture</span>(gaussian, gaussian))</span></code></pre></div>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="bayesian.html#cb107-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> x <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g), <span class="at">family =</span> <span class="fu">mixture</span>(gaussian, gaussian))</span></code></pre></div>
 <p>A ‘growth mixture model.’</p>
-<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="bayesian.html#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> time <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> time <span class="sc">|</span> g), <span class="at">family =</span> <span class="fu">mixture</span>(gaussian, gaussian))</span></code></pre></div>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="bayesian.html#cb108-1" aria-hidden="true" tabindex="-1"></a><span class="fu">brm</span>(y <span class="sc">~</span> time <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> time <span class="sc">|</span> g), <span class="at">family =</span> <span class="fu">mixture</span>(gaussian, gaussian))</span></code></pre></div>
 </div>
 <div id="missing-values" class="section level4">
 <h4>Missing Values</h4>
 <p>We can construct the model formula for missing values as follows, including using a mixed model as the imputation model (for <code>x</code>).</p>
-<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="bayesian.html#cb80-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> </span>
-<span id="cb80-2"><a href="bayesian.html#cb80-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bf</span>(y <span class="sc">~</span> <span class="fu">mi</span>(x) <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g)) <span class="sc">+</span></span>
-<span id="cb80-3"><a href="bayesian.html#cb80-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bf</span>(x <span class="sc">|</span> <span class="fu">mi</span>() <span class="sc">~</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g)) <span class="sc">+</span> </span>
-<span id="cb80-4"><a href="bayesian.html#cb80-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_rescor</span>(<span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="bayesian.html#cb109-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> </span>
+<span id="cb109-2"><a href="bayesian.html#cb109-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bf</span>(y <span class="sc">~</span> <span class="fu">mi</span>(x) <span class="sc">+</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g)) <span class="sc">+</span></span>
+<span id="cb109-3"><a href="bayesian.html#cb109-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bf</span>(x <span class="sc">|</span> <span class="fu">mi</span>() <span class="sc">~</span> z <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> g)) <span class="sc">+</span> </span>
+<span id="cb109-4"><a href="bayesian.html#cb109-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_rescor</span>(<span class="cn">FALSE</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="beyond-the-model" class="section level2">
 <h2>Beyond the Model</h2>
-<p>The development of Stan and packages like <span class="pack">rstanarm</span> and <span class="pack">brms</span> is rapid, and with the combined powers of those involved, there are a lot of useful tools for exploring the model results. Even if one found a specialty package for a specific type of mixed model, it is doubtful you would have as many tools for model exploration such as posterior predictive checks, marginal effects, model comparison, basic model diagnostics and more. That said, the Stan ecosystem of R packages is notable at this point, and so use what works for your situation.</p>
+<p>The development of Stan and packages like <span class="pack">rstanarm</span> and <span class="pack">brms</span> is rapid, and with the combined powers of those involved, there are a lot of useful tools for exploring the model results. Even if one found a specialty package for a specific type of mixed model, it is doubtful you would have as many tools for model exploration such as posterior predictive checks, marginal effects, model comparison, basic model diagnostics and more. That said, the Stan ecosystem of R packages is notable at this point, and so use what works for your situation. For mixed models specifically, you should turn to these tools if <span class="pack" style="">lme4</span> can’t do it for you.</p>
 
 </div>
 </div>

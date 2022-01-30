@@ -510,7 +510,7 @@ After loading the package, the data can be loaded as follows.  I show the first 
 ```{r sleepstudy, echo=-3}
 library(lme4)
 data("sleepstudy")
-head(sleepstudy) %>% kable()
+head(sleepstudy) %>% kable_df()
 ```
 
 1. Run a regression with Reaction as the target variable and Days as the predictor. 

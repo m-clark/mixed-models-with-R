@@ -314,20 +314,7 @@ code span.st {
 img {
   display: block;
   margin: 0 auto;
-}
-
-.arc {
-  display: block;
-  width:30%; 
-  padding:5px 0; 
-  margin: 0 0 10px 0;
-}
-
-.cscar {
-  display: block;
-  width:21%; 
-  padding:5px 0; 
-  margin: 0 0 10px 0;
+  background: transparent;
 }
 
 /* zoom for img*/

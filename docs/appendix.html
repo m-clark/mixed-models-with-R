@@ -158,12 +158,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#goals"><i class="fa fa-check"></i>Goals</a></li>
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#prerequisites"><i class="fa fa-check"></i>Prerequisites</a></li>
 </ul></li>
+<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#data-and-exercises"><i class="fa fa-check"></i>Data and Exercises</a></li>
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#key-packages"><i class="fa fa-check"></i>Key packages</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html"><i class="fa fa-check"></i>Mixed Models</a>
 <ul>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#terminology"><i class="fa fa-check"></i>Terminology</a></li>
-<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#kinds-of-clustering"><i class="fa fa-check"></i>Kinds of Clustering</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#kinds-of-structure"><i class="fa fa-check"></i>Kinds of Structure</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#random-intercepts-model"><i class="fa fa-check"></i>Random Intercepts Model</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#example-student-gpa"><i class="fa fa-check"></i>Example: Student GPA</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#the-standard-regression-model"><i class="fa fa-check"></i>The Standard Regression Model</a></li>
@@ -193,6 +194,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#application-1"><i class="fa fa-check"></i>Application</a></li>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#comparison-to-many-regressions"><i class="fa fa-check"></i>Comparison to many regressions</a></li>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#visualization-of-effects"><i class="fa fa-check"></i>Visualization of effects</a></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#categorical-features"><i class="fa fa-check"></i>Categorical Features</a></li>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#summary-of-random-slopes"><i class="fa fa-check"></i>Summary of Random Slopes</a></li>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#exercises-for-random-slopes"><i class="fa fa-check"></i>Exercises for Random Slopes</a></li>
 </ul></li>
@@ -357,26 +359,25 @@ market segments.</p>
 <li><span class="pack">lme4</span>: generalized linear mixed models; extremely efficient</li>
 <li><span class="pack">nlme</span>: (non-)linear mixed models but only for the gaussian case.</li>
 <li><span class="pack">mgcv</span>: provides means to use both lme4 or nlme, extends distributional families, correlated residuals, and all that additive model stuff too</li>
-<li><span class="pack">glmmTMB</span>: newer package that similarly extends beyond lme4</li>
+<li><span class="pack">glmmTMB</span>: relatively newer package that similarly extends beyond lme4</li>
 <li><span class="pack">ordinal</span>: for various types of ordinal models</li>
 <li><span class="pack">rstanarm</span>: Bayesian with lme4 level options</li>
 <li><span class="pack">brms</span>: Bayesian with possibly the most extensive mixed model capabilities out there</li>
+<li><span class="pack">easystats</span>: A family of packages that provides a lot of additional functionality for models from <span class="pack">lme4</span>, <span class="pack">brms</span>, and others listed above.</li>
 </ul>
 </div>
 <div id="python" class="section level3">
 <h3>Python</h3>
-<p>In Python, the <a href="http://www.statsmodels.org/stable/mixed_linear.html">statsmodels</a> module has basic capabilities for mixed models, but not too many frills relatively speaking. CSCAR director Kerby Shedden has been part of this specific development. You can see his notes from the Data Science Skills Series <a href="https://github.com/kshedden/Statsmodels-MixedLM">here</a>. The following provides an example.</p>
-<div class="sourceCode" id="cb146"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb146-1"><a href="appendix.html#cb146-1" aria-hidden="true" tabindex="-1"></a>pycheck <span class="ot">=</span> <span class="fu">ifelse</span>(<span class="fu">grepl</span>(<span class="st">&#39;Windows&#39;</span>, <span class="fu">sessionInfo</span>()<span class="sc">$</span>running), </span>
-<span id="cb146-2"><a href="appendix.html#cb146-2" aria-hidden="true" tabindex="-1"></a>                 <span class="st">&#39;C:/ProgramData/Anaconda3&#39;</span>, </span>
-<span id="cb146-3"><a href="appendix.html#cb146-3" aria-hidden="true" tabindex="-1"></a>                 <span class="st">&#39;/Users/micl/opt/anaconda3/bin/python&#39;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb147"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb147-1"><a href="appendix.html#cb147-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb147-2"><a href="appendix.html#cb147-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
-<span id="cb147-3"><a href="appendix.html#cb147-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
-<span id="cb147-4"><a href="appendix.html#cb147-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb147-5"><a href="appendix.html#cb147-5" aria-hidden="true" tabindex="-1"></a>gpa <span class="op">=</span> pd.read_csv(<span class="st">&#39;data/gpa.csv&#39;</span>)</span>
-<span id="cb147-6"><a href="appendix.html#cb147-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb147-7"><a href="appendix.html#cb147-7" aria-hidden="true" tabindex="-1"></a>gpa_py_mixed <span class="op">=</span> smf.mixedlm(<span class="st">&quot;gpa ~ occasion&quot;</span>, gpa, groups<span class="op">=</span>gpa[<span class="st">&quot;student&quot;</span>]).fit()</span>
-<span id="cb147-8"><a href="appendix.html#cb147-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(gpa_py_mixed.summary())</span></code></pre></div>
+<p>In Python, the <a href="http://www.statsmodels.org/stable/mixed_linear.html">statsmodels</a> module has basic capabilities for mixed models, but not too many frills relatively speaking. My former boss, University of Michigan CSCAR director Kerby Shedden, has been part of this specific development. You can see his notes <a href="https://github.com/kshedden/Statsmodels-MixedLM">here</a>. The following provides an example.</p>
+<div class="sourceCode" id="cb175"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb175-1"><a href="appendix.html#cb175-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb175-2"><a href="appendix.html#cb175-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.api <span class="im">as</span> sm</span>
+<span id="cb175-3"><a href="appendix.html#cb175-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> statsmodels.formula.api <span class="im">as</span> smf</span>
+<span id="cb175-4"><a href="appendix.html#cb175-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb175-5"><a href="appendix.html#cb175-5" aria-hidden="true" tabindex="-1"></a>gpa <span class="op">=</span> pd.read_csv(<span class="st">&#39;data/gpa.csv&#39;</span>)</span>
+<span id="cb175-6"><a href="appendix.html#cb175-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb175-7"><a href="appendix.html#cb175-7" aria-hidden="true" tabindex="-1"></a>gpa_py_mixed <span class="op">=</span> smf.mixedlm(<span class="st">&quot;gpa ~ occasion&quot;</span>, gpa, groups<span class="op">=</span>gpa[<span class="st">&quot;student&quot;</span>]).fit()</span>
+<span id="cb175-8"><a href="appendix.html#cb175-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb175-9"><a href="appendix.html#cb175-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(gpa_py_mixed.summary())</span></code></pre></div>
 <pre><code>
              Mixed Linear Model Regression Results
 =======================================================
@@ -394,7 +395,15 @@ occasion     0.106    0.004  26.096 0.000  0.098  0.114
 Group Var    0.064    0.033                            
 =======================================================
     </code></pre>
-<!-- Revisit pymer4 in the future. Could not install via conda 2020-09 -->
+<!-- Revisit pymer4 in the future. Can't get it to not crash RStudio Jan 2022 -->
+<!-- ```{python, eval=FALSE} -->
+<!-- import pandas as pd -->
+<!-- from pymer4 import Lmer -->
+<!-- model = Lmer('gpa ~ occasion + (1|student)', data=gpa) -->
+<!-- # Fit and print an R/statsmodels style summary -->
+<!-- # with t/z-tests, CIs, and p-values -->
+<!-- model.fit() -->
+<!-- ``` -->
 </div>
 <div id="julia" class="section level3">
 <h3>Julia</h3>
@@ -404,21 +413,23 @@ Group Var    0.064    0.033
 <h3>Proprietary</h3>
 <p>Among the standard stats packages, I can only recommend <strong>Stata</strong> for both ease of implementation and flexibility in modeling. <strong>SAS</strong> and <strong>SPSS</strong> both have non-intuitive and needlessly verbose syntax, and, while SAS is in fact a fairly good tool for mixed models (from my understanding), I’ve actually seen SPSS consistently struggle with even simple models, and its GUI interface, the only reason to use SPSS in the first place, is not even remotely intuitive.</p>
 <p><strong>Mplus</strong> has a lot of functionality both for standard mixed models and growth curve models, though between <span class="pack">brms</span>, <span class="pack">lavaan</span>, <span class="pack">mediation</span>, and the rest of R, there is little need to use Mplus except for very complicated multilevel SEM, which requires very large samples and a lot of theoretical justification, which most of the people doing SEM are typically lacking in one or the other.</p>
-<p>I will also say that there is no reason to use mixed model specific software like HLM. The days for such hijinks have long since passed.</p>
+<p>I will also say that there is absolutely no reason to use mixed model specific software like HLM. The days for such hijinks have long since passed.</p>
 </div>
 </div>
 <div id="reference-texts-and-other-stuff" class="section level2">
 <h2>Reference texts and other stuff</h2>
 <p>An excellent modeling book can be found in <a href="http://www.stat.columbia.edu/~gelman/arm/">Data Analysis Using Regression and Multilevel/Hierarchical Models</a>. You will learn a great deal about statistical modeling in general, as the mixed model stuff only comprises the second part. Gelman has since updated this, or at least the <a href="https://avehtari.github.io/ROS-Examples/">first part</a>, but I can’t speak to the content yet.</p>
-<p>On the applied side, former CSCAR consultant Brady West has a book- <a href="http://www-personal.umich.edu/~bwest/almmussp.html">Linear Mixed Models: A Practical Guide Using Statistical Software</a>. It shows examples in a variety of programming formats while not glossing over the details you need to know.</p>
+<p>On the applied side, a former coworker of mine Brady West has a book- <a href="http://www-personal.umich.edu/~bwest/almmussp.html">Linear Mixed Models: A Practical Guide Using Statistical Software</a>. It shows examples in a variety of programming formats while not glossing over the details you need to know.</p>
 <p>Two texts come at mixed models from a very broad perspective, which I like. I find Fahrmeier et al. <a href="http://www.springer.com/us/book/9783642343322">Regression - Models, Methods and Applications</a> to be very good. It will also tie mixed models to spatial and nonparametric approaches. <a href="https://www.crcpress.com/Richly-Parameterized-Linear-Models-Additive-Time-Series-and-Spatial/Hodges/p/book/9781439866832">Richly Parameterized Linear Models - Additive, Time Series, and Spatial Models Using Random Effects</a>, does as well, and provides some nice historical context and hits on practical issues you will encounter if you play with these models long enough.</p>
 <p>There is literally <a href="http://lme4.r-forge.r-project.org/lMMwR/lrgprt.pdf">a book on mixed models with lme4</a> by Doug Bates, one of the developers. While dated with regard to <span class="pack">lme4</span>, it’s definitely not with regard to mixed models in general, and worth having around.</p>
 <p>Check out the <a href="https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html">Mixed Model FAQ</a> maintained by Ben Bolker, <span class="pack" style="">lme4</span> developer</p>
-<p>I have <a href="http://m-clark.github.io/documents/#mixed-models">several other docs</a> on various aspects of mixed models, and post about different aspects about them regularly.</p>
-<p>There is a lot of good information on stackoverflow and cross validated Q &amp; A sites, where <span class="pack">lme4</span> developer Ben Bolker has been quite active in answering people’s questions.</p>
+<p>I have <a href="https://m-clark.github.io/documents.html#mixed-models">several other docs</a> on various aspects of mixed models, and post about different aspects about them regularly.</p>
+<p>There is a lot of good information on <a href="https://stackoverflow.com/questions/tagged/lme4">stackoverflow</a> and cross validated Q &amp; A sites, where <span class="pack">lme4</span> developer Ben Bolker has been quite active in answering people’s questions.</p>
 
 </div>
 </div>
+
+
 
 
 
