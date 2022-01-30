@@ -11,9 +11,9 @@ This section covers topics that are generally beyond the scope of what would be 
 
 ## Other Distributions
 
-As noted in the GLMM section, we are not held to use only GLM family distributions regarding the target variable.  Unfortunately, the tools you have available to do so will quickly diminish.  However, a couple packages could help in this regard with simpler random effects structures.  For example, the <span class="pack">mgcv</span> and <span class="pack">glmmTMB</span> packages allow one access to a variety of response distributions, such as student t, negative binomial, beta, zero-inflated Poisson and more.   If you're willing to go Bayesian, you'll have even more options with <span class="pack">rstanarm</span> and <span class="pack">brms</span>.  I've personally had success with ordinal, beta, truncated normal and more with <span class="pack">brms</span> in particular.
+As noted in the GLMM section, we are not held to use only GLM family distributions regarding the target variable.  Unfortunately, the tools you have available to do so will quickly diminish.  However, a couple packages could help in this regard with simpler random effects structures.  For example, the <span class="pack">mgcv</span> and <span class="pack">glmmTMB</span> packages allow one access to a variety of target distributions, such as student t, negative binomial, beta, zero-inflated Poisson and more.   If you're willing to go Bayesian, you'll have even more options with <span class="pack">rstanarm</span> and <span class="pack">brms</span>.  I've personally had success with ordinal, beta, truncated normal and more with <span class="pack">brms</span> in particular.
 
-Note also that nothing says that the random effects must come from a normal distribution either.  You probably are going to need some notably strong theoretical reasons for trying something else, but it does come up for some folks.  You'll almost certainly need to use a specialized approach, as most mixed model tools do not offer such functionality out of the box.
+Note also that nothing says that the random effects must come from a normal distribution either.  You probably are going to need some notably strong theoretical reasons for trying something else, but it does come up for some situations.  You'll almost certainly need to use a specialized approach, as most mixed model tools do not offer that functionality out of the box.
 
 
 ## Other Contexts
@@ -33,7 +33,7 @@ Random effects models in the survival context are typically referred to as <span
 
 ##### Item response theory
 
-<span class="emph">Item response theory</span> models are often used with scholastic and other testing data, but far more general than that. Some IRT models can be estimated as a mixed model, or otherwise thought of as incorporating random effects. See Boeck et al. (2011) The Estimation of Item Response Models with the <span class="func">lmer</span> Function from the <span class="pack">lme4</span> Package in R. I also have some brief demonstration [here](http://m-clark.github.io/sem/item-response-theory.html). 
+<span class="emph">Item response theory</span> models are often used with scholastic and other testing data, but are far more general than that, because they are in fact a special type of random effects model. Some IRT models can be explicitly estimated as a mixed model, e.g. with <span class="pack">lme4</span>. See Boeck et al. (2011) The Estimation of Item Response Models with the <span class="func">lmer</span> Function from the <span class="pack">lme4</span> Package in R. I also have some brief demonstration [here](http://m-clark.github.io/sem/item-response-theory.html). Paul Bürkner, the author of <span class="pack">brms</span> also has a nice [overview of IRT models](https://arxiv.org/abs/1905.09501) in the Bayesian context.
 
 
 ##### Multi-membership models
@@ -43,7 +43,7 @@ Sometimes observations may belong to more than one cluster of some grouping vari
 
 ##### Phylogenetic models
 
-In biology, models make take observations that are of the same species. While one can use species as an additional source of variance as we have done, the species are not independent as they may come from the same phylogenetic tree/branch.  Bayesian packages are available to do such models (e.g. <span class="pack">MCMCglmm</span> and <span class="pack">brms</span>).
+In biology, models make take observations that are of the same species. While one can use species as an additional source of variance as in the manner we have demonstrated, the species are not independent as they may come from the same phylogenetic tree/branch.  Bayesian packages are available to do such models (e.g. <span class="pack">MCMCglmm</span> and <span class="pack">brms</span>).
 
 
 ##### Adjacency structures
@@ -53,7 +53,7 @@ Similar to spatial and phylogenetic models, the dependency among the groups/clus
 
 ##### Gaussian processes
 
-<span class="emph">Gaussian processes</span> are another way to handle dependency in the data, especially over time or space. Some spatial models are in fact a special case of these. One can think of gaussian processes as adding a 'continuous category' random effect.  Consider the effect of age in many models, could that not also be a source of dependency regarding some outcomes? In *Statistical Rethinking*, McElreath has a nice chapter 'Adventures in Covariance' that gets into this a bit.  
+<span class="emph">Gaussian processes</span> are another way to handle dependency in the data, especially over time or space. Some spatial models are in fact a special case of these. One can think of gaussian processes as adding a 'continuous category' random effect.  Consider the effect of age in many models, could that not also be a source of dependency regarding some outcomes? In *Statistical Rethinking*, McElreath has a nice chapter 'Adventures in Covariance' that gets into this a bit, and Gaussian process are widely discussed among the [Stan developers](https://mc-stan.org/docs/2_19/stan-users-guide/gaussian-process-regression.html).  
 
 
 ##### Surveys & Mr. P
@@ -63,12 +63,12 @@ Clustering is often a result of sampling design.  Often one would use a survey d
 
 ##### Post-hoc comparisons and multiple testing 
 
-This is not an issue I'm personally all that concerned with, but a lot of folks seem to be.  The 'problem' is that one has a lot of p-values for some model or across a set of models, and is worried about spurious claims of significance.  If one were truly worried about it, they'd be doing different models that would incorporate some sort of regularization, rather than attempting some p-value hack afterwards.  Didn't we talk about [regularization][Comparison to many regressions] somewhere?  Yep, you can use a mixed model approach instead. See [Gelman](http://www.stat.columbia.edu/~gelman/research/published/multiple2f.pdf) for details.
+This is not an issue I'm personally all that concerned with, but a lot of folks seem to be.  The 'problem' is that one has a lot of p-values for some model or across a set of models, and is worried about spurious claims of significance.  If one were truly worried about it, they'd be doing different models that would incorporate some sort of regularization, rather than attempting some p-value hack afterwards.  Didn't we talk about [regularization][Comparison to many regressions] somewhere?  Yep, you can use a mixed model approach to compare groups instead, specifying the grouping as a random effect. See [Gelman](http://www.stat.columbia.edu/~gelman/research/published/multiple2f.pdf) for details.
 
 
 ##### Growth mixture models
 
-Often people will assume *latent* clusters of individuals within the data, with model effects differing by these latent groups also. Sometimes called <span class="emph">latent trajectory models</span>, these are conceptually adding a cluster analysis to the mixed model setting.  While common in structural equation modeling, packages like <span class="pack">flexmix</span> can keep you in the standard model setting, which might be preferable.
+Often people will assume *latent* clusters of individuals within the data, with model effects differing by these latent groups also. Sometimes called <span class="emph">latent trajectory models</span>, these are conceptually adding a cluster analysis to the mixed model setting for longitudinal data.  While common in structural equation modeling, packages like <span class="pack">flexmix</span> can keep you in the standard model setting, which would be preferable.
 
 
 
@@ -78,7 +78,7 @@ Earlier we used the <span class="pack">nlme</span> package.  The acronym stands 
 
 In other cases we do not specify the functional form, and take a more non-parametric approach.  Here's where the powerful <span class="pack">mgcv</span> package comes in, and there are few if any that have its capabilities for <span class="emph">generalized additive models</span> combined with standard random effects approaches. Depending on the approach you take, you can even get <span class="pack">nlme</span> or <span class="pack">lme4</span> output along with the GAM results.  Highly recommended.
 
-I would also recommend <span class="pack" style = "">brms</span>, which has specific functionality for nonlinear models in general, including IRT, as well as additive models in the vein of <span class="pack" style = "">mgcv</span>, as it uses the same constructor functions that come that package. It might be your best bet whether you have a specific nonlinear functional form or not.
+I would also recommend <span class="pack" style = "">brms</span>, which has specific functionality for nonlinear models in general, including IRT models, as well as additive models in the vein of <span class="pack" style = "">mgcv</span>, as it uses the same constructor functions that come with that package. It might be your best bet whether you have a specific nonlinear functional form or not.
 
 
 
