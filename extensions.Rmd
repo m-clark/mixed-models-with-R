@@ -1,8 +1,8 @@
 ```{r chunk_setup-ext, include=FALSE, eval=TRUE}
 knitr::opts_chunk$set(
   # cache
-  cache.rebuild = F,
-  cache         = T
+  cache.rebuild = FALSE,
+  cache         = TRUE
 )
 ```
 

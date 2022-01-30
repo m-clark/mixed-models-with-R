@@ -1,8 +1,8 @@
 ```{r chunk_setup-ran-int, include=FALSE, eval=TRUE}
 knitr::opts_chunk$set(
   # cache
-  cache.rebuild = F,
-  cache         = T
+  cache.rebuild = FALSE,
+  cache         = TRUE
 )
 ```
 
@@ -140,18 +140,18 @@ More technically, the GPA and $\mu$ variables have an implicit subscript to deno
 Now we show one way of depicting a mixed model that includes a unique effect for each student. Consider the following model for a single student[^notation]. This shows that the student-specific effect, i.e. the deviation in GPA just for that student being who they are, can be seen as an additional source of variance.
 
 
-$$\mathrm{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathrm{occasion} + (\mathrm{effect}_{\mathcal{student}} + \epsilon)$$
+$$\mathrm{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathrm{occasion} + (\mathrm{effect}_{\mathrm{student}} + \epsilon)$$
 
 We would (usually) assume the following for the student effects.  
 
 
 $$\mathrm{effect}_{\mathrm{student}} \sim \mathcal{N}(0, \tau)$$
 
-So the student effects are random, and specifically they are normally distributed with mean of zero and some estimated standard deviation ($\tau$). In other words, conceptually the only difference between this mixed model and a standard regression is the student effect, which on average is no effect, but typically varies from student to student by some amount that is on average $\tau$.
+So the student effects are random, and specifically they are normally distributed with mean of zero and some estimated standard deviation ($\tau$). In other words, conceptually, the only difference between this mixed model and a standard regression is the student effect, which on average is no effect, but typically varies from student to student by some amount that is on average $\tau$.
 
 If we rearrange it, we can instead focus on model coefficients, rather than as an additional source of error.
 
-$$\mathrm{gpa} = (b_{\mathrm{intercept}} + \mathrm{effect}_{\mathcal{student}}) + b_{\mathrm{occ}}\cdot \mathrm{occasion} +  \epsilon$$
+$$\mathrm{gpa} = (b_{\mathrm{intercept}} + \mathrm{effect}_{\mathrm{student}}) + b_{\mathrm{occ}}\cdot \mathrm{occasion} +  \epsilon$$
 Or more succinctly:
 
 $$\mathrm{gpa} = b_{\mathrm{int\_student}} + b_{\mathrm{occ}}\cdot \mathrm{occasion} +  \epsilon$$
@@ -307,7 +307,7 @@ extract_vc(gpa_mixed) %>%
 
 One thing that's new compared to the standard regression output is the estimated standard deviation/variance of the student effect ($\tau$/$\tau^2$ in our formula depiction from before).  This tells us how much, on average, GPA bounces around as we move from student to student. In other words, even after making a prediction based on time point, each student has their own unique deviation, and that value (in terms of the standard deviation) is the estimated average deviation across students.  Note that scores move due to the student more than double what they move based on a semester change. This is an important interpretive aspect not available to us with a standard regression model.
 
-Another way to interpret the variance output is to note percentage of the student variance out of the total, or `r round(vcovs[1,1], 3)` / `r round(sum(vcovs), 3)` =  `r round(vcovs[1,1]/sum(vcovs), 2)*100`%.  In this setting, this value is also called the <span class="emph">intraclass correlation</span>, because it is also an estimate of the within cluster correlation, as we'll see later.
+Another way to interpret the variance output is to note percentage of the student variance out of the total, or `r round(vcovs[1,1], 3)` / `r round(sum(vcovs), 3)` =  `r round(vcovs[1,1]/sum(vcovs), 2)*100`%.  In this setting, this value is also called the *intraclass correlation*, because it is also an estimate of the within cluster correlation, as we'll see later.
 
 
 #### Estimates of the random effects
@@ -487,7 +487,7 @@ $$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + b_{\mathrm{sex}}\cdot \ma
 
 Which, after plugging in, we still have the same model as before, just with an additional predictor.
 
-$$\mathrm{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathrm{occasion}+ b_{\mathrm{sex}}\cdot \mathrm{sex} + (\mathrm{effect}_{\mathcal{student}} + \epsilon)$$
+$$\mathrm{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{occ}}\cdot \mathrm{occasion}+ b_{\mathrm{sex}}\cdot \mathrm{sex} + (\mathrm{effect}_{\mathrm{student}} + \epsilon)$$
 
 So in the end, adding cluster level covariates doesn't have any unusual effect on how we think about the model[^mlevel]. We simply add them to our set of predictor variables. Note also, that we can create cluster level covariates as group means or some other summary of the observation level variables.  This is especially common when the clusters represent geographical units and observations are people.  For example, we might have income as a person level covariate, and use the median to represent the overall wealth of the geographical region.
 
@@ -587,7 +587,7 @@ qplot(x = re, geom = 'density', xlim = c(-3, 3))
 
 [^richlypar]: I actually like [Richly Parameterized Linear Models](https://www.crcpress.com/Richly-Parameterized-Linear-Models-Additive-Time-Series-and-Spatial/Hodges/p/book/9781439866832), or [Structured Additive Regression Models](https://www.springer.com/us/book/9783642343322).  Both are a mouthful, but at least the latter reduces to [STARs](http://m-clark.github.io/workshops/stars/).
 
-[^vcmodel]: Actually, the simplest model would have no covariates at all, just <span class="emph">variance components</span>, with no correlations among the random effects.  Such a model can be interesting to look at while exploring your data, but would rarely suffice on its own to tell the story you desire to.
+[^vcmodel]: Actually, the simplest model would have no covariates at all, just *variance components*, with no correlations among the random effects.  Such a model can be interesting to look at while exploring your data, but would rarely suffice on its own to tell the story you desire to.
 
 [^notation]: Note that I leave out the observation level subscript to keep things clean. I find that multilevel style notation quickly becomes unwieldy, and don't wish to reproduce the problem.  It also tends to add confusion to a lot of applied researchers starting out with mixed models.
 
@@ -599,7 +599,7 @@ qplot(x = re, geom = 'density', xlim = c(-3, 3))
 
 [^confint]: See `?confint.merMod` for details and options.  The output you see is based on my wrapper `mixedup::extract_vc`.
 
-[^blup]: These are sometimes referred to as BLUPs or EBLUPs, which stands for (empirical) best linear unbiased prediction.  However, they are only BLUP for *linear* mixed effects models.  As such you will also see them referred to as <span class="emph">conditional mode</span>.  Furthermore, in the Bayesian context, the effects are actually estimated as additional model parameters, rather than estimated/predicted after the fact.
+[^blup]: These are sometimes referred to as BLUPs or EBLUPs, which stands for (empirical) best linear unbiased prediction.  However, they are only BLUP for *linear* mixed effects models.  As such you will also see them referred to as *conditional mode*.  Furthermore, in the Bayesian context, the effects are actually estimated as additional model parameters, rather than estimated/predicted after the fact.
 
 [^predinterval]: Note that while <span class="func">predictionInterval</span> does not quite incorporate all sources of uncertainty as does <span class="func">bootMer</span>, it's actually feasible for larger data sets, and on par with the Bayesian results (e.g. with <span class="pack">rstanarm</span>).
 

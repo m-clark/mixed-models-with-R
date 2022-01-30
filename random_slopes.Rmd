@@ -1,8 +1,8 @@
 ```{r chunk_setup-ran-slope, include=FALSE, eval=TRUE}
 knitr::opts_chunk$set(
   # cache
-  cache.rebuild = F,
-  cache         = T
+  cache.rebuild = FALSE,
+  cache         = TRUE
 )
 ```
 
@@ -593,16 +593,17 @@ gpa %>%
 
 
 Sometimes we may want to assess the effects of a categorical feature across the levels of our grouping variable.  For our GPA example, this might include something like the binary indicator of whether they took any higher level/AP/Honor courses that semester. Another would be their working status, such as part-time, full-time, volunteer or not working.  For many students, this sort of thing could vary from one semester to the next. 
+
 For binary features, nothing changes from what we've demonstrated so far. We allow that coefficient to vary across groups, just as we would the single coefficient from a numeric predictor.  But what about the case where we have additional categories? 
 
-As a fixed effect, a categorical feature would have k-1 coefficients with default dummy coding, which represent the effect of changing from a reference group to the given category. If we allow that effect to be random, then we would have separate k-1 slopes to vary by our structured levels, resulting in multiple random coefficients, along with their correlation.
+As a fixed effect, a categorical feature would have k-1 coefficients with default dummy coding, which represent the effect of changing from a reference group, whose mean is represented via the intercept, to the given category. If we allow that effect to be random, then we would have separate k-1 slopes to vary by our structured levels (along with our random intercept), resulting in multiple random coefficients, along with their correlation.
 
-Adding these additional random slopes would obviously complicate our model, but perhaps not too much. On the practical side though, it also leads to convergence problems.  But there is a silver lining in that case.  Since it is a categorical feature, we can just treat it like we would a typical random effect. The one difference is that, in the general case of random coefficients, just as we are interested in the interaction of the effect with structure already present, we will want to specify our model to capture this.
+Adding these additional random slopes would obviously complicate our model, but perhaps not too much. On the practical side though, it can often lead to convergence problems.  But there is a silver lining in that case.  Since it is a categorical feature, we can just treat it like we would a typical random effect. The one difference is that, in the general case of random coefficients, just as we are interested in the interaction of the effect with structure already present, we will want to specify our model to capture this.
 
 For our example we will run three models:
 
 - *Model 1*: The way our intuition would suggest based on what we've seen so far
-- *Model 2*: A simplification that removes the correlation between the random intercept and the other random coefficients
+- *Model 2*: An alternate way to code model 1, but which puts our random effects on similar scales
 - *Model 3*: A different, but identically conceptual way to get at our effect via an interaction random effect.
 
 
@@ -635,14 +636,10 @@ ach_cat_re_3 = lmer(
   achievement ~ ses + (1|primary_school_id) + (1|primary_school_id:ses), 
   data = pupils_demo
 )
-
-# 2 is the same as this
-# ach_cat_re_4 = lmer(gpa ~ occasion + job + (1|student) + (-1 + job|student), data = gpa)
 ```
 
-Creating a model list makes it easy to apply the same function to each model, so we do so here.
 
-```{r ran-cat-fixef}
+```{r ran-cat-fixef, echo=FALSE}
 model_list = list(
   ach_cat_re_1 = ach_cat_re_1,
   ach_cat_re_2 = ach_cat_re_2,
@@ -650,19 +647,19 @@ model_list = list(
 )
 ```
 
-If we look at the model summaries, we'll see some differences. The first estimates the random intercept, the random coefficients for ses, and their correlation. 
+If we look at the model summaries, we'll see some differences. The first estimates the random intercept, the random coefficients for the k-1 effects for `ses`, and their correlation. 
 
 ```{r ran-cat-model-summary-mod-1, message=TRUE}
 summarize_model(ach_cat_re_1, ci = FALSE, cor_re = TRUE)
 ```
 
-The second has the the `ses` groups in 'intercept form' but is an identical model, just differently parameterized, so that, while the `seslow` varinace is equivalent to the `Intercept` variance of model 1, the other two are in intercept rather than group difference form.
+The second has the the `ses` groups in 'intercept form' but is an identical model, just differently parameterized, so that, while the `seslow` variance is equivalent to the `Intercept` variance of model 1, the other two are on different scales.
 
 ```{r ran-cat-model-summary-mod-2, message=TRUE}
 summarize_model(ach_cat_re_2, ci = FALSE, cor_re = TRUE)
 ```
 
-The third is conceptually identical to the others. The primary difference is that it removes the correlations among the `ses` effects.
+The third is conceptually identical to the others, and in spirit is the same as model 2. The primary difference is that it removes the correlations among the `ses` effects. Note though that they all have a similar 'intercept' variance estimate.
 
 ```{r ran-cat-model-summary-mod-3, message=TRUE}
 summarize_model(ach_cat_re_3, ci = FALSE, cor_re = TRUE) # no cor_re to show
@@ -687,10 +684,10 @@ AICcmodavg::aictab(model_list, ) %>%
   kable_df()
 ```
 
-The difference in the number of parameters shown (`K`) regards the number of estimated random effect variances and covariances. We can see the first model 'wins' with the lowest AIC but it is not appreciably different from the second. But we note that the number of random effects is different.  There `r n_schools` primary schools. In model 1 we have the intercept and two other fixed effects (`sesmid`, `seshigh`) for each group for `r n_schools` * 3 total random effects. In the second our effect is the group mean itself, three intercepts for `r n_schools` * 3 random effects. For model 3, we estimate both the primary school and the interaction of it with ses, but this is not exactly a balanced data set, which would have  `r n_schools` * 4 random effects, so only effects for each school-ses combination that is present in the data are estimated (two schools did not have all ses groups).
+The difference in the number of parameters shown (`K`) regards the number of estimated random effect variances and covariances. We can see the initial model 'wins' with the lowest AIC, and we can see that the number of random effects is different.  There `r n_schools` primary schools.  In model 1 we have the intercept and two other fixed effects (`sesmid`, `seshigh`) for each group for `r n_schools` * 3 total random effects. In the second our effect is the intercept form, each ses random intercept estimated for every school, i.e. three intercepts for `r n_schools` * 3 random effects. For model 3, we estimate both the primary school and the interaction of it with ses, but this is not exactly a balanced data set, which would have  `r n_schools` * 4 random effects, so only effects for each school-ses combination that is present in the data are estimated (two schools did not have all ses groups).
 
 
-For the actual random effect differences, let's inspect them[^extractre].  Each of the following looks at the `ses` effect for primary school 10. The first two models show identical random effects, though the first shows the difference of the two groups relative to the first, as that is the coefficient that's being estimated. 
+For the actual random effect differences, let's inspect them[^extractre].  Each of the following looks at the `ses` effect for primary school 10. The first two models show identical random effects, though the first shows the difference of the two groups relative to the first, as that is the coefficient/slope that's being estimated. 
 
 ```{r ran-cat-re-mod12, echo=FALSE}
 extract_random_effects(ach_cat_re_1) %>% 
@@ -704,7 +701,7 @@ extract_random_effects(ach_cat_re_2) %>%
   kable_df()
 ```
 
-For our final model we do get different estimates. The variance estimates suggested very little variance for the ses within school effect, so these estimated effects are not very large.
+For our final model we do get different estimates. The variance estimates we saw previously for this model suggested very little variance for the ses within school effect, so these estimated effects are not very large.
 
 ```{r ran-cat-re-mod3, echo=FALSE}
 extract_random_effects(ach_cat_re_3) %>% 
@@ -729,7 +726,7 @@ pupils_demo %>%
   kable_df()
 ```
 
-This would definitely not always be the case.  And in other situations, it may be those models may not converge, where the form of our model 3 will have a much easier time.  At least now you know how to go about dealing with these situations, but for more examples and detail, see [my post here](https://m-clark.github.io/posts/2020-03-01-random-categorical/). 
+This would definitely not always be the case.  And in other situations, it may be those models may not converge, where the form of our model 3 should have a much easier time.  At least now you know how to go about dealing with these situations, but for more examples and detail, see [my post here](https://m-clark.github.io/posts/2020-03-01-random-categorical/). 
 
 
 

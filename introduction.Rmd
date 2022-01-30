@@ -22,15 +22,17 @@ Note the following color coding used in this document:
 - [link]() 
 
 
-<!-- ## Workshop -->
+## Data and Exercises
 
-<!-- If doing or interested in the workshop follow these steps: -->
+If you are interested in doing the examples and exercises, you can follow these steps:
 
-<!-- 0. Download the zip file at [GitHub](https://github.com/m-clark/mixed-models-with-r-workshop-2019/archive/master.zip). Be mindful of where you put it. -->
-<!-- 1. Unzip it. Be mindful of where you put the resulting folder. -->
-<!-- 2. Open RStudio. -->
-<!-- 3. File/Open Project and click on the blue icon (`mixed-models-with-r-workshop-2019.Rproj`) in the folder you just created. -->
-<!-- 4. File/Open Click on the ReadMe file and do what it says. -->
+0. Download the zip file at [GitHub](https://github.com/m-clark/mixed-models-with-r-workshop-2019/archive/master.zip). Be mindful of where you put it.
+1. Unzip it. Be mindful of where you put the resulting folder.
+2. Open RStudio.
+3. File/Open Project and click on the blue icon (`mixed-models-with-r-workshop-2019.Rproj`) in the folder you just created.
+4. File/Open Click on the ReadMe file and do what it says.
+
+Otherwise just download the data files from [GitHub](https://github.com/m-clark/mixed-models-with-R/tree/master/data).
 
 
 ## Key packages
@@ -45,4 +47,4 @@ To run the code in this document you'll really only need the following:
 - <span class="pack">modelr</span>: optional
 - <span class="pack">nlme</span>: part of base R, no need for install
 
-I also use a custom package called <span class="pack">mixedup</span> that provides more usable and printable output for mixed models from <span class="pack">lme4</span>, <span class="pack">brms</span>, <span class="pack">mgcv</span>, etc. Much of the output you see will come from that.
+I also use a custom package called <span class="pack">mixedup</span> that provides more usable and consistent output for mixed models from <span class="pack">lme4</span>, <span class="pack">brms</span>, <span class="pack">mgcv</span>, etc. Much of the output you see will come from that.

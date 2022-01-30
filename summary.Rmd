@@ -1,6 +1,6 @@
 # Summary
 
-The odds of you eventually coming across dependency in your data is very high.  Using standard methods while ignoring the situation can lead to problematic inference. More to the point however, you're missing out on a much richer story to tell with the data. One can estimate a variety of cluster-specific effects, incorporate multiple types of clustering, all while still be able to talk about global effects as well.  One can also extend such models to other types of 'random effects' as well.
+The odds of you eventually coming across dependency in your data is very high.  Using standard methods while ignoring the situation can lead to problematic inference. More to the point, you would be missing out on a much richer story to tell with the data. One can estimate a variety of cluster-specific effects, incorporate multiple types of structure, all while still be able to talk about global effects as well.  One can also extend such models to other types of 'random effects' as well.
 
 With the right tools, even complicated mixed models can be fit relatively easily and quickly for even moderately large data sets.  It does take some getting used to, but in the end can be a highly satisfying modeling approach.  Use them the next time you encounter some dependency in your data.
 

@@ -70,6 +70,12 @@ This is not an issue I'm personally all that concerned with, but a lot of folks 
 
 Often people will assume *latent* clusters of individuals within the data, with model effects differing by these latent groups also. Sometimes called <span class="emph">latent trajectory models</span>, these are conceptually adding a cluster analysis to the mixed model setting for longitudinal data.  While common in structural equation modeling, packages like <span class="pack">flexmix</span> can keep you in the standard model setting, which would be preferable.
 
+##### Embeddings and Neural Nets
+
+Much is made about using neural nets to create word, sentence or other *embeddings*, essentially taking a string of text and converting it to numeric form.  But think about what we've been doing here. We've taken a categorical/string variable like student id, and converted to numeric form (a random effect). Not so complicated a notion really.
+
+Beyond that, one can essentially conduct a mixed model as one would a neural net for standard tabular data, because a neural net incorporates regularization on all parameters, and in particular those group/cluster effects. So if your data was properly coded, you could set up your neural net to produce something very similar to what we have in the matrix form of a random effect model.  This is similar to what mgcv actually does for random effects estimation. By default though, the information extracted from the groups would be done so in a much different way, and would be able to pick up on inter-group correlations as well (much like a spatial random effects model).
+
 
 
 ## Nonlinear Mixed Effects Models
