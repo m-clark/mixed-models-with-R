@@ -6,12 +6,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Going Further | Mixed Models with R</title>
   <meta name="description" content="This is an introduction to using mixed models in R. It covers the most common techniques employed, with demonstration primarily via the lme4 package. Discussion includes extensions into generalized mixed models, Bayesian approaches, and realms beyond." />
-  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Going Further | Mixed Models with R" />
   <meta property="og:type" content="book" />
   <meta property="og:url" content="https://m-clark.github.io/mixed-models-with-R/" />
-  <meta property="og:image" content="https://m-clark.github.io/mixed-models-with-R/img/nineteeneightyR.png" />
+  <meta property="og:image" content="https://m-clark.github.io/mixed-models-with-R//img/nineteeneightyR.png" />
   <meta property="og:description" content="This is an introduction to using mixed models in R. It covers the most common techniques employed, with demonstration primarily via the lme4 package. Discussion includes extensions into generalized mixed models, Bayesian approaches, and realms beyond." />
   <meta name="github-repo" content="m-clark/mixed-models-with-R/" />
 
@@ -19,7 +19,7 @@
   <meta name="twitter:title" content="Going Further | Mixed Models with R" />
   
   <meta name="twitter:description" content="This is an introduction to using mixed models in R. It covers the most common techniques employed, with demonstration primarily via the lme4 package. Discussion includes extensions into generalized mixed models, Bayesian approaches, and realms beyond." />
-  <meta name="twitter:image" content="https://m-clark.github.io/mixed-models-with-R/img/nineteeneightyR.png" />
+  <meta name="twitter:image" content="https://m-clark.github.io/mixed-models-with-R//img/nineteeneightyR.png" />
 
 
 
@@ -31,8 +31,9 @@
   <link rel="shortcut icon" href="img/R.ico" type="image/x-icon" />
 <link rel="prev" href="bayesian.html"/>
 <link rel="next" href="summary.html"/>
-<script src="libs/header-attrs-2.5/header-attrs.js"></script>
-<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -48,34 +49,30 @@
 
 
 
-
-<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
-<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
-<script src="libs/htmlwidgets-1.5.2/htmlwidgets.js"></script>
+<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
 <script src="libs/viz-1.8.2/viz.js"></script>
 <link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
 <script src="libs/grViz-binding-1.0.6.1/grViz.js"></script>
 <link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
-<script src="libs/datatables-binding-0.15/datatables.js"></script>
+<script src="libs/datatables-binding-0.19/datatables.js"></script>
 <link href="libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
 <link href="libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
 <script src="libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
-<link href="libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
-<script src="libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
-<script src="libs/plotly-binding-4.9.2.1/plotly.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+<script src="libs/plotly-binding-4.10.0/plotly.js"></script>
 <script src="libs/typedarray-0.1/typedarray.min.js"></script>
-<link href="libs/plotly-htmlwidgets-css-1.52.2/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="libs/plotly-main-1.52.2/plotly-latest.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-2.5.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-2.5.1/plotly-latest.min.js"></script>
 <script src="libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
-<link href="libs/bsTable-3.3.7/bootstrapTable.min.css" rel="stylesheet" />
-<script src="libs/bsTable-3.3.7/bootstrapTable.js"></script>
 
 
 <style type="text/css">
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 pre.sourceCode { margin: 0; }
 @media screen {
@@ -136,6 +133,7 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
+
 <link rel="stylesheet" href="css/book.css" type="text/css" />
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" type="text/css" />
 </head>
@@ -160,13 +158,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#goals"><i class="fa fa-check"></i>Goals</a></li>
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#prerequisites"><i class="fa fa-check"></i>Prerequisites</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#workshop"><i class="fa fa-check"></i>Workshop</a></li>
+<li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#data-and-exercises"><i class="fa fa-check"></i>Data and Exercises</a></li>
 <li class="chapter" data-level="" data-path="introduction.html"><a href="introduction.html#key-packages"><i class="fa fa-check"></i>Key packages</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html"><i class="fa fa-check"></i>Mixed Models</a>
 <ul>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#terminology"><i class="fa fa-check"></i>Terminology</a></li>
-<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#kinds-of-clustering"><i class="fa fa-check"></i>Kinds of Clustering</a></li>
+<li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#kinds-of-structure"><i class="fa fa-check"></i>Kinds of Structure</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#random-intercepts-model"><i class="fa fa-check"></i>Random Intercepts Model</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#example-student-gpa"><i class="fa fa-check"></i>Example: Student GPA</a></li>
 <li class="chapter" data-level="" data-path="random_intercepts.html"><a href="random_intercepts.html#the-standard-regression-model"><i class="fa fa-check"></i>The Standard Regression Model</a></li>
@@ -196,6 +194,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#application-1"><i class="fa fa-check"></i>Application</a></li>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#comparison-to-many-regressions"><i class="fa fa-check"></i>Comparison to many regressions</a></li>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#visualization-of-effects"><i class="fa fa-check"></i>Visualization of effects</a></li>
+<li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#categorical-features"><i class="fa fa-check"></i>Categorical Features</a></li>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#summary-of-random-slopes"><i class="fa fa-check"></i>Summary of Random Slopes</a></li>
 <li class="chapter" data-level="" data-path="random_slopes.html"><a href="random_slopes.html#exercises-for-random-slopes"><i class="fa fa-check"></i>Exercises for Random Slopes</a></li>
 </ul></li>
@@ -336,8 +335,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>This section covers topics that are generally beyond the scope of what would be covered in this introductory document, but may be given their own section over time.</p>
 <div id="other-distributions" class="section level2">
 <h2>Other Distributions</h2>
-<p>As noted in the GLMM section, we are not held to use only GLM family distributions regarding the target variable. Unfortunately, the tools you have available to do so will quickly diminish. However, a couple packages could help in this regard with simpler random effects structures. For example, the <span class="pack">mgcv</span> and <span class="pack">glmmTMB</span> packages allow one access to a variety of response distributions, such as student t, negative binomial, beta, zero-inflated Poisson and more. If you’re willing to go Bayesian, you’ll have even more options with <span class="pack">rstanarm</span> and <span class="pack">brms</span>. I’ve personally had success with ordinal, beta, truncated normal and more with <span class="pack">brms</span> in particular.</p>
-<p>Note also that nothing says that the random effects must come from a normal distribution either. You probably are going to need some notably strong theoretical reasons for trying something else, but it does come up for some folks. You’ll almost certainly need to use a specialized approach, as most mixed model tools do not offer such functionality out of the box.</p>
+<p>As noted in the GLMM section, we are not held to use only GLM family distributions regarding the target variable. Unfortunately, the tools you have available to do so will quickly diminish. However, a couple packages could help in this regard with simpler random effects structures. For example, the <span class="pack">mgcv</span> and <span class="pack">glmmTMB</span> packages allow one access to a variety of target distributions, such as student t, negative binomial, beta, zero-inflated Poisson and more. If you’re willing to go Bayesian, you’ll have even more options with <span class="pack">rstanarm</span> and <span class="pack">brms</span>. I’ve personally had success with ordinal, beta, truncated normal and more with <span class="pack">brms</span> in particular.</p>
+<p>Note also that nothing says that the random effects must come from a normal distribution either. You probably are going to need some notably strong theoretical reasons for trying something else, but it does come up for some situations. You’ll almost certainly need to use a specialized approach, as most mixed model tools do not offer that functionality out of the box.</p>
 </div>
 <div id="other-contexts" class="section level2">
 <h2>Other Contexts</h2>
@@ -352,7 +351,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="item-response-theory" class="section level5">
 <h5>Item response theory</h5>
-<p><span class="emph">Item response theory</span> models are often used with scholastic and other testing data, but far more general than that. Some IRT models can be estimated as a mixed model, or otherwise thought of as incorporating random effects. See Boeck et al. (2011) The Estimation of Item Response Models with the <span class="func">lmer</span> Function from the <span class="pack">lme4</span> Package in R. I also have some brief demonstration <a href="http://m-clark.github.io/sem/item-response-theory.html">here</a>.</p>
+<p><span class="emph">Item response theory</span> models are often used with scholastic and other testing data, but are far more general than that, because they are in fact a special type of random effects model. Some IRT models can be explicitly estimated as a mixed model, e.g. with <span class="pack">lme4</span>. See Boeck et al. (2011) The Estimation of Item Response Models with the <span class="func">lmer</span> Function from the <span class="pack">lme4</span> Package in R. I also have some brief demonstration <a href="http://m-clark.github.io/sem/item-response-theory.html">here</a>. Paul Bürkner, the author of <span class="pack">brms</span> also has a nice <a href="https://arxiv.org/abs/1905.09501">overview of IRT models</a> in the Bayesian context.</p>
 </div>
 <div id="multi-membership-models" class="section level5">
 <h5>Multi-membership models</h5>
@@ -360,7 +359,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="phylogenetic-models" class="section level5">
 <h5>Phylogenetic models</h5>
-<p>In biology, models make take observations that are of the same species. While one can use species as an additional source of variance as we have done, the species are not independent as they may come from the same phylogenetic tree/branch. Bayesian packages are available to do such models (e.g. <span class="pack">MCMCglmm</span> and <span class="pack">brms</span>).</p>
+<p>In biology, models make take observations that are of the same species. While one can use species as an additional source of variance as in the manner we have demonstrated, the species are not independent as they may come from the same phylogenetic tree/branch. Bayesian packages are available to do such models (e.g. <span class="pack">MCMCglmm</span> and <span class="pack">brms</span>).</p>
 </div>
 <div id="adjacency-structures" class="section level5">
 <h5>Adjacency structures</h5>
@@ -368,7 +367,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="gaussian-processes" class="section level5">
 <h5>Gaussian processes</h5>
-<p><span class="emph">Gaussian processes</span> are another way to handle dependency in the data, especially over time or space. Some spatial models are in fact a special case of these. One can think of gaussian processes as adding a ‘continuous category’ random effect. Consider the effect of age in many models, could that not also be a source of dependency regarding some outcomes? In <em>Statistical Rethinking</em>, McElreath has a nice chapter ‘Adventures in Covariance’ that gets into this a bit.</p>
+<p><span class="emph">Gaussian processes</span> are another way to handle dependency in the data, especially over time or space. Some spatial models are in fact a special case of these. One can think of gaussian processes as adding a ‘continuous category’ random effect. Consider the effect of age in many models, could that not also be a source of dependency regarding some outcomes? In <em>Statistical Rethinking</em>, McElreath has a nice chapter ‘Adventures in Covariance’ that gets into this a bit, and Gaussian process are widely discussed among the <a href="https://mc-stan.org/docs/2_19/stan-users-guide/gaussian-process-regression.html">Stan developers</a>.</p>
 </div>
 <div id="surveys-mr.-p" class="section level5">
 <h5>Surveys &amp; Mr. P</h5>
@@ -376,18 +375,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="post-hoc-comparisons-and-multiple-testing" class="section level5">
 <h5>Post-hoc comparisons and multiple testing</h5>
-<p>This is not an issue I’m personally all that concerned with, but a lot of folks seem to be. The ‘problem’ is that one has a lot of p-values for some model or across a set of models, and is worried about spurious claims of significance. If one were truly worried about it, they’d be doing different models that would incorporate some sort of regularization, rather than attempting some p-value hack afterwards. Didn’t we talk about <a href="random_slopes.html#comparison-to-many-regressions">regularization</a> somewhere? Yep, you can use a mixed model approach instead. See <a href="http://www.stat.columbia.edu/~gelman/research/published/multiple2f.pdf">Gelman</a> for details.</p>
+<p>This is not an issue I’m personally all that concerned with, but a lot of folks seem to be. The ‘problem’ is that one has a lot of p-values for some model or across a set of models, and is worried about spurious claims of significance. If one were truly worried about it, they’d be doing different models that would incorporate some sort of regularization, rather than attempting some p-value hack afterwards. Didn’t we talk about <a href="random_slopes.html#comparison-to-many-regressions">regularization</a> somewhere? Yep, you can use a mixed model approach to compare groups instead, specifying the grouping as a random effect. See <a href="http://www.stat.columbia.edu/~gelman/research/published/multiple2f.pdf">Gelman</a> for details.</p>
 </div>
 <div id="growth-mixture-models" class="section level5">
 <h5>Growth mixture models</h5>
-<p>Often people will assume <em>latent</em> clusters of individuals within the data, with model effects differing by these latent groups also. Sometimes called <span class="emph">latent trajectory models</span>, these are conceptually adding a cluster analysis to the mixed model setting. While common in structural equation modeling, packages like <span class="pack">flexmix</span> can keep you in the standard model setting, which might be preferable.</p>
+<p>Often people will assume <em>latent</em> clusters of individuals within the data, with model effects differing by these latent groups also. Sometimes called <span class="emph">latent trajectory models</span>, these are conceptually adding a cluster analysis to the mixed model setting for longitudinal data. While common in structural equation modeling, packages like <span class="pack">flexmix</span> can keep you in the standard model setting, which would be preferable.</p>
+</div>
+<div id="embeddings-and-neural-nets" class="section level5">
+<h5>Embeddings and Neural Nets</h5>
+<p>Much is made about using neural nets to create word, sentence or other <em>embeddings</em>, essentially taking a string of text and converting it to numeric form. But think about what we’ve been doing here. We’ve taken a categorical/string variable like student id, and converted to numeric form (a random effect). Not so complicated a notion really.</p>
+<p>Beyond that, one can essentially conduct a mixed model as one would a neural net for standard tabular data, because a neural net incorporates regularization on all parameters, and in particular those group/cluster effects. So if your data was properly coded, you could set up your neural net to produce something very similar to what we have in the matrix form of a random effect model. This is similar to what mgcv actually does for random effects estimation. By default though, the information extracted from the groups would be done so in a much different way, and would be able to pick up on inter-group correlations as well (much like a spatial random effects model).</p>
 </div>
 </div>
 <div id="nonlinear-mixed-effects-models" class="section level2">
 <h2>Nonlinear Mixed Effects Models</h2>
-<p>Earlier we used the <span class="pack">nlme</span> package. The acronym stands for <strong>nonlinear</strong> mixed effects models. In this case, we are assuming a specific functional form for a predictor. A common example is a logistic growth curve<a href="#fn27" class="footnote-ref" id="fnref27"><sup>27</sup></a>, and one could use a function like <span class="func">SSlogis</span>.</p>
+<p>Earlier we used the <span class="pack">nlme</span> package. The acronym stands for <strong>nonlinear</strong> mixed effects models. In this case, we are assuming a specific functional form for a predictor. A common example is a logistic growth curve<a href="#fn29" class="footnote-ref" id="fnref29"><sup>29</sup></a>, and one could use a function like <span class="func">SSlogis</span>.</p>
 <p>In other cases we do not specify the functional form, and take a more non-parametric approach. Here’s where the powerful <span class="pack">mgcv</span> package comes in, and there are few if any that have its capabilities for <span class="emph">generalized additive models</span> combined with standard random effects approaches. Depending on the approach you take, you can even get <span class="pack">nlme</span> or <span class="pack">lme4</span> output along with the GAM results. Highly recommended.</p>
-<p>I would also recommend <span class="pack" style="">brms</span>, which has specific functionality for nonlinear models in general, including IRT, as well as additive models in the vein of <span class="pack" style="">mgcv</span>, as it uses the same constructor functions that come that package. It might be your best bet whether you have a specific nonlinear functional form or not.</p>
+<p>I would also recommend <span class="pack" style="">brms</span>, which has specific functionality for nonlinear models in general, including IRT models, as well as additive models in the vein of <span class="pack" style="">mgcv</span>, as it uses the same constructor functions that come with that package. It might be your best bet whether you have a specific nonlinear functional form or not.</p>
 </div>
 <div id="connections" class="section level2">
 <h2>Connections</h2>
@@ -398,8 +402,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div class="footnotes">
 <hr />
-<ol start="27">
-<li id="fn27"><p>Not to be confused with latent growth curve models or logistic regression.<a href="further.html#fnref27" class="footnote-back">↩︎</a></p></li>
+<ol start="29">
+<li id="fn29"><p>Not to be confused with latent growth curve models or logistic regression.<a href="further.html#fnref29" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
             </section>
@@ -412,7 +416,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
-<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
 <script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
@@ -431,6 +434,7 @@ gitbook.start({
 "weibo": false,
 "instapaper": false,
 "vk": false,
+"whatsapp": false,
 "all": ["twitter", "facebook", "linkedin", "google", "weibo", "instapaper"],
 "google": false,
 "instapper": false
@@ -453,14 +457,17 @@ gitbook.start({
 "text": null
 },
 "download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
 "toc": {
 "collapse": "section",
 "depth": 2,
 "scroll_highlight": true
 },
 "df_print": "kable",
-"highlight": "pygments",
-"search": true
+"highlight": "pygments"
 });
 });
 </script>

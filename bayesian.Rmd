@@ -11,9 +11,9 @@ knitr::opts_chunk$set(
 
 <img src="img/priorpost.png" style="display:block; margin: 0 auto; width:50%">
 
-With mixed models we've been thinking of coefficients as coming from a distribution (normal).  While we have what we are calling 'fixed' effects, the distinguishing feature of the mixed model is the addition of this random component.  Now consider a standard regression model, i.e. no clustering.  You can actually do the same thing, i.e. assume the coefficients are not fixed, but random.  In this sense, the goal is to understand that distribution, and focus on it, rather than just the summary of it, e.g. the mean.  However, the mean (or other central tendency) of that distribution can be treated like you've been doing the fixed effects in your standard models.
+With mixed models we've been thinking of coefficients as coming from a distribution (normal).  While we have what we are calling 'fixed' effects, the distinguishing feature of the mixed model is the addition of this random component.  Now consider a standard regression model, i.e. no clustering.  You can actually do the same thing, i.e. assume the coefficients are not fixed, but random.  In this sense, the goal is to understand that distribution, and focus on it, rather than just the summary of it, like the mean.  However, the mean (or other central tendency) of that distribution can be treated like you've been doing the fixed effects in your standard models.
 
-Thus you can use how you've been thinking about the random effects in mixed models as a natural segue to the Bayesian approach, where all parameters are random draws from a distribution.  Using Bayesian versions of your favorite models takes no more syntactical effort than your standard models.  The following is a standard linear regression and a mixed model in the <span class="pack">brms</span> package, but would likewise be the same for <span class="pack" style = "">rstanarm</span>.
+Thus you can use how you've been thinking about the random effects in mixed models as a natural segue to the Bayesian approach for any model, where all parameters are random draws from a distribution.  Using Bayesian versions of your favorite models takes no more syntactical effort than your standard models.  The following is a standard linear regression and a mixed model in the <span class="pack">brms</span> package, but would likewise be the same for <span class="pack" style = "">rstanarm</span>, two very popular packages for Bayesian estimation that use Stan under the hood.
 
 ```{r syntax, eval=FALSE}
 brms::brm(gpa ~ occasion, data = gpa)
@@ -23,7 +23,7 @@ rstanarm::stan_lm(gpa ~ occasion, data = gpa)
 rstanarm::stan_lmer(Reaction ~ Days + (1 + Days | Subject), data = sleepstudy)
 ```
 
-So running the Bayesian models is not only as easy, the syntax is identical!  Furthermore, just like mixed models allowed you to understand your data more deeply, the Bayesian models have the potential to do the same. Even the probabilities and intervals make more sense.  With <span class="pack">rstanarm</span> and especially <span class="pack">brms</span>, you can do fairly complex models, taking you further than the standard mixed model packages, all without learning how to code the models explicitly in Stan, the probabilistic programming language that both are based on.  However, when you get to that point, the modeling possibilities are only limited by your imagination.
+So running the Bayesian models is not only as easy, the syntax is identical!  Furthermore, just like mixed models allowed you to understand your data more deeply, the Bayesian models have the potential to do the same. Even the probabilities and intervals make more sense compared to our usual `frequentist` approaches.  With <span class="pack">rstanarm</span> and especially <span class="pack">brms</span>, you can do fairly complex models, taking you further than the standard mixed model packages, all without learning how to code the models explicitly in Stan, the probabilistic programming language that both are based on.  However, when you get to that point, the modeling possibilities are only limited by your imagination.
 
 You will have to learn a new inferential framework, as well as some of the nuances of the Markov Chain Monte Carlo (MCMC) approach.  But you may be surprised to find that the basics come more easily than you would anticipate.  Using tools like <span class="pack">brms</span> and related make it easier than ever to dive into Bayesian data analysis, and you've already been in a similar mindset with mixed models, so try it out some time.  I have an [introduction to Baysian analysis with Stan](https://m-clark.github.io/bayesian-basics/), and a bit more on the Bayesian approach and mixed models in this [document](https://m-clark.github.io/docs/mixedModels/mixedModels.html#mixed_model_7:_bayesian_mixed_model).
 
@@ -35,12 +35,12 @@ The following information about priors assumes some background knowledge of Baye
 
 ### Fixed effects
 
-For fixed effect regression coefficients, normal and student t would be the most common prior distributions, but the default <span class="pack">brms</span> (and <span class="pack">rstanarm</span>) implementation does not specify any, and so defaults to a uniform/improper prior, which is a poor choice.  You will want to set this for your models. Note that scaling numeric predictors benefits here just like it does with <span class="pack">lme4</span>, and makes specifying the prior easier as well.
+For fixed effect regression coefficients, normal and student t would be the most common prior distributions, but the default <span class="pack">brms</span> (and <span class="pack">rstanarm</span>) implementation does not specify any, and so defaults to a uniform/improper prior, which is a poor choice.  You will want to set this for your models. Note that scaling numeric predictors benefits here just like it does with <span class="pack">lme4</span>, and makes specifying the prior easier as well, since you have a better idea about the range of plausible values for the estimate.
 
 
 ### Variance components
 
-In Bayesian linear mixed models, the random effects are estimated parameters, just like the fixed effects (and thus are not BLUPs). The benefit to this is that getting interval estimates for them, or predictions using them, is as easy as anything else.  Typically priors for variance components are half-t for the variances, as the values can only be positive, but beyond that, e.g. intercept and slope correlations, you can again just rely on the package defaults.
+In Bayesian linear mixed models, the random effects are estimated parameters, just like the fixed effects (and thus are not BLUPs). The benefit to this is that getting interval estimates for them, or predictions using them, is as easy as anything else.  Typically priors for variance components are half-t or similar, as the values can only be positive, but beyond that, e.g. intercept and slope correlations, you can again just rely on the package defaults.
 
 To make this more explicit, let's say we have a situation with random intercepts and slopes, with variances 1 and .1 respectively, with a .3 correlation.  The random effects, say for 10 clusters, would come from a multivariate distribution as follows.
 
@@ -51,7 +51,7 @@ re_cov
 mvtnorm::rmvnorm(10, mean = c(0, 0), sigma = re_cov)
 ```
 
-The priors in the model would regard the correlation matrix, and the estimated random effects would be added to the linear predictor, as we showed in the [beginning][Initial depiction].
+The priors in the model for the variance components would regard this correlation matrix, and the estimated random effects from that would be explicitly added to the linear predictor, as we showed in the [beginning][Initial depiction].
 
 
 ## Demonstration
@@ -71,6 +71,14 @@ bayesian_mixed = brm(
 )
 ```
 
+Before getting too far, we can see more explicitly what our priors were. Though the result looks complicated, a. you didn't have to worry about setting everything and these are likely fine for your situations, and b., it's not as bad as it seems once you start to get the hang of things. But for example, along with the prior we just set, we have student-t priors for the variances (on the standard deviation scale).
+
+```{r brms-gpa-prior-summary}
+prior_summary(bayesian_mixed)
+```
+
+Now for the model summary.
+
 ```{r brms-gpa-summary}
 summary(bayesian_mixed)
 ```
@@ -82,7 +90,7 @@ Compare to our previous results.
 summary(gpa_mixed, cor= F)
 ```
 
-Aside from additional diagnostic information, the Bayesian results are essentially the same, but now we can continue to explore the model. The <span class="pack" style = "">brms</span> package tries to use the same function names as <span class="pack" style = "">lme4</span> where possible, so <span class="func" style = "">ranef</span>, <span class="func" style = "">fixef</span>, <span class="func" style = "">VarCorr</span>, etc. are still in play.  However, you can still use my functions for standard models, which will return tidy data frames.
+Aside from additional diagnostic information, the Bayesian results are essentially the same, but now we can continue to explore the model. The <span class="pack" style = "">brms</span> package tries to use the same function names as <span class="pack" style = "">lme4</span> where possible, so <span class="func" style = "">ranef</span>, <span class="func" style = "">fixef</span>, <span class="func" style = "">VarCorr</span>, etc. are still in play.  However, you can still use my <span class="pack" style = "">mixedup</span> functions for standard models, which will return tidy data frames.
 
 ```{r brms-ranef}
 # examine random effects with the usual functions, not too tidy
@@ -90,10 +98,15 @@ Aside from additional diagnostic information, the Bayesian results are essential
 mixedup::extract_random_effects(bayesian_mixed)
 ```
 
-However, we also have some nice plotting functions.  Here I plot the occasion effect, as well as the estimated predictions from the model vs. our observed GPA values.
+However, we also have some nice plotting functions.  Here I plot the occasion effect
 
-```{r brms-cond-pp}
+```{r brms-cond}
 conditional_effects(bayesian_mixed)
+```
+
+Here are estimated predictions from the model (multiple posterior draws) vs. our observed GPA values.
+
+```{r brms-pp}
 pp_check(bayesian_mixed)
 ```
 
@@ -178,7 +191,7 @@ Various functions exist to model temporal, spatial and other residual structure.
 brm(y ~  time +  (1 + time | g) +   ar(time, person, p = 2))
 ```
 
-We can model the variance just like anything else.
+We can model the (observation level) variance just like anything else.
 
 ```{r brms-hetvar, eval=FALSE}
 brm(y ~ x + z + (1 | g), 
@@ -220,7 +233,7 @@ bf(y  ~ x * z + (1 + x | ID1 | g),
 
 #### Additive mixed models
 
-Much of the basic functionality of <span class="pack">mgcv</span> is incorporated, and works with the same syntax.
+Much of the basic functionality of <span class="pack">mgcv</span> is incorporated for generalized additive models, and works with the same syntax.
 
 ```{r brms-gam, eval=FALSE}
 brm(y ~ s(x) + z + (1 | g))
@@ -292,4 +305,4 @@ f =
 
 ## Beyond the Model
 
-The development of Stan and packages like <span class="pack">rstanarm</span> and <span class="pack">brms</span> is rapid, and with the combined powers of those involved, there are a lot of useful tools for exploring the model results.  Even if one found a specialty package for a specific type of mixed model, it is doubtful you would have as many tools for model exploration such as posterior predictive checks, marginal effects, model comparison, basic model diagnostics and more.  That said, the Stan ecosystem of R packages is notable at this point, and so use what works for your situation.
+The development of Stan and packages like <span class="pack">rstanarm</span> and <span class="pack">brms</span> is rapid, and with the combined powers of those involved, there are a lot of useful tools for exploring the model results.  Even if one found a specialty package for a specific type of mixed model, it is doubtful you would have as many tools for model exploration such as posterior predictive checks, marginal effects, model comparison, basic model diagnostics and more.  That said, the Stan ecosystem of R packages is notable at this point, and so use what works for your situation. For mixed models specifically, you should turn to these tools if <span class="pack" style = "">lme4</span> can't do it for you.

@@ -7,7 +7,8 @@ author:  |
 # date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 output:
-  bookdown::gitbook
+  bookdown::gitbook:
+    anchor_sections: FALSE
 documentclass: book
 bibliography: refs.bib
 biblio-style: apalike

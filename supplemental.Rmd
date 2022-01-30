@@ -20,7 +20,7 @@ To best understand a growth curve model, I still think it's instructive to see i
 
 [As before][Random Intercepts model] we assume the following for the GPA model.  As a simple starting point we merely model a trend of time (occasion- 6 semesters) and have random effects due to student for both intercept and occasion.  In this setting we are treating time as numeric, but one could treat the occasion variable as categorical[^subscript].
 
-$$\mathcal{GPA} = (b_{\mathrm{intercept}} + \mathrm{re}_{\mathrm{intercept}}) + (b_{\mathrm{occ}}  + \mathrm{re}_{\mathrm{occasion}})\cdot \mathrm{occasion} +  \epsilon$$
+$$\mathrm{gpa} = (b_{\mathrm{intercept}} + \mathrm{re}_{\mathrm{intercept}}) + (b_{\mathrm{occ}}  + \mathrm{re}_{\mathrm{occasion}})\cdot \mathrm{occasion} +  \epsilon$$
 
 $$\mathrm{re}_{\mathrm{intercept}} \sim \mathcal{N}(0, \tau)$$
 $$\mathrm{re}_{\mathrm{occasion}} \sim \mathcal{N}(0, \varphi)$$
@@ -30,7 +30,7 @@ Thus the student effects for the intercept and slope are random, and specificall
 
 The 'multilevel model' version might look like the following, but it is identical.
 
-$$\mathcal{GPA} = b_{\mathrm{int\_student}} + b_{\mathrm{occ\_student}}\cdot \mathrm{occasion} + \epsilon$$
+$$\mathrm{gpa} = b_{\mathrm{int\_student}} + b_{\mathrm{occ\_student}}\cdot \mathrm{occasion} + \epsilon$$
 
 $$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + \mathrm{re}_{\mathrm{intercept}}$$
 $$b_{\mathrm{occ\_student}} = b_{\mathrm{occ}} + \mathrm{re}_{\mathrm{occasion}}$$
@@ -187,7 +187,7 @@ Variances:
 ```
 
 ```{r gpa_mixed_var_comp}
-print(VarCorr(gpa_mixed), comp = 'Var')  # using print to show variance
+mixedup::extract_vc(gpa_mixed)
 ```
 
 
@@ -380,21 +380,21 @@ To add a <span class="emph">cluster-level covariate</span>, for a mixed model, i
 
 *standard random intercept*
 
-$$\mathcal{GPA} = b_{\mathrm{int\_student}} + b_{occ}\cdot\mathrm{time} + \epsilon $$
+$$\mathrm{gpa} = b_{\mathrm{int\_student}} + b_{occ}\cdot\mathrm{time} + \epsilon $$
 
 $$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + \mathrm{re}_{\mathrm{intercept}}$$   
 
 Plugging in becomes:
 
-$$\mathcal{GPA} = b_{\mathrm{intercept}} + b_{occ}\cdot\mathrm{occasion} +  \mathrm{re}_{\mathrm{intercept}} + \epsilon $$
+$$\mathrm{gpa} = b_{\mathrm{intercept}} + b_{occ}\cdot\mathrm{occasion} +  \mathrm{re}_{\mathrm{intercept}} + \epsilon $$
 
 *subject level covariate added*
 
-$$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + b_{sex}\cdot\mathrm{sex} + \mathrm{re}_{\mathrm{intercept}}$$ 
+$$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + b_{\mathrm{sex}}\cdot\mathrm{sex} + \mathrm{re}_{\mathrm{intercept}}$$ 
 
 But if we plug that into our level 1 model, it just becomes:
 
-$$\mathcal{GPA} = b_{\mathrm{intercept}} + b_{sex}\cdot\mathrm{sex} + b_{occ}\cdot\mathrm{occasion} +  \mathrm{re}_{\mathrm{intercept}} + \epsilon $$
+$$\mathrm{gpa} = b_{\mathrm{intercept}} + b_{\mathrm{sex}}\cdot\mathrm{sex} + b_{occ}\cdot\mathrm{occasion} +  \mathrm{re}_{\mathrm{intercept}} + \epsilon $$
 
 
 In our previous modeling syntax it would look like this:
@@ -413,8 +413,8 @@ With LGC, there is a tendency to interpret the model as an SEM, with the languag
 
 
 
-$$\mathcal{GPA} = b_{\mathrm{int\_student}} + b_{\mathrm{occ\_student}}\cdot \mathrm{occasion} + \epsilon$$
-$$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + b_{sex}\cdot\mathrm{sex} + \mathrm{re}_{\mathrm{intercept}}$$ 
+$$\mathrm{gpa} = b_{\mathrm{int\_student}} + b_{\mathrm{occ\_student}}\cdot \mathrm{occasion} + \epsilon$$
+$$b_{\mathrm{int\_student}} = b_{\mathrm{intercept}} + b_{\mathrm{sex}}\cdot\mathrm{sex} + \mathrm{re}_{\mathrm{intercept}}$$ 
 Furthermore, people almost automatically put in an effect for the cluster level covariate on the slope factor also.  In the mixed model this would result in the following:
 
 *subject level covariate added added for slopes*
@@ -424,7 +424,7 @@ $$b_{\mathrm{occ\_student}} = b_{\mathrm{occ}} + \gamma\cdot\mathrm{sex} + \math
 
 And after plugging in:
 
-$$\mathcal{GPA} = \color{#b2001d}{b_{\mathrm{intercept}} + b_{sex}\cdot\mathrm{sex} + b_{occ}\cdot\mathrm{occasion} + \mathbf{\gamma\cdot\mathrm{sex}\cdot\mathrm{occasion}}}  + \color{#001eb2}{\mathrm{re}_{\mathrm{intercept}} + \mathrm{re}_{\mathrm{occasion}}\cdot\mathrm{occasion}} + e$$
+$$\mathrm{gpa} = \color{#b2001d}{b_{\mathrm{intercept}} + b_{\mathrm{sex}}\cdot\mathrm{sex} + b_{occ}\cdot\mathrm{occasion} + \mathbf{\gamma\cdot\mathrm{sex}\cdot\mathrm{occasion}}}  + \color{#001eb2}{\mathrm{re}_{\mathrm{intercept}} + \mathrm{re}_{\mathrm{occasion}}\cdot\mathrm{occasion}} + e$$
 
 The fixed effects are in red, while the random effects are in blue. Focusing on the fixed effects, we can see that this warrants an interaction between sex and occasion.  This is *not required*, but one should add it if they actually are interested in the interaction.  Our graphical model looks like the following using the above notation.
 
@@ -671,7 +671,7 @@ How does this get into our model? We can find out via simulation.  The next bit 
 
 
 ```{r sim-ar-group}
-simGroup <- function(g, n = 5, rho = 0.7, sigma = .5) {
+simGroup <- function(g, n = 5, rho = 0, sigma = 1) {
   # create time points and group id
   times <- factor(1:n)
   group <- factor(rep(g, n))
@@ -703,9 +703,9 @@ simGroup(1)
 ```
 
 ```{r ar-settings, echo=FALSE}
-ng = 500
-n = 10
-rho = .8
+ng    = 500
+n     = 10
+rho   = 0.8
 sigma = 1.5
 ```
 
@@ -741,9 +741,9 @@ library(brms)
 
 model_brm = brm(
   y ~ x + ar(times, group),
-  data = test_df,
+  data  = test_df,
   cores = 4,
-  seed = 1234
+  seed  = 1234
 )
 ```
 
@@ -821,7 +821,7 @@ ar_tmb
 ar_brm*(ar_var_tmb + res_var_tmb)/ar_var_tmb
 ```
 
-The <span class="pack" style = "">glmmTMB</span> approach is interesting in how it explicitly separates out the ar component from the rest of the residual component.  This seems non-standard, as I don't recall papers reporting the AR standard deviation for example, and every depiction I come across in the mixed model literature is the one that underlies <span class="pack" style = "">brms</span>.  However, it seems like it might be useful and/or interesting from some settings, or maybe even preferable as an additional interpretation for a random effect, similar to the ones we commonly use.
+The <span class="pack" style = "">glmmTMB</span> approach is interesting in how it explicitly separates out the ar component from the rest of the residual component.  This seems non-standard, as I don't recall papers reporting the AR standard deviation for example, and every depiction I come across in the mixed model literature is the one that underlies <span class="pack" style = "">brms</span>.  However, it seems like it would be useful and/or interesting for some settings, or I think is even preferable as an additional interpretation for a type of random effect, similar to the ones we commonly use.
 
 ```{r ar-brms2, echo=FALSE, eval=FALSE}
 model_brm2 = brm(y ~ x + ar(times, group) + (1|group), data = test_df, cores = 4)
