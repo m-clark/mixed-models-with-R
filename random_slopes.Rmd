@@ -9,7 +9,7 @@ knitr::opts_chunk$set(
 # More Random Effects
 
 
-Previously we've looked at random intercepts, but any observation or lower level covariate effect could be allowed to vary by cluster as well.
+Previously we've looked at random intercepts, but any observation or lower level covariate effect could be allowed to vary by cluster as well.  This is identical in concept to an *interaction*, where the effect of some feature is allowed to vary by the levels/values of another.
 
 
 ## Application
@@ -19,11 +19,12 @@ Returning to the GPA data, recall the visualization from before.  I've animated 
 
 ```{r spaghetti2-anim, echo=FALSE, eval=FALSE}
 options(gganimate.dev_args = list(bg = '#fffff8'))
-gpa %>%
+p = gpa %>%
   slice(1:120) %>%   # if you don't want to wait
   ggplot(aes(x = occasion, y = gpa)) +
   geom_path(aes(group = student, alpha = occasion),
             color = '#ff5500',
+            size = 1.5,
             arrow = arrow(type = 'closed',
                           angle = 45,
                           length = unit(2, 'points')),
@@ -38,15 +39,25 @@ gpa %>%
   shadow_mark(colour = 'gray50', size = 0.25) +
   theme_clean()
 
-anim_save('img/gpa_anim.gif')
+# trying to get better resolution without making the file size notably larger is
+# mostly a lost cause.
+p = animate(
+  p,
+  res = 360,
+  # width = 300,
+  # height = 200,
+  # units = 'px'
+)
+
+anim_save('img/gpa_anim_test.gif', animation = p)
 ```
 
-```{r spaghetti2-anim-show, echo=F, out.width='50%'}
+```{r spaghetti2-anim-show, echo=F, out.width='50%', dpi=720}
 knitr::include_graphics('img/gpa_anim.gif')
 ```
 
-
 <br>
+
 To do so, let's now assume that the trend over time is allowed to vary by student, in addition to the intercepts.  Using <span class="pack">lme4</span>, this is quite straightforward.
 
 ```{r random_slope, eval=FALSE}
@@ -157,7 +168,7 @@ knitr::include_graphics('img/shrinkage_main.svg')
 ```
 
 
-Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what would have been the by-group estimate, which would otherwise overfit in this scenario.  This <span class="emph">regularizing</span> effect is yet another bonus when using mixed models[^pool].  It comes into play largely when we have few observations per group and less estimated variance for the random effects.  In other words, when there is little information in a group, or less group-level variance relative to the observation variance, then the mixed model will produce a group-specific effect that is closer to the overall population effect.  In that sense, the mixed model group coefficients better reflect our ignorance.  Conversely, with more pronounced group effects, our uncertainty about the overall effect increases.  
+Here we can see that the mixed model intercepts are generally not as extreme, i.e. the tails of the distribution have been pulled toward the overall effect.  Same goes for the slopes. In both cases the mixed model shrinks what would have been the by-group estimate, which would otherwise overfit in this scenario.  This *regularizing* effect is yet another bonus when using mixed models[^pool].  It comes into play largely when we have few observations per group and less estimated variance for the random effects.  In other words, when there is little information in a group, or less group-level variance relative to the observation variance, then the mixed model will produce a group-specific effect that is closer to the overall population effect.  In that sense, the mixed model group coefficients better reflect our ignorance.  Conversely, with more pronounced group effects, our uncertainty about the overall effect increases.  
 
 
 The following shows what would happen to similar data under a variety of settings with simulated data that is based on the results of the GPA model we had above. On the far left is the plot just shown, our current data setting. Then there are four settings to go along with the original results. The first shows what would happen had we taken many more measurements per student. In the next, we add to the intercept and slope variance, and decrease the residual variance, but keep the sample size the same as the original data.  In both cases we have a less regularizing effect of the mixed model. The random coefficients are very similar to the separate regressions results.  Then, we keep the data the same but where we only have 4 observations per student, which shows more variability in the per-student results, and with it relatively more shrinkage with the mixed model. Finally, we add to the number of occasions per student (10), but have dropout over time, and so have roughly the same amount of data, but which is imbalanced.  For more on this see topic, see my post [here](https://m-clark.github.io/posts/2019-05-14-shrinkage-in-mixed-models/).
@@ -578,9 +589,156 @@ gpa %>%
 ```
 
 
+## Categorical Features
+
+
+Sometimes we may want to assess the effects of a categorical feature across the levels of our grouping variable.  For our GPA example, this might include something like the binary indicator of whether they took any higher level/AP/Honor courses that semester. Another would be their working status, such as part-time, full-time, volunteer or not working.  For many students, this sort of thing could vary from one semester to the next. 
+For binary features, nothing changes from what we've demonstrated so far. We allow that coefficient to vary across groups, just as we would the single coefficient from a numeric predictor.  But what about the case where we have additional categories? 
+
+As a fixed effect, a categorical feature would have k-1 coefficients with default dummy coding, which represent the effect of changing from a reference group to the given category. If we allow that effect to be random, then we would have separate k-1 slopes to vary by our structured levels, resulting in multiple random coefficients, along with their correlation.
+
+Adding these additional random slopes would obviously complicate our model, but perhaps not too much. On the practical side though, it also leads to convergence problems.  But there is a silver lining in that case.  Since it is a categorical feature, we can just treat it like we would a typical random effect. The one difference is that, in the general case of random coefficients, just as we are interested in the interaction of the effect with structure already present, we will want to specify our model to capture this.
+
+For our example we will run three models:
+
+- *Model 1*: The way our intuition would suggest based on what we've seen so far
+- *Model 2*: A simplification that removes the correlation between the random intercept and the other random coefficients
+- *Model 3*: A different, but identically conceptual way to get at our effect via an interaction random effect.
+
+
+We demonstrate with the pupils data set[^pups]. We predict student achievement with a focus on an ordered socioeconomic indicator. For simplification, I've changed it to have only three categories of low, medium, and high (not shown).
+
+
+```{r ran-cat, echo=-(1:3)}
+load('data/pupils.RData')
+
+pupils_demo = pupils %>% 
+  mutate(ses = fct_collapse(
+    ses,
+    low = c('lowest', '2', '3'),
+    mid = c('4', '5'),
+    high = 'highest'
+  )) %>% 
+  rename(student = PUPIL)
+
+ach_cat_re_1 = lmer(
+  achievement ~ ses + (1 + ses|primary_school_id), 
+  data = pupils_demo
+)
+
+ach_cat_re_2 = lmer(
+  achievement ~ ses + (0 + ses|primary_school_id), 
+  data = pupils_demo
+)
+
+ach_cat_re_3 = lmer(
+  achievement ~ ses + (1|primary_school_id) + (1|primary_school_id:ses), 
+  data = pupils_demo
+)
+
+# 2 is the same as this
+# ach_cat_re_4 = lmer(gpa ~ occasion + job + (1|student) + (-1 + job|student), data = gpa)
+```
+
+Creating a model list makes it easy to apply the same function to each model, so we do so here.
+
+```{r ran-cat-fixef}
+model_list = list(
+  ach_cat_re_1 = ach_cat_re_1,
+  ach_cat_re_2 = ach_cat_re_2,
+  ach_cat_re_3 = ach_cat_re_3
+)
+```
+
+If we look at the model summaries, we'll see some differences. The first estimates the random intercept, the random coefficients for ses, and their correlation. 
+
+```{r ran-cat-model-summary-mod-1, message=TRUE}
+summarize_model(ach_cat_re_1, ci = FALSE, cor_re = TRUE)
+```
+
+The second has the the `ses` groups in 'intercept form' but is an identical model, just differently parameterized, so that, while the `seslow` varinace is equivalent to the `Intercept` variance of model 1, the other two are in intercept rather than group difference form.
+
+```{r ran-cat-model-summary-mod-2, message=TRUE}
+summarize_model(ach_cat_re_2, ci = FALSE, cor_re = TRUE)
+```
+
+The third is conceptually identical to the others. The primary difference is that it removes the correlations among the `ses` effects.
+
+```{r ran-cat-model-summary-mod-3, message=TRUE}
+summarize_model(ach_cat_re_3, ci = FALSE, cor_re = TRUE) # no cor_re to show
+```
+
+
+So which model should we choose? We can go about this in a typical fashion, e.g. via theory, AIC, or other considerations.  The following table shows AIC differences among other things. We can definitely see the first two are identical, but they estimate different numbers of parameters and random effects relative to the third. 
+
+```{r ran-cat-aic, echo=FALSE}
+# map_df(model_list, AIC, .id = 'model') %>% 
+#   kable_df()
+
+n_schools = n_distinct(pupils_demo$primary_school_id)
+
+AICcmodavg::aictab(model_list, ) %>% 
+  as_tibble() %>% 
+  select(Modnames:Delta_AICc) %>% 
+  rename(Model = Modnames) %>% 
+  left_join(
+    map_df(model_list, ~tibble(N_random_effects = nrow(extract_random_effects(.x))), .id = 'Model')
+  ) %>% 
+  kable_df()
+```
+
+The difference in the number of parameters shown (`K`) regards the number of estimated random effect variances and covariances. We can see the first model 'wins' with the lowest AIC but it is not appreciably different from the second. But we note that the number of random effects is different.  There `r n_schools` primary schools. In model 1 we have the intercept and two other fixed effects (`sesmid`, `seshigh`) for each group for `r n_schools` * 3 total random effects. In the second our effect is the group mean itself, three intercepts for `r n_schools` * 3 random effects. For model 3, we estimate both the primary school and the interaction of it with ses, but this is not exactly a balanced data set, which would have  `r n_schools` * 4 random effects, so only effects for each school-ses combination that is present in the data are estimated (two schools did not have all ses groups).
+
+
+For the actual random effect differences, let's inspect them[^extractre].  Each of the following looks at the `ses` effect for primary school 10. The first two models show identical random effects, though the first shows the difference of the two groups relative to the first, as that is the coefficient that's being estimated. 
+
+```{r ran-cat-re-mod12, echo=FALSE}
+extract_random_effects(ach_cat_re_1) %>% 
+  filter(str_detect(group, c('10'))) %>% 
+  arrange(desc(group)) %>% 
+  kable_df()
+
+extract_random_effects(ach_cat_re_2) %>% 
+  filter(str_detect(group, c('10'))) %>% 
+  arrange(group) %>% 
+  kable_df()
+```
+
+For our final model we do get different estimates. The variance estimates suggested very little variance for the ses within school effect, so these estimated effects are not very large.
+
+```{r ran-cat-re-mod3, echo=FALSE}
+extract_random_effects(ach_cat_re_3) %>% 
+  filter(str_detect(group, c('10|^10$'))) %>% 
+  droplevels() %>% 
+  mutate(group = fct_relevel(group, '10', '10:low', '10:mid', after = 0)) %>% 
+  arrange(group) %>% 
+  kable_df()
+```
+
+Practically speaking, would there be differences in our predictions?  Results suggest not much, at least for this school.  However, the slight differences do add up across all the data, hence our AIC favoring the model(s) with estimated random effect correlations.
+
+```{r ran-cat-predictions, echo=FALSE}
+pupils_demo %>% 
+  modelr::add_predictions(ach_cat_re_1, var = 'model_1') %>% 
+  modelr::add_predictions(ach_cat_re_2, var = 'model_2') %>% 
+  modelr::add_predictions(ach_cat_re_3, var = 'model_3') %>%
+  filter(primary_school_id == '10') %>% 
+  select(primary_school_id, ses, contains('model')) %>% 
+  distinct() %>% 
+  arrange(model_1) %>% 
+  kable_df()
+```
+
+This would definitely not always be the case.  And in other situations, it may be those models may not converge, where the form of our model 3 will have a much easier time.  At least now you know how to go about dealing with these situations, but for more examples and detail, see [my post here](https://m-clark.github.io/posts/2020-03-01-random-categorical/). 
+
+
+
+
 ## Summary of Random Slopes
 
 At this point it might be clearer why some would call these *richly parameterized linear models*. Relative to a standard regression we get extra variance parameters that add to our understanding of the sources of uncertainty in the model, we can get the subjects specific effects, and their correlation, and use that information to obtain far better predictions.  What's not to like?
+
+
 
 ## Exercises for Random Slopes
 
@@ -696,4 +854,8 @@ tibble(
 ```
 
 
-[^pool]: This phenomenon is also sometimes referred to as <span class="emph">partial pooling</span>.  This idea of pooling is as in 'pooling resources' or borrowing strength.  You have complete pooling, which would be the standard regression model case of ignoring the clusters, i.e. all cluster effects are assumed to be the same. With no pooling, we assumes the clusters have nothing in common, i.e. the separate regressions approach.  Partial pooling is seen in the mixed model scenario, where the similarity among the clusters is estimated in some fashion, and data for all observations informs the estimates for each cluster.  I've never really liked the 'pooling' terminology, as regularization/shrinkage is a more broad concept that applies beyond mixed models, and I'd prefer to stick to that.  In any case, if interested in more detail, see practically anything Andrew Gelman has written on it, and the pool-no-pool document [here](https://github.com/stan-dev/example-models/tree/master/knitr/pool-binary-trials).
+[^pool]: This phenomenon is also sometimes referred to as *partial pooling*.  This idea of pooling is as in 'pooling resources' or borrowing strength.  You have complete pooling, which would be the standard regression model case of ignoring the clusters, i.e. all cluster effects are assumed to be the same. With no pooling, we assumes the clusters have nothing in common, i.e. the separate regressions approach.  Partial pooling is seen in the mixed model scenario, where the similarity among the clusters is estimated in some fashion, and data for all observations informs the estimates for each cluster.  I've never really liked the 'pooling' terminology, as regularization/shrinkage is a more broad concept that applies beyond mixed models, and I'd prefer to stick to that.  In any case, if interested in more detail, see practically anything Andrew Gelman has written on it, and the pool-no-pool document [here](https://github.com/stan-dev/example-models/tree/master/knitr/pool-binary-trials).
+
+[^pups]: We describe the data a bit more in the next chapter where it is of primary focus, as well as in the [appendix][Data].
+
+[^extractre]: These tables are produced by `mixedup::extract_random_effects`.
