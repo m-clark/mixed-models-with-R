@@ -24,7 +24,7 @@ Note the following color coding used in this document:
 
 ## Data and Exercises
 
-All data used can be downloaded [here](https://github.com/m-clark/mixed-models-with-R/data.zip).
+All data used can be downloaded [here](https://github.com/m-clark/mixed-models-with-R/blob/master/data.zip).
 
 If you are interested in doing the examples and exercises, you can follow these steps.
 
